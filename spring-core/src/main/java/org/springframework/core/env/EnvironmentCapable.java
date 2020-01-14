@@ -39,6 +39,7 @@ package org.springframework.core.env;
  * @see org.springframework.context.ConfigurableApplicationContext#getEnvironment()
  */
 public interface EnvironmentCapable {
+	//定义获取Environment方法
 
 	/**
 	 * Return the {@link Environment} associated with this component.

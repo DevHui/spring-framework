@@ -33,6 +33,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.support.AbstractBeanFactory
  */
 public interface SingletonBeanRegistry {
+	//单例的注册和获取
 
 	/**
 	 * Register the given existing object as singleton in the bean registry,
