@@ -16,10 +16,7 @@
 
 package org.springframework.expression.spel.support;
 
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.EvaluationException;
 import org.springframework.expression.Operation;
@@ -28,7 +25,11 @@ import org.springframework.expression.TypeComparator;
 import org.springframework.expression.TypeConverter;
 import org.springframework.expression.TypeLocator;
 
-import static org.junit.Assert.*;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 public class StandardComponentsTests {
 

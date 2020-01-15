@@ -16,17 +16,16 @@
 
 package org.springframework.jmx.export.assembler;
 
-import java.lang.reflect.Method;
-import java.util.Properties;
+import org.junit.Test;
+import org.springframework.jmx.JmxTestBean;
 
 import javax.management.modelmbean.ModelMBeanAttributeInfo;
 import javax.management.modelmbean.ModelMBeanInfo;
+import java.lang.reflect.Method;
+import java.util.Properties;
 
-import org.junit.Test;
-
-import org.springframework.jmx.JmxTestBean;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rob Harrop
@@ -61,7 +60,7 @@ public class MethodExclusionMBeanInfoAssemblerTests extends AbstractJmxAssembler
 	@Override
 	protected MBeanInfoAssembler getAssembler() {
 		MethodExclusionMBeanInfoAssembler assembler = new MethodExclusionMBeanInfoAssembler();
-		assembler.setIgnoredMethods(new String[] {"dontExposeMe", "setSuperman"});
+		assembler.setIgnoredMethods(new String[]{"dontExposeMe", "setSuperman"});
 		return assembler;
 	}
 

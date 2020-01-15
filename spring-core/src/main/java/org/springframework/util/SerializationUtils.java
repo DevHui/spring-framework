@@ -16,13 +16,13 @@
 
 package org.springframework.util;
 
+import org.springframework.lang.Nullable;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Static utilities for serialization and deserialization.
@@ -34,6 +34,7 @@ public abstract class SerializationUtils {
 
 	/**
 	 * Serialize the given object to a byte array.
+	 *
 	 * @param object the object to serialize
 	 * @return an array of bytes representing the object in a portable fashion
 	 */
@@ -46,8 +47,7 @@ public abstract class SerializationUtils {
 		try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
 			oos.writeObject(object);
 			oos.flush();
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new IllegalArgumentException("Failed to serialize object of type: " + object.getClass(), ex);
 		}
 		return baos.toByteArray();
@@ -55,6 +55,7 @@ public abstract class SerializationUtils {
 
 	/**
 	 * Deserialize the byte array into an object.
+	 *
 	 * @param bytes a serialized object
 	 * @return the result of deserializing the bytes
 	 */
@@ -65,11 +66,9 @@ public abstract class SerializationUtils {
 		}
 		try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
 			return ois.readObject();
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new IllegalArgumentException("Failed to deserialize object", ex);
-		}
-		catch (ClassNotFoundException ex) {
+		} catch (ClassNotFoundException ex) {
 			throw new IllegalStateException("Failed to deserialize object type", ex);
 		}
 	}

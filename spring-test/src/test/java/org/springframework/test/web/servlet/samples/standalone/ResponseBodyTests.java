@@ -17,7 +17,6 @@
 package org.springframework.test.web.servlet.samples.standalone;
 
 import org.junit.Test;
-
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.web.Person;
@@ -49,7 +48,7 @@ public class ResponseBodyTests {
 	@Controller
 	private class PersonController {
 
-		@RequestMapping(value="/person/{name}")
+		@RequestMapping(value = "/person/{name}")
 		@ResponseBody
 		public Person get(@PathVariable String name) {
 			return new Person(name);

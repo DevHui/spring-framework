@@ -16,15 +16,7 @@
 
 package org.springframework.web.context;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
 import org.junit.Test;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -46,8 +38,22 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.SimpleWebApplicationContext;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link ContextLoader} and {@link ContextLoaderListener}.
@@ -55,8 +61,8 @@ import static org.junit.Assert.*;
  * @author Juergen Hoeller
  * @author Sam Brannen
  * @author Chris Beams
- * @since 12.08.2003
  * @see org.springframework.web.context.support.Spr8510Tests
+ * @since 12.08.2003
  */
 public class ContextLoaderTests {
 
@@ -65,7 +71,7 @@ public class ContextLoaderTests {
 		MockServletContext sc = new MockServletContext("");
 		sc.addInitParameter(ContextLoader.CONFIG_LOCATION_PARAM,
 				"/org/springframework/web/context/WEB-INF/applicationContext.xml " +
-				"/org/springframework/web/context/WEB-INF/context-addition.xml");
+						"/org/springframework/web/context/WEB-INF/context-addition.xml");
 		ServletContextListener listener = new ContextLoaderListener();
 		ServletContextEvent event = new ServletContextEvent(sc);
 		listener.contextInitialized(event);
@@ -118,7 +124,7 @@ public class ContextLoaderTests {
 		sc.addInitParameter(ContextLoader.CONFIG_LOCATION_PARAM,
 				"org/springframework/web/context/WEB-INF/ContextLoaderTests-acc-context.xml");
 		sc.addInitParameter(ContextLoader.CONTEXT_INITIALIZER_CLASSES_PARAM, StringUtils.arrayToCommaDelimitedString(
-				new Object[] {TestContextInitializer.class.getName(), TestWebContextInitializer.class.getName()}));
+				new Object[]{TestContextInitializer.class.getName(), TestWebContextInitializer.class.getName()}));
 		ContextLoaderListener listener = new ContextLoaderListener();
 		listener.contextInitialized(new ServletContextEvent(sc));
 		WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(sc);
@@ -133,7 +139,7 @@ public class ContextLoaderTests {
 		sc.addInitParameter(ContextLoader.CONFIG_LOCATION_PARAM,
 				"org/springframework/web/context/WEB-INF/ContextLoaderTests-acc-context.xml");
 		sc.addInitParameter(ContextLoader.GLOBAL_INITIALIZER_CLASSES_PARAM, StringUtils.arrayToCommaDelimitedString(
-				new Object[] {TestContextInitializer.class.getName(), TestWebContextInitializer.class.getName()}));
+				new Object[]{TestContextInitializer.class.getName(), TestWebContextInitializer.class.getName()}));
 		ContextLoaderListener listener = new ContextLoaderListener();
 		listener.contextInitialized(new ServletContextEvent(sc));
 		WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(sc);
@@ -222,13 +228,12 @@ public class ContextLoaderTests {
 		sc.addInitParameter(ContextLoader.CONFIG_LOCATION_PARAM,
 				"/org/springframework/web/context/WEB-INF/empty-context.xml");
 		sc.addInitParameter(ContextLoader.CONTEXT_INITIALIZER_CLASSES_PARAM,
-				StringUtils.arrayToCommaDelimitedString(new Object[] {UnknownContextInitializer.class.getName()}));
+				StringUtils.arrayToCommaDelimitedString(new Object[]{UnknownContextInitializer.class.getName()}));
 		ContextLoaderListener listener = new ContextLoaderListener();
 		try {
 			listener.contextInitialized(new ServletContextEvent(sc));
 			fail("expected exception");
-		}
-		catch (ApplicationContextException ex) {
+		} catch (ApplicationContextException ex) {
 			assertTrue(ex.getMessage().contains("not assignable"));
 		}
 	}
@@ -256,8 +261,7 @@ public class ContextLoaderTests {
 		try {
 			listener.contextInitialized(event);
 			fail("Should have thrown BeanDefinitionStoreException");
-		}
-		catch (BeanDefinitionStoreException ex) {
+		} catch (BeanDefinitionStoreException ex) {
 			// expected
 			assertTrue(ex.getCause() instanceof FileNotFoundException);
 		}
@@ -273,8 +277,7 @@ public class ContextLoaderTests {
 		try {
 			listener.contextInitialized(event);
 			fail("Should have thrown ApplicationContextException");
-		}
-		catch (ApplicationContextException ex) {
+		} catch (ApplicationContextException ex) {
 			// expected
 			assertTrue(ex.getCause() instanceof ClassNotFoundException);
 		}
@@ -288,8 +291,7 @@ public class ContextLoaderTests {
 		try {
 			listener.contextInitialized(event);
 			fail("Should have thrown BeanDefinitionStoreException");
-		}
-		catch (BeanDefinitionStoreException ex) {
+		} catch (BeanDefinitionStoreException ex) {
 			// expected
 			assertTrue(ex.getCause() instanceof IOException);
 			assertTrue(ex.getCause().getMessage().contains("/WEB-INF/applicationContext.xml"));
@@ -303,8 +305,7 @@ public class ContextLoaderTests {
 		try {
 			servlet.init(new MockServletConfig(new MockServletContext(""), "test"));
 			fail("Should have thrown BeanDefinitionStoreException");
-		}
-		catch (BeanDefinitionStoreException ex) {
+		} catch (BeanDefinitionStoreException ex) {
 			// expected
 			assertTrue(ex.getCause() instanceof IOException);
 			assertTrue(ex.getCause().getMessage().contains("/WEB-INF/test-servlet.xml"));
@@ -332,9 +333,9 @@ public class ContextLoaderTests {
 		assertTrue("Doesn't have spouse", ((TestBean) context.getBean("rod")).getSpouse() == null);
 		assertTrue("myinit not evaluated", "Roderick".equals(((TestBean) context.getBean("rod")).getName()));
 
-		context = new ClassPathXmlApplicationContext(new String[] {
-			"/org/springframework/web/context/WEB-INF/applicationContext.xml",
-			"/org/springframework/web/context/WEB-INF/context-addition.xml" });
+		context = new ClassPathXmlApplicationContext(new String[]{
+				"/org/springframework/web/context/WEB-INF/applicationContext.xml",
+				"/org/springframework/web/context/WEB-INF/context-addition.xml"});
 		assertTrue("Has father", context.containsBean("father"));
 		assertTrue("Has rod", context.containsBean("rod"));
 		assertTrue("Has kerry", context.containsBean("kerry"));
@@ -343,16 +344,15 @@ public class ContextLoaderTests {
 	@Test(expected = BeanCreationException.class)
 	@SuppressWarnings("resource")
 	public void testSingletonDestructionOnStartupFailure() throws IOException {
-		new ClassPathXmlApplicationContext(new String[] {
-			"/org/springframework/web/context/WEB-INF/applicationContext.xml",
-			"/org/springframework/web/context/WEB-INF/fail.xml" }) {
+		new ClassPathXmlApplicationContext(new String[]{
+				"/org/springframework/web/context/WEB-INF/applicationContext.xml",
+				"/org/springframework/web/context/WEB-INF/fail.xml"}) {
 
 			@Override
 			public void refresh() throws BeansException {
 				try {
 					super.refresh();
-				}
-				catch (BeanCreationException ex) {
+				} catch (BeanCreationException ex) {
 					DefaultListableBeanFactory factory = (DefaultListableBeanFactory) getBeanFactory();
 					assertEquals(0, factory.getSingletonCount());
 					throw ex;
@@ -361,6 +361,11 @@ public class ContextLoaderTests {
 		};
 	}
 
+
+	private static interface UnknownApplicationContext extends ConfigurableApplicationContext {
+
+		void unheardOf();
+	}
 
 	private static class TestContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
@@ -376,7 +381,6 @@ public class ContextLoaderTests {
 		}
 	}
 
-
 	private static class TestWebContextInitializer implements
 			ApplicationContextInitializer<ConfigurableWebApplicationContext> {
 
@@ -386,7 +390,6 @@ public class ContextLoaderTests {
 			ctx.setAttribute("initialized", true);
 		}
 	}
-
 
 	private static class EnvApplicationContextInitializer
 			implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
@@ -399,13 +402,6 @@ public class ContextLoaderTests {
 			assertThat(value, is("someValue"));
 		}
 	}
-
-
-	private static interface UnknownApplicationContext extends ConfigurableApplicationContext {
-
-		void unheardOf();
-	}
-
 
 	private static class UnknownContextInitializer implements ApplicationContextInitializer<UnknownApplicationContext> {
 

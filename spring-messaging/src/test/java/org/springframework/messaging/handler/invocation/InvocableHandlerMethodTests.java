@@ -16,18 +16,22 @@
 
 package org.springframework.messaging.handler.invocation;
 
-import java.lang.reflect.Method;
-
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.ResolvableMethod;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.lang.reflect.Method;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link InvocableHandlerMethod}.
@@ -73,8 +77,7 @@ public class InvocableHandlerMethodTests {
 			Method method = ResolvableMethod.on(Handler.class).mockCall(c -> c.handle(0, "")).method();
 			invoke(new Handler(), method);
 			fail("Expected exception");
-		}
-		catch (MethodArgumentResolutionException ex) {
+		} catch (MethodArgumentResolutionException ex) {
 			assertNotNull(ex.getMessage());
 			assertTrue(ex.getMessage().contains("Could not resolve parameter [0]"));
 		}
@@ -107,8 +110,7 @@ public class InvocableHandlerMethodTests {
 			Method method = ResolvableMethod.on(Handler.class).mockCall(c -> c.handle(0, "")).method();
 			invoke(new Handler(), method);
 			fail("Expected exception");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected -  allow HandlerMethodArgumentResolver exceptions to propagate
 		}
 	}
@@ -121,8 +123,7 @@ public class InvocableHandlerMethodTests {
 			Method method = ResolvableMethod.on(Handler.class).mockCall(c -> c.handle(0, "")).method();
 			invoke(new Handler(), method);
 			fail("Expected exception");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertNotNull("Exception not wrapped", ex.getCause());
 			assertTrue(ex.getCause() instanceof IllegalArgumentException);
 			assertTrue(ex.getMessage().contains("Endpoint ["));
@@ -142,32 +143,28 @@ public class InvocableHandlerMethodTests {
 			expected = new RuntimeException("error");
 			invoke(handler, method, expected);
 			fail("Expected exception");
-		}
-		catch (RuntimeException actual) {
+		} catch (RuntimeException actual) {
 			assertSame(expected, actual);
 		}
 		try {
 			expected = new Error("error");
 			invoke(handler, method, expected);
 			fail("Expected exception");
-		}
-		catch (Error actual) {
+		} catch (Error actual) {
 			assertSame(expected, actual);
 		}
 		try {
 			expected = new Exception("error");
 			invoke(handler, method, expected);
 			fail("Expected exception");
-		}
-		catch (Exception actual) {
+		} catch (Exception actual) {
 			assertSame(expected, actual);
 		}
 		try {
 			expected = new Throwable("error", expected);
 			invoke(handler, method, expected);
 			fail("Expected exception");
-		}
-		catch (IllegalStateException actual) {
+		} catch (IllegalStateException actual) {
 			assertNotNull(actual.getCause());
 			assertSame(expected, actual.getCause());
 			assertTrue(actual.getMessage().contains("Invocation failure"));
@@ -181,8 +178,7 @@ public class InvocableHandlerMethodTests {
 			Method method = ResolvableMethod.on(Handler.class).mockCall(c -> c.handle(0.0)).method();
 			invoke(new Handler(), method);
 			fail();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertThat(ex.getMessage(), containsString("Illegal argument"));
 		}
 	}
@@ -197,7 +193,6 @@ public class InvocableHandlerMethodTests {
 	private StubArgumentResolver getStubResolver(int index) {
 		return (StubArgumentResolver) this.resolvers.getResolvers().get(index);
 	}
-
 
 
 	@SuppressWarnings("unused")

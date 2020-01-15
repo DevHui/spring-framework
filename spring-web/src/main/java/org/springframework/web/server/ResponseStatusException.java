@@ -16,14 +16,14 @@
 
 package org.springframework.web.server;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Base class for exceptions associated with specific HTTP response status codes.
@@ -43,6 +43,7 @@ public class ResponseStatusException extends NestedRuntimeException {
 
 	/**
 	 * Constructor with a response status.
+	 *
 	 * @param status the HTTP status (required)
 	 */
 	public ResponseStatusException(HttpStatus status) {
@@ -52,6 +53,7 @@ public class ResponseStatusException extends NestedRuntimeException {
 	/**
 	 * Constructor with a response status and a reason to add to the exception
 	 * message as explanation.
+	 *
 	 * @param status the HTTP status (required)
 	 * @param reason the associated reason (optional)
 	 */
@@ -62,9 +64,10 @@ public class ResponseStatusException extends NestedRuntimeException {
 	/**
 	 * Constructor with a response status and a reason to add to the exception
 	 * message as explanation, as well as a nested exception.
+	 *
 	 * @param status the HTTP status (required)
 	 * @param reason the associated reason (optional)
-	 * @param cause a nested exception (optional)
+	 * @param cause  a nested exception (optional)
 	 */
 	public ResponseStatusException(HttpStatus status, @Nullable String reason, @Nullable Throwable cause) {
 		super(null, cause);
@@ -84,6 +87,7 @@ public class ResponseStatusException extends NestedRuntimeException {
 	/**
 	 * Return response headers associated with the exception, possibly required
 	 * for the given status code (e.g. "Allow", "Accept").
+	 *
 	 * @since 5.1.11
 	 */
 	public Map<String, String> getHeaders() {

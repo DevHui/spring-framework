@@ -16,17 +16,17 @@
 
 package org.springframework.oxm.jibx;
 
-import java.io.StringWriter;
-
-import javax.xml.transform.stream.StreamResult;
-
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.springframework.oxm.AbstractMarshallerTests;
 
-import static org.junit.Assert.*;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 /**

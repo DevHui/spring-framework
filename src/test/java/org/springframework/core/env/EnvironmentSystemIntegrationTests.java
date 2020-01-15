@@ -16,12 +16,8 @@
 
 package org.springframework.core.env;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -57,11 +53,26 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.beans.factory.support.BeanDefinitionBuilder.*;
-import static org.springframework.context.ConfigurableApplicationContext.*;
-import static org.springframework.core.env.EnvironmentSystemIntegrationTests.Constants.*;
+import java.io.File;
+import java.io.IOException;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.springframework.beans.factory.support.BeanDefinitionBuilder.rootBeanDefinition;
+import static org.springframework.context.ConfigurableApplicationContext.ENVIRONMENT_BEAN_NAME;
+import static org.springframework.core.env.EnvironmentSystemIntegrationTests.Constants.DERIVED_DEV_BEAN_NAME;
+import static org.springframework.core.env.EnvironmentSystemIntegrationTests.Constants.DERIVED_DEV_ENV_NAME;
+import static org.springframework.core.env.EnvironmentSystemIntegrationTests.Constants.DEV_BEAN_NAME;
+import static org.springframework.core.env.EnvironmentSystemIntegrationTests.Constants.DEV_ENV_NAME;
+import static org.springframework.core.env.EnvironmentSystemIntegrationTests.Constants.ENVIRONMENT_AWARE_BEAN_NAME;
+import static org.springframework.core.env.EnvironmentSystemIntegrationTests.Constants.PROD_BEAN_NAME;
+import static org.springframework.core.env.EnvironmentSystemIntegrationTests.Constants.PROD_ENV_NAME;
+import static org.springframework.core.env.EnvironmentSystemIntegrationTests.Constants.TRANSITIVE_BEAN_NAME;
+import static org.springframework.core.env.EnvironmentSystemIntegrationTests.Constants.XML_PATH;
 
 /**
  * System integration tests for container support of the {@link Environment} API.
@@ -158,7 +169,7 @@ public class EnvironmentSystemIntegrationTests {
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(ctx);
 		scanner.scan("org.springframework.core.env.scan2");
 		ctx.refresh();
-		assertThat(scanner.getEnvironment(), is((Environment)ctx.getEnvironment()));
+		assertThat(scanner.getEnvironment(), is((Environment) ctx.getEnvironment()));
 		assertThat(ctx.containsBean(DEV_BEAN_NAME), is(false));
 		assertThat(ctx.containsBean(PROD_BEAN_NAME), is(true));
 	}
@@ -199,7 +210,7 @@ public class EnvironmentSystemIntegrationTests {
 
 		// strange - FSXAC strips leading '/' unless prefixed with 'file:'
 		ConfigurableApplicationContext ctx =
-				new FileSystemXmlApplicationContext(new String[] {"file:" + tmpFile.getPath()}, false);
+				new FileSystemXmlApplicationContext(new String[]{"file:" + tmpFile.getPath()}, false);
 		ctx.setEnvironment(prodEnv);
 		ctx.refresh();
 		assertEnvironmentBeanRegistered(ctx);
@@ -557,8 +568,7 @@ public class EnvironmentSystemIntegrationTests {
 			try {
 				ctx.refresh();
 				fail("expected missing property exception");
-			}
-			catch (MissingRequiredPropertiesException ex) {
+			} catch (MissingRequiredPropertiesException ex) {
 			}
 		}
 

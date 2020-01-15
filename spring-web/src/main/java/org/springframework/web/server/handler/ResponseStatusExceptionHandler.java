@@ -18,8 +18,6 @@ package org.springframework.web.server.handler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -27,6 +25,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebExceptionHandler;
+import reactor.core.publisher.Mono;
 
 /**
  * Handle {@link ResponseStatusException} by setting the response status.
@@ -52,9 +51,10 @@ public class ResponseStatusExceptionHandler implements WebExceptionHandler {
 	 * Set the log category for warn logging.
 	 * <p>Default is no warn logging. Specify this setting to activate warn
 	 * logging into a specific category.
-	 * @since 5.1
+	 *
 	 * @see org.apache.commons.logging.LogFactory#getLog(String)
 	 * @see java.util.logging.Logger#getLogger(String)
+	 * @since 5.1
 	 */
 	public void setWarnLogCategory(String loggerName) {
 		this.warnLogger = LogFactory.getLog(loggerName);
@@ -71,8 +71,7 @@ public class ResponseStatusExceptionHandler implements WebExceptionHandler {
 		String logPrefix = exchange.getLogPrefix();
 		if (this.warnLogger != null && this.warnLogger.isWarnEnabled()) {
 			this.warnLogger.warn(logPrefix + formatError(ex, exchange.getRequest()), ex);
-		}
-		else if (logger.isDebugEnabled()) {
+		} else if (logger.isDebugEnabled()) {
 			logger.debug(logPrefix + formatError(ex, exchange.getRequest()));
 		}
 
@@ -97,8 +96,7 @@ public class ResponseStatusExceptionHandler implements WebExceptionHandler {
 				}
 				result = true;
 			}
-		}
-		else {
+		} else {
 			Throwable cause = ex.getCause();
 			if (cause != null) {
 				result = updateResponse(response, cause);
@@ -109,6 +107,7 @@ public class ResponseStatusExceptionHandler implements WebExceptionHandler {
 
 	/**
 	 * Determine the HTTP status implied by the given exception.
+	 *
 	 * @param ex the exception to introspect
 	 * @return the associated HTTP status, if any
 	 * @since 5.0.5

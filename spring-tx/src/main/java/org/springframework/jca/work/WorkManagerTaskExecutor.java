@@ -16,19 +16,6 @@
 
 package org.springframework.jca.work;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-
-import javax.naming.NamingException;
-import javax.resource.spi.BootstrapContext;
-import javax.resource.spi.work.ExecutionContext;
-import javax.resource.spi.work.Work;
-import javax.resource.spi.work.WorkException;
-import javax.resource.spi.work.WorkListener;
-import javax.resource.spi.work.WorkManager;
-import javax.resource.spi.work.WorkRejectedException;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.core.task.TaskDecorator;
@@ -42,6 +29,18 @@ import org.springframework.scheduling.SchedulingTaskExecutor;
 import org.springframework.util.Assert;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureTask;
+
+import javax.naming.NamingException;
+import javax.resource.spi.BootstrapContext;
+import javax.resource.spi.work.ExecutionContext;
+import javax.resource.spi.work.Work;
+import javax.resource.spi.work.WorkException;
+import javax.resource.spi.work.WorkListener;
+import javax.resource.spi.work.WorkManager;
+import javax.resource.spi.work.WorkRejectedException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 /**
  * {@link org.springframework.core.task.TaskExecutor} implementation
@@ -64,9 +63,9 @@ import org.springframework.util.concurrent.ListenableFutureTask;
  * in the {@code geronimo-web.xml} deployment descriptor.
  *
  * @author Juergen Hoeller
- * @since 2.0.3
  * @see #setWorkManager
  * @see javax.resource.spi.work.WorkManager#scheduleWork
+ * @since 2.0.3
  */
 public class WorkManagerTaskExecutor extends JndiLocatorSupport
 		implements AsyncListenableTaskExecutor, SchedulingTaskExecutor, WorkManager, BootstrapContextAware, InitializingBean {
@@ -90,6 +89,7 @@ public class WorkManagerTaskExecutor extends JndiLocatorSupport
 
 	/**
 	 * Create a new WorkManagerTaskExecutor, expecting bean-style configuration.
+	 *
 	 * @see #setWorkManager
 	 */
 	public WorkManagerTaskExecutor() {
@@ -97,6 +97,7 @@ public class WorkManagerTaskExecutor extends JndiLocatorSupport
 
 	/**
 	 * Create a new WorkManagerTaskExecutor for the given WorkManager.
+	 *
 	 * @param workManager the JCA WorkManager to delegate to
 	 */
 	public WorkManagerTaskExecutor(WorkManager workManager) {
@@ -117,6 +118,7 @@ public class WorkManagerTaskExecutor extends JndiLocatorSupport
 	 * <p>This can either be a fully qualified JNDI name,
 	 * or the JNDI name relative to the current environment
 	 * naming context if "resourceRef" is set to "true".
+	 *
 	 * @see #setWorkManager
 	 * @see #setResourceRef
 	 */
@@ -139,6 +141,7 @@ public class WorkManagerTaskExecutor extends JndiLocatorSupport
 	 * has been actually started.
 	 * <p>Uses the JCA {@code startWork} operation underneath,
 	 * instead of the default {@code scheduleWork}.
+	 *
 	 * @see javax.resource.spi.work.WorkManager#startWork
 	 * @see javax.resource.spi.work.WorkManager#scheduleWork
 	 */
@@ -151,6 +154,7 @@ public class WorkManagerTaskExecutor extends JndiLocatorSupport
 	 * has been completed.
 	 * <p>Uses the JCA {@code doWork} operation underneath,
 	 * instead of the default {@code scheduleWork}.
+	 *
 	 * @see javax.resource.spi.work.WorkManager#doWork
 	 * @see javax.resource.spi.work.WorkManager#scheduleWork
 	 */
@@ -175,6 +179,7 @@ public class WorkManagerTaskExecutor extends JndiLocatorSupport
 	 * execution callback (which may be a wrapper around the user-supplied task).
 	 * <p>The primary use case is to set some execution context around the task's
 	 * invocation, or to provide some monitoring/statistics for task execution.
+	 *
 	 * @since 4.3
 	 */
 	public void setTaskDecorator(TaskDecorator taskDecorator) {
@@ -186,8 +191,7 @@ public class WorkManagerTaskExecutor extends JndiLocatorSupport
 		if (this.workManager == null) {
 			if (this.workManagerName != null) {
 				this.workManager = lookup(this.workManagerName, WorkManager.class);
-			}
-			else {
+			} else {
 				this.workManager = getDefaultWorkManager();
 			}
 		}
@@ -225,37 +229,29 @@ public class WorkManagerTaskExecutor extends JndiLocatorSupport
 			if (this.blockUntilCompleted) {
 				if (startTimeout != TIMEOUT_INDEFINITE || this.workListener != null) {
 					obtainWorkManager().doWork(work, startTimeout, null, this.workListener);
-				}
-				else {
+				} else {
 					obtainWorkManager().doWork(work);
 				}
-			}
-			else if (this.blockUntilStarted) {
+			} else if (this.blockUntilStarted) {
 				if (startTimeout != TIMEOUT_INDEFINITE || this.workListener != null) {
 					obtainWorkManager().startWork(work, startTimeout, null, this.workListener);
-				}
-				else {
+				} else {
 					obtainWorkManager().startWork(work);
 				}
-			}
-			else {
+			} else {
 				if (startTimeout != TIMEOUT_INDEFINITE || this.workListener != null) {
 					obtainWorkManager().scheduleWork(work, startTimeout, null, this.workListener);
-				}
-				else {
+				} else {
 					obtainWorkManager().scheduleWork(work);
 				}
 			}
-		}
-		catch (WorkRejectedException ex) {
+		} catch (WorkRejectedException ex) {
 			if (WorkException.START_TIMED_OUT.equals(ex.getErrorCode())) {
 				throw new TaskTimeoutException("JCA WorkManager rejected task because of timeout: " + task, ex);
-			}
-			else {
+			} else {
 				throw new TaskRejectedException("JCA WorkManager rejected task: " + task, ex);
 			}
-		}
-		catch (WorkException ex) {
+		} catch (WorkException ex) {
 			throw new SchedulingException("Could not schedule task on JCA WorkManager", ex);
 		}
 	}

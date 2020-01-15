@@ -16,16 +16,19 @@
 
 package org.springframework.jms.support.destination;
 
+import org.junit.Test;
+import org.springframework.jms.StubTopic;
+
 import javax.jms.Destination;
 import javax.jms.Session;
 import javax.naming.NamingException;
 
-import org.junit.Test;
-
-import org.springframework.jms.StubTopic;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Rick Evans
@@ -106,8 +109,7 @@ public class JndiDestinationResolverTests {
 		try {
 			resolver.resolveDestinationName(session, DESTINATION_NAME, true);
 			fail("expected DestinationResolutionException");
-		}
-		catch (DestinationResolutionException ex) {
+		} catch (DestinationResolutionException ex) {
 			// expected
 		}
 	}

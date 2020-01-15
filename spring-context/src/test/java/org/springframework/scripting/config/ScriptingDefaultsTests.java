@@ -16,17 +16,18 @@
 
 package org.springframework.scripting.config;
 
-import java.lang.reflect.Field;
-
 import org.junit.Test;
-
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.aop.target.dynamic.AbstractRefreshableTargetSource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Field;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Mark Fisher
@@ -36,10 +37,10 @@ import static org.junit.Assert.*;
 public class ScriptingDefaultsTests {
 
 	private static final String CONFIG =
-		"org/springframework/scripting/config/scriptingDefaultsTests.xml";
+			"org/springframework/scripting/config/scriptingDefaultsTests.xml";
 
 	private static final String PROXY_CONFIG =
-		"org/springframework/scripting/config/scriptingDefaultsProxyTargetClassTests.xml";
+			"org/springframework/scripting/config/scriptingDefaultsProxyTargetClassTests.xml";
 
 
 	@Test

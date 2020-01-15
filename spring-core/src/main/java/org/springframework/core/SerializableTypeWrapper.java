@@ -16,6 +16,11 @@
 
 package org.springframework.core;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.ConcurrentReferenceHashMap;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.ReflectionUtils;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -29,11 +34,6 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.ConcurrentReferenceHashMap;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Internal utility class that can be used to obtain wrapped {@link Serializable}
@@ -55,10 +55,9 @@ import org.springframework.util.ReflectionUtils;
  */
 final class SerializableTypeWrapper {
 
+	static final ConcurrentReferenceHashMap<Type, Type> cache = new ConcurrentReferenceHashMap<>(256);
 	private static final Class<?>[] SUPPORTED_SERIALIZABLE_TYPES = {
 			GenericArrayType.class, ParameterizedType.class, TypeVariable.class, WildcardType.class};
-
-	static final ConcurrentReferenceHashMap<Type, Type> cache = new ConcurrentReferenceHashMap<>(256);
 
 
 	private SerializableTypeWrapper() {
@@ -84,6 +83,7 @@ final class SerializableTypeWrapper {
 
 	/**
 	 * Unwrap the given type, effectively returning the original non-serializable type.
+	 *
 	 * @param type the type to unwrap
 	 * @return the original non-serializable type
 	 */
@@ -122,7 +122,7 @@ final class SerializableTypeWrapper {
 		for (Class<?> type : SUPPORTED_SERIALIZABLE_TYPES) {
 			if (type.isInstance(providedType)) {
 				ClassLoader classLoader = provider.getClass().getClassLoader();
-				Class<?>[] interfaces = new Class<?>[] {type, SerializableTypeProxy.class, Serializable.class};
+				Class<?>[] interfaces = new Class<?>[]{type, SerializableTypeProxy.class, Serializable.class};
 				InvocationHandler handler = new TypeProxyInvocationHandler(provider);
 				cached = (Type) Proxy.newProxyInstance(classLoader, interfaces, handler);
 				cache.put(providedType, cached);
@@ -192,18 +192,15 @@ final class SerializableTypeWrapper {
 					other = unwrap((Type) other);
 				}
 				return ObjectUtils.nullSafeEquals(this.provider.getType(), other);
-			}
-			else if (method.getName().equals("hashCode")) {
+			} else if (method.getName().equals("hashCode")) {
 				return ObjectUtils.nullSafeHashCode(this.provider.getType());
-			}
-			else if (method.getName().equals("getTypeProvider")) {
+			} else if (method.getName().equals("getTypeProvider")) {
 				return this.provider;
 			}
 
 			if (Type.class == method.getReturnType() && args == null) {
 				return forTypeProvider(new MethodInvokeTypeProvider(this.provider, method, -1));
-			}
-			else if (Type[].class == method.getReturnType() && args == null) {
+			} else if (Type[].class == method.getReturnType() && args == null) {
 				Type[] result = new Type[((Type[]) method.invoke(this.provider.getType())).length];
 				for (int i = 0; i < result.length; i++) {
 					result[i] = forTypeProvider(new MethodInvokeTypeProvider(this.provider, method, i));
@@ -213,8 +210,7 @@ final class SerializableTypeWrapper {
 
 			try {
 				return method.invoke(this.provider.getType(), args);
-			}
-			catch (InvocationTargetException ex) {
+			} catch (InvocationTargetException ex) {
 				throw ex.getTargetException();
 			}
 		}
@@ -253,8 +249,7 @@ final class SerializableTypeWrapper {
 			inputStream.defaultReadObject();
 			try {
 				this.field = this.declaringClass.getDeclaredField(this.fieldName);
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				throw new IllegalStateException("Could not find original class structure", ex);
 			}
 		}
@@ -302,13 +297,11 @@ final class SerializableTypeWrapper {
 				if (this.methodName != null) {
 					this.methodParameter = new MethodParameter(
 							this.declaringClass.getDeclaredMethod(this.methodName, this.parameterTypes), this.parameterIndex);
-				}
-				else {
+				} else {
 					this.methodParameter = new MethodParameter(
 							this.declaringClass.getDeclaredConstructor(this.parameterTypes), this.parameterIndex);
 				}
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				throw new IllegalStateException("Could not find original class structure", ex);
 			}
 		}

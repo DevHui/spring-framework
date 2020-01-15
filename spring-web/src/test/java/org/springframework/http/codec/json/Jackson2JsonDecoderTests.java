@@ -16,12 +16,6 @@
 
 package org.springframework.http.codec.json;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,10 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.AbstractDecoderTestCase;
 import org.springframework.core.codec.CodecException;
@@ -41,14 +31,28 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.Pojo;
 import org.springframework.util.MimeType;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static java.util.Arrays.*;
-import static java.util.Collections.*;
-import static org.junit.Assert.*;
-import static org.springframework.core.ResolvableType.*;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.core.ResolvableType.forClass;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.http.codec.json.Jackson2JsonDecoder.*;
-import static org.springframework.http.codec.json.JacksonViewBean.*;
+import static org.springframework.http.codec.json.JacksonViewBean.MyJacksonView1;
+import static org.springframework.http.codec.json.JacksonViewBean.MyJacksonView3;
 
 /**
  * Unit tests for {@link Jackson2JsonDecoder}.
@@ -190,7 +194,7 @@ public class Jackson2JsonDecoderTests extends AbstractDecoderTestCase<Jackson2Js
 	}
 
 	@Test  // SPR-15975
-	public void  customDeserializer() {
+	public void customDeserializer() {
 		Mono<DataBuffer> input = stringBuffer("{\"test\": 1}");
 
 		testDecode(input, TestObject.class, step -> step
@@ -238,6 +242,7 @@ public class Jackson2JsonDecoderTests extends AbstractDecoderTestCase<Jackson2Js
 		public int getTest() {
 			return this.test;
 		}
+
 		public void setTest(int test) {
 			this.test = test;
 		}

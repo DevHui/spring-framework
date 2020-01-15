@@ -16,15 +16,7 @@
 
 package org.springframework.test.web.servlet.samples.standalone;
 
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.junit.Test;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +32,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import static org.junit.Assert.*;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -215,8 +214,7 @@ public class AsyncTests {
 				try {
 					Thread.sleep(200);
 					os.write("&someBoolean=true".getBytes(StandardCharsets.UTF_8));
-				}
-				catch (InterruptedException e) {
+				} catch (InterruptedException e) {
 					/* no-op */
 				}
 			};
@@ -250,8 +248,7 @@ public class AsyncTests {
 					try {
 						Thread.sleep(100);
 						deferredResult.setErrorResult(new RuntimeException("Delayed Error"));
-					}
-					catch (InterruptedException e) {
+					} catch (InterruptedException e) {
 						/* no-op */
 					}
 				}

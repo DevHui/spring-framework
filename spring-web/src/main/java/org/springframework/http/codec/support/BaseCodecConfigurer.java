@@ -16,12 +16,6 @@
 
 package org.springframework.http.codec.support;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.Decoder;
 import org.springframework.core.codec.Encoder;
@@ -31,6 +25,12 @@ import org.springframework.http.codec.EncoderHttpMessageWriter;
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Default implementation of {@link CodecConfigurer} that serves as a base for
@@ -59,6 +59,7 @@ abstract class BaseCodecConfigurer implements CodecConfigurer {
 
 	/**
 	 * Create a deep copy of the given {@link BaseCodecConfigurer}.
+	 *
 	 * @since 5.1.12
 	 */
 	protected BaseCodecConfigurer(BaseCodecConfigurer other) {
@@ -69,6 +70,7 @@ abstract class BaseCodecConfigurer implements CodecConfigurer {
 	/**
 	 * Sub-classes should override this to create  deep copy of
 	 * {@link BaseDefaultCodecs} which can can be client or server specific.
+	 *
 	 * @since 5.1.12
 	 */
 	protected abstract BaseDefaultCodecs cloneDefaultCodecs();
@@ -139,6 +141,7 @@ abstract class BaseCodecConfigurer implements CodecConfigurer {
 
 		/**
 		 * Create a deep copy of the given {@link DefaultCustomCodecs}.
+		 *
 		 * @since 5.1.12
 		 */
 		DefaultCustomCodecs(DefaultCustomCodecs other) {
@@ -198,8 +201,7 @@ abstract class BaseCodecConfigurer implements CodecConfigurer {
 
 			if (codec instanceof Decoder) {
 				codec = new DecoderHttpMessageReader<>((Decoder<?>) codec);
-			}
-			else if (codec instanceof Encoder) {
+			} else if (codec instanceof Encoder) {
 				codec = new EncoderHttpMessageWriter<>((Encoder<?>) codec);
 			}
 
@@ -207,13 +209,11 @@ abstract class BaseCodecConfigurer implements CodecConfigurer {
 				HttpMessageReader<?> reader = (HttpMessageReader<?>) codec;
 				boolean canReadToObject = reader.canRead(ResolvableType.forClass(Object.class), null);
 				(canReadToObject ? this.objectReaders : this.typedReaders).put(reader, applyDefaultConfig);
-			}
-			else if (codec instanceof HttpMessageWriter) {
+			} else if (codec instanceof HttpMessageWriter) {
 				HttpMessageWriter<?> writer = (HttpMessageWriter<?>) codec;
 				boolean canWriteObject = writer.canWrite(ResolvableType.forClass(Object.class), null);
 				(canWriteObject ? this.objectWriters : this.typedWriters).put(writer, applyDefaultConfig);
-			}
-			else {
+			} else {
 				throw new IllegalArgumentException("Unexpected codec type: " + codec.getClass().getName());
 			}
 		}

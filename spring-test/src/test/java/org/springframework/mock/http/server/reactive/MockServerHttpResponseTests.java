@@ -15,17 +15,15 @@
  */
 package org.springframework.mock.http.server.reactive;
 
-import java.util.Arrays;
-
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Arrays;
 
 /**
  * Unit tests for {@link MockServerHttpResponse}.
+ *
  * @author Rossen Stoyanchev
  */
 public class MockServerHttpResponseTests {

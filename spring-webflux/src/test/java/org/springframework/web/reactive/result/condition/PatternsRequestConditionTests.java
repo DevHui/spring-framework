@@ -16,16 +16,15 @@
 
 package org.springframework.web.reactive.result.condition;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.stream.Collectors;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

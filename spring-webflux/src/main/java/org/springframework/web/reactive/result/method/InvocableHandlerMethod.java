@@ -16,16 +16,6 @@
 
 package org.springframework.web.reactive.result.method;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -40,6 +30,15 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.HandlerResult;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Extension of {@link HandlerMethod} that invokes the underlying method with
@@ -78,6 +77,21 @@ public class InvocableHandlerMethod extends HandlerMethod {
 		super(bean, method);
 	}
 
+	private static boolean isAsyncVoidReturnType(MethodParameter returnType, @Nullable ReactiveAdapter adapter) {
+		if (adapter != null && adapter.supportsEmpty()) {
+			if (adapter.isNoValue()) {
+				return true;
+			}
+			Type parameterType = returnType.getGenericParameterType();
+			if (parameterType instanceof ParameterizedType) {
+				ParameterizedType type = (ParameterizedType) parameterType;
+				if (type.getActualTypeArguments().length == 1) {
+					return Void.class.equals(type.getActualTypeArguments()[0]);
+				}
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Configure the argument resolvers to use to use for resolving method
@@ -95,19 +109,19 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	}
 
 	/**
+	 * Return the configured parameter name discoverer.
+	 */
+	public ParameterNameDiscoverer getParameterNameDiscoverer() {
+		return this.parameterNameDiscoverer;
+	}
+
+	/**
 	 * Set the ParameterNameDiscoverer for resolving parameter names when needed
 	 * (e.g. default request attribute name).
 	 * <p>Default is a {@link DefaultParameterNameDiscoverer}.
 	 */
 	public void setParameterNameDiscoverer(ParameterNameDiscoverer nameDiscoverer) {
 		this.parameterNameDiscoverer = nameDiscoverer;
-	}
-
-	/**
-	 * Return the configured parameter name discoverer.
-	 */
-	public ParameterNameDiscoverer getParameterNameDiscoverer() {
-		return this.parameterNameDiscoverer;
 	}
 
 	/**
@@ -119,12 +133,12 @@ public class InvocableHandlerMethod extends HandlerMethod {
 		this.reactiveAdapterRegistry = registry;
 	}
 
-
 	/**
 	 * Invoke the method for the given exchange.
-	 * @param exchange the current exchange
+	 *
+	 * @param exchange       the current exchange
 	 * @param bindingContext the binding context to use
-	 * @param providedArgs optional list of argument values to match by type
+	 * @param providedArgs   optional list of argument values to match by type
 	 * @return a Mono with a {@link HandlerResult}
 	 */
 	public Mono<HandlerResult> invoke(
@@ -135,16 +149,13 @@ public class InvocableHandlerMethod extends HandlerMethod {
 			try {
 				ReflectionUtils.makeAccessible(getBridgedMethod());
 				value = getBridgedMethod().invoke(getBean(), args);
-			}
-			catch (IllegalArgumentException ex) {
+			} catch (IllegalArgumentException ex) {
 				assertTargetBean(getBridgedMethod(), getBean(), args);
 				String text = (ex.getMessage() != null ? ex.getMessage() : "Illegal argument");
 				return Mono.error(new IllegalStateException(formatInvokeError(text, args), ex));
-			}
-			catch (InvocationTargetException ex) {
+			} catch (InvocationTargetException ex) {
 				return Mono.error(ex.getTargetException());
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				// Unlikely to ever get here, but it must be handled...
 				return Mono.error(new IllegalStateException(formatInvokeError("Invocation failure", args), ex));
 			}
@@ -190,8 +201,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 				argMonos.add(this.resolvers.resolveArgument(parameter, bindingContext, exchange)
 						.defaultIfEmpty(NO_ARG_VALUE)
 						.doOnError(ex -> logArgumentErrorIfNecessary(exchange, parameter, ex)));
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				logArgumentErrorIfNecessary(exchange, parameter, ex);
 				argMonos.add(Mono.error(ex));
 			}
@@ -208,22 +218,6 @@ public class InvocableHandlerMethod extends HandlerMethod {
 				logger.debug(exchange.getLogPrefix() + formatArgumentError(parameter, exMsg));
 			}
 		}
-	}
-
-	private static boolean isAsyncVoidReturnType(MethodParameter returnType, @Nullable ReactiveAdapter adapter) {
-		if (adapter != null && adapter.supportsEmpty()) {
-			if (adapter.isNoValue()) {
-				return true;
-			}
-			Type parameterType = returnType.getGenericParameterType();
-			if (parameterType instanceof ParameterizedType) {
-				ParameterizedType type = (ParameterizedType) parameterType;
-				if (type.getActualTypeArguments().length == 1) {
-					return Void.class.equals(type.getActualTypeArguments()[0]);
-				}
-			}
-		}
-		return false;
 	}
 
 	private boolean isResponseHandled(Object[] args, ServerWebExchange exchange) {

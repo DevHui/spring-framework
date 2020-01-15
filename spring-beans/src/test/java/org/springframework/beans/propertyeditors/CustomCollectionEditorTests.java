@@ -16,13 +16,15 @@
 
 package org.springframework.beans.propertyeditors;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for the {@link CustomCollectionEditor} class.
@@ -52,7 +54,7 @@ public class CustomCollectionEditorTests {
 	@Test
 	public void testSunnyDaySetValue() throws Exception {
 		CustomCollectionEditor editor = new CustomCollectionEditor(ArrayList.class);
-		editor.setValue(new int[] {0, 1, 2});
+		editor.setValue(new int[]{0, 1, 2});
 		Object value = editor.getValue();
 		assertNotNull(value);
 		assertTrue(value instanceof ArrayList);
@@ -86,7 +88,7 @@ public class CustomCollectionEditorTests {
 	}
 
 
-	@SuppressWarnings({ "serial", "unused" })
+	@SuppressWarnings({"serial", "unused"})
 	private static final class CollectionTypeWithNoNoArgCtor extends ArrayList<Object> {
 		public CollectionTypeWithNoNoArgCtor(String anArg) {
 		}

@@ -16,15 +16,7 @@
 
 package org.springframework.web.reactive.function.server.support;
 
-import java.net.URI;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpMethod;
@@ -34,9 +26,17 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyExtractor;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.server.ServerRequest;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.net.URI;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arjen Poutsma
@@ -158,7 +158,8 @@ public class ServerRequestWrapperTests {
 	@Test
 	public void bodyToMonoParameterizedTypeReference() {
 		Mono<String> result = Mono.just("foo");
-		ParameterizedTypeReference<String> reference = new ParameterizedTypeReference<String>() {};
+		ParameterizedTypeReference<String> reference = new ParameterizedTypeReference<String>() {
+		};
 		when(mockRequest.bodyToMono(reference)).thenReturn(result);
 
 		assertSame(result, wrapper.bodyToMono(reference));
@@ -175,7 +176,8 @@ public class ServerRequestWrapperTests {
 	@Test
 	public void bodyToFluxParameterizedTypeReference() {
 		Flux<String> result = Flux.just("foo");
-		ParameterizedTypeReference<String> reference = new ParameterizedTypeReference<String>() {};
+		ParameterizedTypeReference<String> reference = new ParameterizedTypeReference<String>() {
+		};
 		when(mockRequest.bodyToFlux(reference)).thenReturn(result);
 
 		assertSame(result, wrapper.bodyToFlux(reference));

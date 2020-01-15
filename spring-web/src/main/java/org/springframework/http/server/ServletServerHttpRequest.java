@@ -16,6 +16,16 @@
 
 package org.springframework.http.server;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.InvalidMediaTypeException;
+import org.springframework.http.MediaType;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.LinkedCaseInsensitiveMap;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -34,17 +44,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.InvalidMediaTypeException;
-import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.LinkedCaseInsensitiveMap;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link ServerHttpRequest} implementation that is based on a {@link HttpServletRequest}.
@@ -76,6 +75,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest {
 	/**
 	 * Construct a new instance of the ServletServerHttpRequest based on the
 	 * given {@link HttpServletRequest}.
+	 *
 	 * @param servletRequest the servlet request
 	 */
 	public ServletServerHttpRequest(HttpServletRequest servletRequest) {
@@ -83,6 +83,45 @@ public class ServletServerHttpRequest implements ServerHttpRequest {
 		this.servletRequest = servletRequest;
 	}
 
+	private static boolean isFormPost(HttpServletRequest request) {
+		String contentType = request.getContentType();
+		return (contentType != null && contentType.contains(FORM_CONTENT_TYPE) &&
+				HttpMethod.POST.matches(request.getMethod()));
+	}
+
+	/**
+	 * Use {@link javax.servlet.ServletRequest#getParameterMap()} to reconstruct the
+	 * body of a form 'POST' providing a predictable outcome as opposed to reading
+	 * from the body, which can fail if any other code has used the ServletRequest
+	 * to access a parameter, thus causing the input stream to be "consumed".
+	 */
+	private static InputStream getBodyFromServletRequestParameters(HttpServletRequest request) throws IOException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
+		Writer writer = new OutputStreamWriter(bos, FORM_CHARSET);
+
+		Map<String, String[]> form = request.getParameterMap();
+		for (Iterator<String> nameIterator = form.keySet().iterator(); nameIterator.hasNext(); ) {
+			String name = nameIterator.next();
+			List<String> values = Arrays.asList(form.get(name));
+			for (Iterator<String> valueIterator = values.iterator(); valueIterator.hasNext(); ) {
+				String value = valueIterator.next();
+				writer.write(URLEncoder.encode(name, FORM_CHARSET.name()));
+				if (value != null) {
+					writer.write('=');
+					writer.write(URLEncoder.encode(value, FORM_CHARSET.name()));
+					if (valueIterator.hasNext()) {
+						writer.write('&');
+					}
+				}
+			}
+			if (nameIterator.hasNext()) {
+				writer.append('&');
+			}
+		}
+		writer.flush();
+
+		return new ByteArrayInputStream(bos.toByteArray());
+	}
 
 	/**
 	 * Returns the {@code HttpServletRequest} this object is based on.
@@ -116,8 +155,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest {
 				}
 				urlString = url.toString();
 				this.uri = new URI(urlString);
-			}
-			catch (URISyntaxException ex) {
+			} catch (URISyntaxException ex) {
 				if (!hasQuery) {
 					throw new IllegalStateException(
 							"Could not resolve HttpServletRequest as URI: " + urlString, ex);
@@ -126,8 +164,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest {
 				try {
 					urlString = this.servletRequest.getRequestURL().toString();
 					this.uri = new URI(urlString);
-				}
-				catch (URISyntaxException ex2) {
+				} catch (URISyntaxException ex2) {
 					throw new IllegalStateException(
 							"Could not resolve HttpServletRequest as URI: " + urlString, ex2);
 				}
@@ -141,10 +178,10 @@ public class ServletServerHttpRequest implements ServerHttpRequest {
 		if (this.headers == null) {
 			this.headers = new HttpHeaders();
 
-			for (Enumeration<?> names = this.servletRequest.getHeaderNames(); names.hasMoreElements();) {
+			for (Enumeration<?> names = this.servletRequest.getHeaderNames(); names.hasMoreElements(); ) {
 				String headerName = (String) names.nextElement();
 				for (Enumeration<?> headerValues = this.servletRequest.getHeaders(headerName);
-						headerValues.hasMoreElements();) {
+					 headerValues.hasMoreElements(); ) {
 					String headerValue = (String) headerValues.nextElement();
 					this.headers.add(headerName, headerValue);
 				}
@@ -172,8 +209,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest {
 						this.headers.setContentType(mediaType);
 					}
 				}
-			}
-			catch (InvalidMediaTypeException ex) {
+			} catch (InvalidMediaTypeException ex) {
 				// Ignore: simply not exposing an invalid content type in HttpHeaders...
 			}
 
@@ -207,8 +243,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest {
 	public InputStream getBody() throws IOException {
 		if (isFormPost(this.servletRequest)) {
 			return getBodyFromServletRequestParameters(this.servletRequest);
-		}
-		else {
+		} else {
 			return this.servletRequest.getInputStream();
 		}
 	}
@@ -224,47 +259,6 @@ public class ServletServerHttpRequest implements ServerHttpRequest {
 			this.asyncRequestControl = new ServletServerHttpAsyncRequestControl(this, servletServerResponse);
 		}
 		return this.asyncRequestControl;
-	}
-
-
-	private static boolean isFormPost(HttpServletRequest request) {
-		String contentType = request.getContentType();
-		return (contentType != null && contentType.contains(FORM_CONTENT_TYPE) &&
-				HttpMethod.POST.matches(request.getMethod()));
-	}
-
-	/**
-	 * Use {@link javax.servlet.ServletRequest#getParameterMap()} to reconstruct the
-	 * body of a form 'POST' providing a predictable outcome as opposed to reading
-	 * from the body, which can fail if any other code has used the ServletRequest
-	 * to access a parameter, thus causing the input stream to be "consumed".
-	 */
-	private static InputStream getBodyFromServletRequestParameters(HttpServletRequest request) throws IOException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
-		Writer writer = new OutputStreamWriter(bos, FORM_CHARSET);
-
-		Map<String, String[]> form = request.getParameterMap();
-		for (Iterator<String> nameIterator = form.keySet().iterator(); nameIterator.hasNext();) {
-			String name = nameIterator.next();
-			List<String> values = Arrays.asList(form.get(name));
-			for (Iterator<String> valueIterator = values.iterator(); valueIterator.hasNext();) {
-				String value = valueIterator.next();
-				writer.write(URLEncoder.encode(name, FORM_CHARSET.name()));
-				if (value != null) {
-					writer.write('=');
-					writer.write(URLEncoder.encode(value, FORM_CHARSET.name()));
-					if (valueIterator.hasNext()) {
-						writer.write('&');
-					}
-				}
-			}
-			if (nameIterator.hasNext()) {
-				writer.append('&');
-			}
-		}
-		writer.flush();
-
-		return new ByteArrayInputStream(bos.toByteArray());
 	}
 
 }

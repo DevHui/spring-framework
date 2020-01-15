@@ -16,19 +16,21 @@
 
 package org.springframework.web.socket.server.support;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.web.socket.AbstractHttpRequestTests;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.server.HandshakeInterceptor;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.web.socket.AbstractHttpRequestTests;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.server.HandshakeInterceptor;
-
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.verifyNoMoreInteractions;
 
 /**
  * Test fixture for {@link HandshakeInterceptorChain}.

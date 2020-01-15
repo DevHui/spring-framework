@@ -16,22 +16,24 @@
 
 package org.springframework.web.cors.reactive;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.filter.reactive.ForwardedHeaderFilter;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
-import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.*;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.get;
+import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.options;
 
 /**
  * Test case for reactive {@link CorsUtils}.
+ *
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
  */
@@ -102,7 +104,7 @@ public class CorsUtilsTests {
 	}
 
 	private void testWithXForwardedHeaders(String serverName, int port,
-			String forwardedProto, String forwardedHost, int forwardedPort, String originHeader) {
+										   String forwardedProto, String forwardedHost, int forwardedPort, String originHeader) {
 
 		String url = "http://" + serverName;
 		if (port != -1) {
@@ -125,7 +127,7 @@ public class CorsUtilsTests {
 	}
 
 	private void testWithForwardedHeader(String serverName, int port,
-			String forwardedHeader, String originHeader) {
+										 String forwardedHeader, String originHeader) {
 
 		String url = "http://" + serverName;
 		if (port != -1) {

@@ -19,11 +19,12 @@ package org.springframework.cache.caffeine;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.cache.AbstractValueAdaptingCacheTests;
 import org.springframework.cache.Cache;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Ben Manes
@@ -43,7 +44,7 @@ public class CaffeineCacheTests extends AbstractValueAdaptingCacheTests<Caffeine
 		cache = new CaffeineCache(CACHE_NAME, nativeCache);
 		com.github.benmanes.caffeine.cache.Cache<Object, Object> nativeCacheNoNull
 				= Caffeine.newBuilder().build();
-		cacheNoNull =  new CaffeineCache(CACHE_NAME_NO_NULL, nativeCacheNoNull, false);
+		cacheNoNull = new CaffeineCache(CACHE_NAME_NO_NULL, nativeCacheNoNull, false);
 	}
 
 	@Override

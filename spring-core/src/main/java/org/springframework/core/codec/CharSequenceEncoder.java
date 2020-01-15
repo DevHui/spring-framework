@@ -16,16 +16,7 @@
 
 package org.springframework.core.codec;
 
-import java.nio.charset.Charset;
-import java.nio.charset.CoderMalfunctionError;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
@@ -34,6 +25,14 @@ import org.springframework.core.log.LogFormatUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
+import reactor.core.publisher.Flux;
+
+import java.nio.charset.Charset;
+import java.nio.charset.CoderMalfunctionError;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Encode from a {@code CharSequence} stream to a bytes stream.
@@ -41,8 +40,8 @@ import org.springframework.util.MimeTypeUtils;
  * @author Sebastien Deleuze
  * @author Arjen Poutsma
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see StringDecoder
+ * @since 5.0
  */
 public final class CharSequenceEncoder extends AbstractEncoder<CharSequence> {
 
@@ -59,6 +58,19 @@ public final class CharSequenceEncoder extends AbstractEncoder<CharSequence> {
 		super(mimeTypes);
 	}
 
+	/**
+	 * Create a {@code CharSequenceEncoder} that supports only "text/plain".
+	 */
+	public static CharSequenceEncoder textPlainOnly() {
+		return new CharSequenceEncoder(new MimeType("text", "plain", DEFAULT_CHARSET));
+	}
+
+	/**
+	 * Create a {@code CharSequenceEncoder} that supports all MIME types.
+	 */
+	public static CharSequenceEncoder allMimeTypes() {
+		return new CharSequenceEncoder(new MimeType("text", "plain", DEFAULT_CHARSET), MimeTypeUtils.ALL);
+	}
 
 	@Override
 	public boolean canEncode(ResolvableType elementType, @Nullable MimeType mimeType) {
@@ -68,8 +80,8 @@ public final class CharSequenceEncoder extends AbstractEncoder<CharSequence> {
 
 	@Override
 	public Flux<DataBuffer> encode(Publisher<? extends CharSequence> inputStream,
-			DataBufferFactory bufferFactory, ResolvableType elementType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+								   DataBufferFactory bufferFactory, ResolvableType elementType,
+								   @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		Charset charset = getCharset(mimeType);
 
@@ -86,11 +98,9 @@ public final class CharSequenceEncoder extends AbstractEncoder<CharSequence> {
 			try {
 				dataBuffer.write(charSequence, charset);
 				release = false;
-			}
-			catch (CoderMalfunctionError ex) {
+			} catch (CoderMalfunctionError ex) {
 				throw new EncodingException("String encoding error: " + ex.getMessage(), ex);
-			}
-			finally {
+			} finally {
 				if (release) {
 					DataBufferUtils.release(dataBuffer);
 				}
@@ -109,25 +119,9 @@ public final class CharSequenceEncoder extends AbstractEncoder<CharSequence> {
 	private Charset getCharset(@Nullable MimeType mimeType) {
 		if (mimeType != null && mimeType.getCharset() != null) {
 			return mimeType.getCharset();
-		}
-		else {
+		} else {
 			return DEFAULT_CHARSET;
 		}
-	}
-
-
-	/**
-	 * Create a {@code CharSequenceEncoder} that supports only "text/plain".
-	 */
-	public static CharSequenceEncoder textPlainOnly() {
-		return new CharSequenceEncoder(new MimeType("text", "plain", DEFAULT_CHARSET));
-	}
-
-	/**
-	 * Create a {@code CharSequenceEncoder} that supports all MIME types.
-	 */
-	public static CharSequenceEncoder allMimeTypes() {
-		return new CharSequenceEncoder(new MimeType("text", "plain", DEFAULT_CHARSET), MimeTypeUtils.ALL);
 	}
 
 }

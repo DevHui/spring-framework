@@ -16,10 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
@@ -36,6 +32,10 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Resolves arguments of type {@link Map} annotated with {@link MatrixVariable @MatrixVariable}
@@ -61,7 +61,7 @@ public class MatrixVariableMapMethodArgumentResolver implements HandlerMethodArg
 	@Override
 	@Nullable
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
-			NativeWebRequest request, @Nullable WebDataBinderFactory binderFactory) throws Exception {
+								  NativeWebRequest request, @Nullable WebDataBinderFactory binderFactory) throws Exception {
 
 		@SuppressWarnings("unchecked")
 		Map<String, MultiValueMap<String, String>> matrixVariables =
@@ -83,8 +83,7 @@ public class MatrixVariableMapMethodArgumentResolver implements HandlerMethodArg
 				return Collections.emptyMap();
 			}
 			map.putAll(mapForPathVariable);
-		}
-		else {
+		} else {
 			for (MultiValueMap<String, String> vars : matrixVariables.values()) {
 				vars.forEach((name, values) -> {
 					for (String value : values) {

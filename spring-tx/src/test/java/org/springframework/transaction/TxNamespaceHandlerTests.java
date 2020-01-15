@@ -16,11 +16,8 @@
 
 package org.springframework.transaction;
 
-import java.lang.reflect.Method;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -30,7 +27,12 @@ import org.springframework.transaction.interceptor.TransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionAttributeSource;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Rob Harrop
@@ -79,8 +81,7 @@ public class TxNamespaceHandlerTests {
 		try {
 			testBean.exceptional(new IllegalArgumentException("foo"));
 			fail("Should NEVER get here");
-		}
-		catch (Throwable throwable) {
+		} catch (Throwable throwable) {
 			assertEquals("Should have another started transaction", 2, ptm.begun);
 			assertEquals("Should have 1 rolled back transaction", 1, ptm.rollbacks);
 		}
@@ -90,11 +91,11 @@ public class TxNamespaceHandlerTests {
 	public void rollbackRules() {
 		TransactionInterceptor txInterceptor = (TransactionInterceptor) context.getBean("txRollbackAdvice");
 		TransactionAttributeSource txAttrSource = txInterceptor.getTransactionAttributeSource();
-		TransactionAttribute txAttr = txAttrSource.getTransactionAttribute(getAgeMethod,ITestBean.class);
-		assertTrue("should be configured to rollback on Exception",txAttr.rollbackOn(new Exception()));
+		TransactionAttribute txAttr = txAttrSource.getTransactionAttribute(getAgeMethod, ITestBean.class);
+		assertTrue("should be configured to rollback on Exception", txAttr.rollbackOn(new Exception()));
 
 		txAttr = txAttrSource.getTransactionAttribute(setAgeMethod, ITestBean.class);
-		assertFalse("should not rollback on RuntimeException",txAttr.rollbackOn(new RuntimeException()));
+		assertFalse("should not rollback on RuntimeException", txAttr.rollbackOn(new RuntimeException()));
 	}
 
 	private ITestBean getTestBean() {

@@ -15,18 +15,22 @@
  */
 package org.springframework.web.servlet.view.tiles3;
 
-import java.util.Locale;
-
 import org.apache.tiles.request.Request;
 import org.apache.tiles.request.render.Renderer;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockServletContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.util.Locale;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.isA;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Test fixture for {@link TilesViewResolver}.

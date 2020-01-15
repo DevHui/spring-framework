@@ -16,14 +16,8 @@
 
 package org.springframework.messaging.simp.stomp;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -37,7 +31,16 @@ import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.MultiValueMap;
 
-import static org.junit.Assert.*;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for {@link StompHeaderAccessor}.

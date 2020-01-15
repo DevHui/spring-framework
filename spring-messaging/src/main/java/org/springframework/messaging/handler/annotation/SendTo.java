@@ -16,13 +16,13 @@
 
 package org.springframework.messaging.handler.annotation;
 
+import org.springframework.messaging.Message;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.springframework.messaging.Message;
 
 /**
  * Annotation that indicates a method's return value should be converted to
@@ -32,7 +32,7 @@ import org.springframework.messaging.Message;
  * convey the destination to use for the reply. In that case, that destination
  * should take precedence.
  *
-* <p>This annotation may be placed class-level in which case it is inherited by
+ * <p>This annotation may be placed class-level in which case it is inherited by
  * methods of the class.
  *
  * @author Rossen Stoyanchev

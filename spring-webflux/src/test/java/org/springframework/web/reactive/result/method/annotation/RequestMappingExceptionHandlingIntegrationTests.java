@@ -16,15 +16,8 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-
 import org.junit.Test;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -36,8 +29,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.reactive.config.EnableWebFlux;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * {@code @RequestMapping} integration tests with exception handling scenarios.
@@ -81,8 +83,7 @@ public class RequestMappingExceptionHandlingIntegrationTests extends AbstractReq
 		try {
 			performGet("/SPR-16051", new HttpHeaders(), String.class).getBody();
 			fail();
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			String message = ex.getMessage();
 			assertNotNull(message);
 			assertTrue("Actual: " + message, message.startsWith("Error while extracting response"));
@@ -96,8 +97,7 @@ public class RequestMappingExceptionHandlingIntegrationTests extends AbstractReq
 			headers.add("Accept", "text/plain, application/problem+json");
 			performGet("/SPR-16318", headers, String.class).getBody();
 			fail();
-		}
-		catch (HttpStatusCodeException ex) {
+		} catch (HttpStatusCodeException ex) {
 			assertEquals(500, ex.getRawStatusCode());
 			assertEquals("application/problem+json;charset=UTF-8", ex.getResponseHeaders().getContentType().toString());
 			assertEquals("{\"reason\":\"error\"}", ex.getResponseBodyAsString());

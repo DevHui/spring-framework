@@ -15,16 +15,15 @@
  */
 package org.springframework.web.reactive.resource;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
@@ -35,6 +34,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Unit tests for {@link PathResourceResolver}.
+ *
  * @author Rossen Stoyanchev
  */
 public class PathResourceResolverTests {
@@ -132,8 +132,8 @@ public class PathResourceResolverTests {
 
 	@Test // SPR-12624
 	public void checkRelativeLocation() throws Exception {
-		String locationUrl= new UrlResource(getClass().getResource("./test/")).getURL().toExternalForm();
-		Resource location = new UrlResource(locationUrl.replace("/springframework","/../org/springframework"));
+		String locationUrl = new UrlResource(getClass().getResource("./test/")).getURL().toExternalForm();
+		Resource location = new UrlResource(locationUrl.replace("/springframework", "/../org/springframework"));
 		List<Resource> locations = singletonList(location);
 		assertNotNull(this.resolver.resolveResource(null, "main.css", locations, null).block(TIMEOUT));
 	}

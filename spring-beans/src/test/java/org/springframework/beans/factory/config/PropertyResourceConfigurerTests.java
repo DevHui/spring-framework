@@ -16,19 +16,7 @@
 
 package org.springframework.beans.factory.config;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.prefs.AbstractPreferences;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-import java.util.prefs.PreferencesFactory;
-
 import org.junit.Test;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -44,9 +32,25 @@ import org.springframework.tests.sample.beans.IndexedTestBean;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.StringUtils;
 
-import static org.junit.Assert.*;
-import static org.springframework.beans.factory.support.BeanDefinitionBuilder.*;
-import static org.springframework.tests.TestResourceUtils.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.prefs.AbstractPreferences;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
+import java.util.prefs.PreferencesFactory;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.springframework.beans.factory.support.BeanDefinitionBuilder.genericBeanDefinition;
+import static org.springframework.tests.TestResourceUtils.qualifiedResource;
 
 /**
  * Unit tests for various {@link PropertyResourceConfigurer} implementations including:
@@ -56,19 +60,19 @@ import static org.springframework.tests.TestResourceUtils.*;
  * @author Juergen Hoeller
  * @author Chris Beams
  * @author Phillip Webb
- * @since 02.10.2003
  * @see PropertyPlaceholderConfigurerTests
+ * @since 02.10.2003
  */
 public class PropertyResourceConfigurerTests {
-
-	static {
-		System.setProperty("java.util.prefs.PreferencesFactory", MockPreferencesFactory.class.getName());
-	}
 
 	private static final Class<?> CLASS = PropertyResourceConfigurerTests.class;
 	private static final Resource TEST_PROPS = qualifiedResource(CLASS, "test.properties");
 	private static final Resource XTEST_PROPS = qualifiedResource(CLASS, "xtest.properties"); // does not exist
 	private static final Resource TEST_PROPS_XML = qualifiedResource(CLASS, "test.properties.xml");
+
+	static {
+		System.setProperty("java.util.prefs.PreferencesFactory", MockPreferencesFactory.class.getName());
+	}
 
 	private final DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
 
@@ -271,8 +275,7 @@ public class PropertyResourceConfigurerTests {
 			poc.setOrder(0); // won't actually do anything since we're not processing through an app ctx
 			try {
 				poc.postProcessBeanFactory(factory);
-			}
-			catch (BeanInitializationException ex) {
+			} catch (BeanInitializationException ex) {
 				// prove that the processor chokes on the invalid key
 				assertTrue(ex.getMessage().toLowerCase().contains("argh"));
 			}
@@ -336,8 +339,7 @@ public class PropertyResourceConfigurerTests {
 			ChildBeanDefinition bd = new ChildBeanDefinition("${parent}", pvs2);
 			factory.registerBeanDefinition("parent1", parent);
 			factory.registerBeanDefinition("tb1", bd);
-		}
-		else {
+		} else {
 			MutablePropertyValues pvs = new MutablePropertyValues();
 			pvs.add("age", "${age}");
 			pvs.add("name", "name${var}${var}${");
@@ -353,7 +355,7 @@ public class PropertyResourceConfigurerTests {
 		cas.addGenericArgumentValue("${var}name${age}");
 
 		MutablePropertyValues pvs = new MutablePropertyValues();
-		pvs.add("stringArray", new String[] {"${os.name}", "${age}"});
+		pvs.add("stringArray", new String[]{"${os.name}", "${age}"});
 
 		List<Object> friends = new ManagedList<>();
 		friends.add("na${age}me");
@@ -482,8 +484,7 @@ public class PropertyResourceConfigurerTests {
 		try {
 			ppc.postProcessBeanFactory(factory);
 			fail("Should have thrown BeanDefinitionStoreException");
-		}
-		catch (BeanDefinitionStoreException ex) {
+		} catch (BeanDefinitionStoreException ex) {
 			// expected
 			assertTrue(ex.getMessage().contains("user.dir"));
 		}
@@ -499,8 +500,7 @@ public class PropertyResourceConfigurerTests {
 		try {
 			ppc.postProcessBeanFactory(factory);
 			fail("Should have thrown BeanDefinitionStoreException");
-		}
-		catch (BeanDefinitionStoreException ex) {
+		} catch (BeanDefinitionStoreException ex) {
 			// expected
 			assertTrue(ex.getMessage().contains("ref"));
 		}
@@ -613,8 +613,7 @@ public class PropertyResourceConfigurerTests {
 		try {
 			ppc.postProcessBeanFactory(factory);
 			fail("Should have thrown BeanDefinitionStoreException");
-		}
-		catch (BeanDefinitionStoreException ex) {
+		} catch (BeanDefinitionStoreException ex) {
 			// expected
 		}
 	}

@@ -18,7 +18,6 @@ package org.springframework.web.cors.reactive;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -29,7 +28,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.server.ServerWebExchange;
 
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;

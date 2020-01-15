@@ -16,22 +16,22 @@
 
 package org.springframework.jmx.support;
 
-import java.net.MalformedURLException;
-
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXConnectorServerFactory;
-import javax.management.remote.JMXServiceURL;
-
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.jmx.AbstractMBeanServerTests;
 import org.springframework.tests.Assume;
 import org.springframework.tests.TestGroup;
 import org.springframework.util.SocketUtils;
 
-import static org.junit.Assert.*;
+import javax.management.MBeanServerConnection;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
+import java.net.MalformedURLException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * To run the tests in the class, set the following Java system property:
@@ -75,12 +75,10 @@ public class MBeanServerConnectionFactoryBeanTests extends AbstractMBeanServerTe
 
 				// perform simple MBean count test
 				assertEquals("MBean count should be the same", getServer().getMBeanCount(), connection.getMBeanCount());
-			}
-			finally {
+			} finally {
 				bean.destroy();
 			}
-		}
-		finally {
+		} finally {
 			connectorServer.stop();
 		}
 	}
@@ -107,8 +105,7 @@ public class MBeanServerConnectionFactoryBeanTests extends AbstractMBeanServerTe
 			connector = getConnectorServer();
 			connector.start();
 			assertEquals("Incorrect MBean count", getServer().getMBeanCount(), connection.getMBeanCount());
-		}
-		finally {
+		} finally {
 			bean.destroy();
 			if (connector != null) {
 				connector.stop();

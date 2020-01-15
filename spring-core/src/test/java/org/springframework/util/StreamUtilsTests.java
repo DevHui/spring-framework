@@ -16,6 +16,10 @@
 
 package org.springframework.util;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -25,13 +29,13 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.inOrder;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.never;
+import static org.mockito.BDDMockito.spy;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Tests for {@link StreamUtils}.

@@ -16,21 +16,8 @@
 
 package org.springframework.web.reactive.resource;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.Hints;
@@ -55,6 +42,18 @@ import org.springframework.web.server.MethodNotAllowedException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebHandler;
+import reactor.core.publisher.Mono;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * {@code HttpRequestHandler} that serves static resources in an optimized way
@@ -114,10 +113,19 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 	@Nullable
 	private ResourceLoader resourceLoader;
 
+	/**
+	 * Return the configured location values.
+	 *
+	 * @since 5.1
+	 */
+	public List<String> getLocationValues() {
+		return this.locationValues;
+	}
 
 	/**
 	 * Accepts a list of String-based location values to be resolved into
 	 * {@link Resource} locations.
+	 *
 	 * @since 5.1
 	 */
 	public void setLocationValues(List<String> locationValues) {
@@ -127,11 +135,17 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 	}
 
 	/**
-	 * Return the configured location values.
-	 * @since 5.1
+	 * Return the {@code List} of {@code Resource} paths to use as sources
+	 * for serving static resources.
+	 * <p>Note that if {@link #setLocationValues(List) locationValues} are provided,
+	 * instead of loaded Resource-based locations, this method will return
+	 * empty until after initialization via {@link #afterPropertiesSet()}.
+	 *
+	 * @see #setLocationValues
+	 * @see #setLocations
 	 */
-	public List<String> getLocationValues() {
-		return this.locationValues;
+	public List<Resource> getLocations() {
+		return this.locations;
 	}
 
 	/**
@@ -146,16 +160,10 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 	}
 
 	/**
-	 * Return the {@code List} of {@code Resource} paths to use as sources
-	 * for serving static resources.
-	 * <p>Note that if {@link #setLocationValues(List) locationValues} are provided,
-	 * instead of loaded Resource-based locations, this method will return
-	 * empty until after initialization via {@link #afterPropertiesSet()}.
-	 * @see #setLocationValues
-	 * @see #setLocations
+	 * Return the list of configured resource resolvers.
 	 */
-	public List<Resource> getLocations() {
-		return this.locations;
+	public List<ResourceResolver> getResourceResolvers() {
+		return this.resourceResolvers;
 	}
 
 	/**
@@ -171,10 +179,10 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 	}
 
 	/**
-	 * Return the list of configured resource resolvers.
+	 * Return the list of configured resource transformers.
 	 */
-	public List<ResourceResolver> getResourceResolvers() {
-		return this.resourceResolvers;
+	public List<ResourceTransformer> getResourceTransformers() {
+		return this.resourceTransformers;
 	}
 
 	/**
@@ -189,10 +197,12 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 	}
 
 	/**
-	 * Return the list of configured resource transformers.
+	 * Return the {@link org.springframework.http.CacheControl} instance to build
+	 * the Cache-Control HTTP response header.
 	 */
-	public List<ResourceTransformer> getResourceTransformers() {
-		return this.resourceTransformers;
+	@Nullable
+	public CacheControl getCacheControl() {
+		return this.cacheControl;
 	}
 
 	/**
@@ -204,12 +214,11 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 	}
 
 	/**
-	 * Return the {@link org.springframework.http.CacheControl} instance to build
-	 * the Cache-Control HTTP response header.
+	 * Return the configured resource message writer.
 	 */
 	@Nullable
-	public CacheControl getCacheControl() {
-		return this.cacheControl;
+	public ResourceHttpMessageWriter getResourceHttpMessageWriter() {
+		return this.resourceHttpMessageWriter;
 	}
 
 	/**
@@ -221,16 +230,9 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 	}
 
 	/**
-	 * Return the configured resource message writer.
-	 */
-	@Nullable
-	public ResourceHttpMessageWriter getResourceHttpMessageWriter() {
-		return this.resourceHttpMessageWriter;
-	}
-
-	/**
 	 * Provide the ResourceLoader to load {@link #setLocationValues(List)
 	 * location values} with.
+	 *
 	 * @since 5.1
 	 */
 	public void setResourceLoader(ResourceLoader resourceLoader) {
@@ -265,8 +267,7 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 	private void resolveResourceLocations() {
 		if (CollectionUtils.isEmpty(this.locationValues)) {
 			return;
-		}
-		else if (!CollectionUtils.isEmpty(this.locations)) {
+		} else if (!CollectionUtils.isEmpty(this.locations)) {
 			throw new IllegalArgumentException("Please set either Resource-based \"locations\" or " +
 					"String-based \"locationValues\", but not both.");
 		}
@@ -367,8 +368,7 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 								null, ResolvableType.forClass(Resource.class), mediaType,
 								exchange.getRequest(), exchange.getResponse(),
 								Hints.from(Hints.LOG_PREFIX_HINT, exchange.getLogPrefix()));
-					}
-					catch (IOException ex) {
+					} catch (IOException ex) {
 						return Mono.error(ex);
 					}
 				});
@@ -403,6 +403,7 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 	 * with a single "/" or "". For example {@code "  / // foo/bar"}
 	 * becomes {@code "/foo/bar"}.
 	 * </ul>
+	 *
 	 * @since 3.2.12
 	 */
 	protected String processPath(String path) {
@@ -426,8 +427,7 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 				if (sb != null) {
 					sb.append(path.charAt(i));
 				}
-			}
-			finally {
+			} finally {
 				prev = curr;
 			}
 		}
@@ -439,8 +439,7 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 		for (int i = 0; i < path.length(); i++) {
 			if (path.charAt(i) == '/') {
 				slash = true;
-			}
-			else if (path.charAt(i) > ' ' && path.charAt(i) != 127) {
+			} else if (path.charAt(i) > ' ' && path.charAt(i) != 127) {
 				if (i == 0 || (i == 1 && slash)) {
 					return path;
 				}
@@ -452,6 +451,7 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 
 	/**
 	 * Check whether the given path contains invalid escape sequences.
+	 *
 	 * @param path the path to validate
 	 * @return {@code true} if the path is invalid, {@code false} otherwise
 	 */
@@ -467,11 +467,9 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 				if (isInvalidPath(decodedPath)) {
 					return true;
 				}
-			}
-			catch (IllegalArgumentException ex) {
+			} catch (IllegalArgumentException ex) {
 				// May not be possible to decode...
-			}
-			catch (UnsupportedEncodingException ex) {
+			} catch (UnsupportedEncodingException ex) {
 				// Should never happen...
 			}
 		}
@@ -490,6 +488,7 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 	 * <p><strong>Note:</strong> this method assumes that leading, duplicate '/'
 	 * or control characters (e.g. white space) have been trimmed so that the
 	 * path starts predictably with a single '/' or does not have one.
+	 *
 	 * @param path the path to validate
 	 * @return {@code true} if the path is invalid, {@code false} otherwise
 	 */
@@ -520,8 +519,9 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 
 	/**
 	 * Set headers on the response. Called for both GET and HEAD requests.
-	 * @param exchange current exchange
-	 * @param resource the identified resource (never {@code null})
+	 *
+	 * @param exchange  current exchange
+	 * @param resource  the identified resource (never {@code null})
 	 * @param mediaType the resource's media type (never {@code null})
 	 */
 	protected void setHeaders(ServerWebExchange exchange, Resource resource, @Nullable MediaType mediaType)
@@ -550,8 +550,7 @@ public class ResourceWebHandler implements WebHandler, InitializingBean {
 	private Object formatLocations() {
 		if (!this.locationValues.isEmpty()) {
 			return this.locationValues.stream().collect(Collectors.joining("\", \"", "[\"", "\"]"));
-		}
-		else if (!this.locations.isEmpty()) {
+		} else if (!this.locations.isEmpty()) {
 			return "[" + this.locations + "]";
 		}
 		return Collections.emptyList();

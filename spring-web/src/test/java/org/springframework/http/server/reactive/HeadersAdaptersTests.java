@@ -16,9 +16,6 @@
 
 package org.springframework.http.server.reactive;
 
-import java.util.Arrays;
-import java.util.Locale;
-
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.undertow.util.HeaderMap;
 import org.apache.tomcat.util.http.MimeHeaders;
@@ -27,10 +24,12 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.springframework.util.MultiValueMap;
+
+import java.util.Arrays;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -49,7 +48,7 @@ public class HeadersAdaptersTests {
 
 	@Parameterized.Parameters(name = "headers [{0}]")
 	public static Object[][] arguments() {
-		return new Object[][] {
+		return new Object[][]{
 				{CollectionUtils.toMultiValueMap(
 						new LinkedCaseInsensitiveMap<>(8, Locale.ENGLISH))},
 				{new NettyHeadersAdapter(new DefaultHttpHeaders())},

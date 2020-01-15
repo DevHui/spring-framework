@@ -16,15 +16,9 @@
 
 package org.springframework.orm.jpa;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.sql.DataSource;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -38,7 +32,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import static org.junit.Assert.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
+import javax.sql.DataSource;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rod Johnson
@@ -46,7 +46,7 @@ import static org.junit.Assert.*;
  */
 public abstract class AbstractEntityManagerFactoryIntegrationTests {
 
-	protected static final String[] ECLIPSELINK_CONFIG_LOCATIONS = new String[] {
+	protected static final String[] ECLIPSELINK_CONFIG_LOCATIONS = new String[]{
 			"/org/springframework/orm/jpa/eclipselink/eclipselink-manager.xml",
 			"/org/springframework/orm/jpa/memdb.xml", "/org/springframework/orm/jpa/inject.xml"};
 
@@ -62,13 +62,17 @@ public abstract class AbstractEntityManagerFactoryIntegrationTests {
 	protected DefaultTransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
 
 	protected TransactionStatus transactionStatus;
-
-	private boolean complete = false;
-
 	protected JdbcTemplate jdbcTemplate;
-
+	private boolean complete = false;
 	private boolean zappedTables = false;
 
+	@AfterClass
+	public static void closeContext() {
+		if (applicationContext != null) {
+			applicationContext.close();
+			applicationContext = null;
+		}
+	}
 
 	@Autowired
 	public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
@@ -85,7 +89,6 @@ public abstract class AbstractEntityManagerFactoryIntegrationTests {
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
-
 
 	@Before
 	public void setup() {
@@ -115,15 +118,6 @@ public abstract class AbstractEntityManagerFactoryIntegrationTests {
 		assertFalse(TransactionSynchronizationManager.isActualTransactionActive());
 	}
 
-	@AfterClass
-	public static void closeContext() {
-		if (applicationContext != null) {
-			applicationContext.close();
-			applicationContext = null;
-		}
-	}
-
-
 	protected EntityManager createContainerManagedEntityManager() {
 		return ExtendedEntityManagerCreator.createContainerManagedEntityManager(this.entityManagerFactory);
 	}
@@ -144,12 +138,10 @@ public abstract class AbstractEntityManagerFactoryIntegrationTests {
 			try {
 				if (commit) {
 					this.transactionManager.commit(this.transactionStatus);
-				}
-				else {
+				} else {
 					this.transactionManager.rollback(this.transactionStatus);
 				}
-			}
-			finally {
+			} finally {
 				this.transactionStatus = null;
 			}
 		}

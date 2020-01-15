@@ -16,6 +16,13 @@
 
 package org.springframework.core.io;
 
+import org.hamcrest.Matchers;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
+import org.springframework.util.FileCopyUtils;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -28,17 +35,12 @@ import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
-
-import org.springframework.util.FileCopyUtils;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * Unit tests for the {@link PathResource} class.
@@ -61,19 +63,14 @@ public class PathResourceTests {
 
 	private static final String NON_EXISTING_FILE =
 			platformPath("src/test/resources/org/springframework/core/io/doesnotexist.properties");
-
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	private static String platformPath(String string) {
 		return string.replace('/', File.separatorChar);
 	}
-
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
 
 	@Test
 	public void nullPath() {
@@ -305,8 +302,7 @@ public class PathResourceTests {
 			channel.read(buffer);
 			buffer.rewind();
 			assertThat(buffer.limit(), greaterThan(0));
-		}
-		finally {
+		} finally {
 			if (channel != null) {
 				channel.close();
 			}
@@ -318,8 +314,7 @@ public class PathResourceTests {
 		PathResource resource = new PathResource(TEST_DIR);
 		try {
 			resource.readableChannel();
-		}
-		catch (AccessDeniedException ex) {
+		} catch (AccessDeniedException ex) {
 			// on Windows
 		}
 	}
@@ -339,8 +334,7 @@ public class PathResourceTests {
 		try {
 			channel = resource.writableChannel();
 			channel.write(buffer);
-		}
-		finally {
+		} finally {
 			if (channel != null) {
 				channel.close();
 			}

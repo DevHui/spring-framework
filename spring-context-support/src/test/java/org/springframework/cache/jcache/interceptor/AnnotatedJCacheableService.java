@@ -16,9 +16,11 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.cache.Cache;
+import org.springframework.cache.interceptor.SimpleKeyGenerator;
+import org.springframework.cache.jcache.config.JCacheableService;
+import org.springframework.cache.jcache.support.TestableCacheKeyGenerator;
+import org.springframework.cache.jcache.support.TestableCacheResolverFactory;
 
 import javax.cache.annotation.CacheDefaults;
 import javax.cache.annotation.CacheKey;
@@ -27,12 +29,9 @@ import javax.cache.annotation.CacheRemove;
 import javax.cache.annotation.CacheRemoveAll;
 import javax.cache.annotation.CacheResult;
 import javax.cache.annotation.CacheValue;
-
-import org.springframework.cache.Cache;
-import org.springframework.cache.interceptor.SimpleKeyGenerator;
-import org.springframework.cache.jcache.config.JCacheableService;
-import org.springframework.cache.jcache.support.TestableCacheKeyGenerator;
-import org.springframework.cache.jcache.support.TestableCacheResolverFactory;
+import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Repository sample with a @CacheDefaults annotation
@@ -200,8 +199,7 @@ public class AnnotatedJCacheableService implements JCacheableService<Long> {
 		long count = exceptionCounter.getAndIncrement();
 		if (matchFilter) {
 			throw new UnsupportedOperationException("Expected exception (" + count + ")");
-		}
-		else {
+		} else {
 			throw new NullPointerException("Expected exception (" + count + ")");
 		}
 	}
@@ -210,8 +208,7 @@ public class AnnotatedJCacheableService implements JCacheableService<Long> {
 		long count = exceptionCounter.getAndIncrement();
 		if (matchFilter) {
 			throw new IOException("Expected exception (" + count + ")");
-		}
-		else {
+		} else {
 			throw new NullPointerException("Expected exception (" + count + ")");
 		}
 	}

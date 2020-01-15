@@ -16,13 +16,10 @@
 
 package org.springframework.test.web.servlet.samples.context;
 
-import javax.servlet.ServletContext;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +43,8 @@ import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 
+import javax.servlet.ServletContext;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -66,8 +65,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("classpath:META-INF/web-resources")
 @ContextHierarchy({
-	@ContextConfiguration(classes = RootConfig.class),
-	@ContextConfiguration(classes = WebConfig.class)
+		@ContextConfiguration(classes = RootConfig.class),
+		@ContextConfiguration(classes = WebConfig.class)
 })
 public class JavaConfigTests {
 
@@ -93,16 +92,16 @@ public class JavaConfigTests {
 	@Test
 	public void person() throws Exception {
 		this.mockMvc.perform(get("/person/5").accept(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(content().string("{\"name\":\"Joe\",\"someDouble\":0.0,\"someBoolean\":false}"));
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().string("{\"name\":\"Joe\",\"someDouble\":0.0,\"someBoolean\":false}"));
 	}
 
 	@Test
 	public void tilesDefinitions() throws Exception {
 		this.mockMvc.perform(get("/"))
-			.andExpect(status().isOk())
-			.andExpect(forwardedUrl("/WEB-INF/layouts/standardLayout.jsp"));
+				.andExpect(status().isOk())
+				.andExpect(forwardedUrl("/WEB-INF/layouts/standardLayout.jsp"));
 	}
 
 	/**

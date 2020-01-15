@@ -16,19 +16,17 @@
 
 package org.springframework.web.context.request.async;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
-import javax.servlet.AsyncEvent;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.mock.web.test.MockAsyncContext;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import javax.servlet.AsyncEvent;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

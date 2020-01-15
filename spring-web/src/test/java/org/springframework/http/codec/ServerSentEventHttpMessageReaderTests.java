@@ -16,23 +16,25 @@
 
 package org.springframework.http.codec;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Collections;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.AbstractLeakCheckingTestCase;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link ServerSentEventHttpMessageReader}.
@@ -62,7 +64,7 @@ public class ServerSentEventHttpMessageReaderTests extends AbstractLeakCheckingT
 		MockServerHttpRequest request = MockServerHttpRequest.post("/")
 				.body(Mono.just(stringBuffer(
 						"id:c42\nevent:foo\nretry:123\n:bla\n:bla bla\n:bla bla bla\ndata:bar\n\n" +
-						"id:c43\nevent:bar\nretry:456\ndata:baz\n\n")));
+								"id:c43\nevent:bar\nretry:456\ndata:baz\n\n")));
 
 		Flux<ServerSentEvent> events = this.messageReader
 				.read(ResolvableType.forClassWithGenerics(ServerSentEvent.class, String.class),

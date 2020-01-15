@@ -16,16 +16,8 @@
 
 package org.springframework.http.codec;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.AbstractLeakCheckingTestCase;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -35,8 +27,18 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sebastien Deleuze
@@ -123,9 +125,9 @@ public class FormHttpMessageReaderTests extends AbstractLeakCheckingTestCase {
 
 	private MockServerHttpRequest request(Publisher<? extends DataBuffer> body) {
 		return MockServerHttpRequest
-					.method(HttpMethod.GET, "/")
-					.header(HttpHeaders.CONTENT_TYPE,  MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-					.body(body);
+				.method(HttpMethod.GET, "/")
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+				.body(body);
 	}
 
 	private DataBuffer stringBuffer(String value) {

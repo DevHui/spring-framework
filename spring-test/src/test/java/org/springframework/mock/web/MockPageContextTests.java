@@ -16,11 +16,11 @@
 
 package org.springframework.mock.web;
 
-import javax.servlet.jsp.PageContext;
-
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import javax.servlet.jsp.PageContext;
+
+import static org.junit.Assert.assertNull;
 
 /**
  * Unit tests for the {@code MockPageContext} class.

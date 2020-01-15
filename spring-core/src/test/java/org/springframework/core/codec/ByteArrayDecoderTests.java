@@ -16,17 +16,18 @@
 
 package org.springframework.core.codec;
 
-import java.nio.charset.StandardCharsets;
-import java.util.function.Consumer;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.util.MimeTypeUtils;
+import reactor.core.publisher.Flux;
 
-import static org.junit.Assert.*;
+import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Arjen Poutsma

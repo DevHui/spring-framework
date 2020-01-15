@@ -16,11 +16,6 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
@@ -32,6 +27,11 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.sockjs.transport.TransportType;
 
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * An extension of {@link AbstractClientSockJsSession} for use with HTTP
  * transports simulating a WebSocket session.
@@ -42,20 +42,16 @@ import org.springframework.web.socket.sockjs.transport.TransportType;
 public class XhrClientSockJsSession extends AbstractClientSockJsSession {
 
 	private final XhrTransport transport;
-
-	private HttpHeaders headers;
-
-	private HttpHeaders sendHeaders;
-
 	private final URI sendUrl;
-
+	private HttpHeaders headers;
+	private HttpHeaders sendHeaders;
 	private int textMessageSizeLimit = -1;
 
 	private int binaryMessageSizeLimit = -1;
 
 
 	public XhrClientSockJsSession(TransportRequest request, WebSocketHandler handler,
-			XhrTransport transport, SettableListenableFuture<WebSocketSession> connectFuture) {
+								  XhrTransport transport, SettableListenableFuture<WebSocketSession> connectFuture) {
 
 		super(request, handler, connectFuture);
 		Assert.notNull(transport, "XhrTransport is required");
@@ -89,23 +85,23 @@ public class XhrClientSockJsSession extends AbstractClientSockJsSession {
 	}
 
 	@Override
-	public void setTextMessageSizeLimit(int messageSizeLimit) {
-		this.textMessageSizeLimit = messageSizeLimit;
-	}
-
-	@Override
 	public int getTextMessageSizeLimit() {
 		return this.textMessageSizeLimit;
 	}
 
 	@Override
-	public void setBinaryMessageSizeLimit(int messageSizeLimit) {
-		this.binaryMessageSizeLimit = -1;
+	public void setTextMessageSizeLimit(int messageSizeLimit) {
+		this.textMessageSizeLimit = messageSizeLimit;
 	}
 
 	@Override
 	public int getBinaryMessageSizeLimit() {
 		return this.binaryMessageSizeLimit;
+	}
+
+	@Override
+	public void setBinaryMessageSizeLimit(int messageSizeLimit) {
+		this.binaryMessageSizeLimit = -1;
 	}
 
 	@Override

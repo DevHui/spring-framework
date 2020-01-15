@@ -16,18 +16,17 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.function.Supplier;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-
 import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.cache.interceptor.CacheOperationInvoker;
 import org.springframework.cache.interceptor.SimpleCacheErrorHandler;
 import org.springframework.lang.Nullable;
 import org.springframework.util.function.SingletonSupplier;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.function.Supplier;
 
 /**
  * AOP Alliance MethodInterceptor for declarative cache
@@ -41,8 +40,8 @@ import org.springframework.util.function.SingletonSupplier;
  *
  * @author Stephane Nicoll
  * @author Juergen Hoeller
- * @since 4.1
  * @see org.springframework.cache.interceptor.CacheInterceptor
+ * @since 4.1
  */
 @SuppressWarnings("serial")
 public class JCacheInterceptor extends JCacheAspectSupport implements MethodInterceptor, Serializable {
@@ -55,8 +54,9 @@ public class JCacheInterceptor extends JCacheAspectSupport implements MethodInte
 
 	/**
 	 * Construct a new {@code JCacheInterceptor} with the given error handler.
+	 *
 	 * @param errorHandler a supplier for the error handler to use,
-	 * applying the default error handler if the supplier is not resolvable
+	 *                     applying the default error handler if the supplier is not resolvable
 	 * @since 5.1
 	 */
 	public JCacheInterceptor(@Nullable Supplier<CacheErrorHandler> errorHandler) {
@@ -72,16 +72,14 @@ public class JCacheInterceptor extends JCacheAspectSupport implements MethodInte
 		CacheOperationInvoker aopAllianceInvoker = () -> {
 			try {
 				return invocation.proceed();
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				throw new CacheOperationInvoker.ThrowableWrapper(ex);
 			}
 		};
 
 		try {
 			return execute(aopAllianceInvoker, invocation.getThis(), method, invocation.getArguments());
-		}
-		catch (CacheOperationInvoker.ThrowableWrapper th) {
+		} catch (CacheOperationInvoker.ThrowableWrapper th) {
 			throw th.getOriginal();
 		}
 	}

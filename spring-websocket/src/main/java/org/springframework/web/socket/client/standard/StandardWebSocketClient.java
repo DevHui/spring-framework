@@ -16,25 +16,6 @@
 
 package org.springframework.web.socket.client.standard;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.ClientEndpointConfig.Configurator;
-import javax.websocket.ContainerProvider;
-import javax.websocket.Endpoint;
-import javax.websocket.Extension;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.WebSocketContainer;
-
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
@@ -51,6 +32,24 @@ import org.springframework.web.socket.adapter.standard.StandardWebSocketSession;
 import org.springframework.web.socket.adapter.standard.WebSocketToStandardExtensionAdapter;
 import org.springframework.web.socket.client.AbstractWebSocketClient;
 
+import javax.websocket.ClientEndpointConfig;
+import javax.websocket.ClientEndpointConfig.Configurator;
+import javax.websocket.ContainerProvider;
+import javax.websocket.Endpoint;
+import javax.websocket.Extension;
+import javax.websocket.HandshakeResponse;
+import javax.websocket.WebSocketContainer;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 /**
  * A WebSocketClient based on standard Java WebSocket API.
  *
@@ -61,7 +60,7 @@ public class StandardWebSocketClient extends AbstractWebSocketClient {
 
 	private final WebSocketContainer webSocketContainer;
 
-	private final Map<String,Object> userProperties = new HashMap<>();
+	private final Map<String, Object> userProperties = new HashMap<>();
 
 	@Nullable
 	private AsyncListenableTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor();
@@ -87,6 +86,20 @@ public class StandardWebSocketClient extends AbstractWebSocketClient {
 		this.webSocketContainer = webSocketContainer;
 	}
 
+	private static List<Extension> adaptExtensions(List<WebSocketExtension> extensions) {
+		List<Extension> result = new ArrayList<>();
+		for (WebSocketExtension extension : extensions) {
+			result.add(new WebSocketToStandardExtensionAdapter(extension));
+		}
+		return result;
+	}
+
+	/**
+	 * The configured user properties.
+	 */
+	public Map<String, Object> getUserProperties() {
+		return this.userProperties;
+	}
 
 	/**
 	 * The standard Java WebSocket API allows passing "user properties" to the
@@ -101,10 +114,11 @@ public class StandardWebSocketClient extends AbstractWebSocketClient {
 	}
 
 	/**
-	 * The configured user properties.
+	 * Return the configured {@link TaskExecutor}.
 	 */
-	public Map<String, Object> getUserProperties() {
-		return this.userProperties;
+	@Nullable
+	public AsyncListenableTaskExecutor getTaskExecutor() {
+		return this.taskExecutor;
 	}
 
 	/**
@@ -117,19 +131,10 @@ public class StandardWebSocketClient extends AbstractWebSocketClient {
 		this.taskExecutor = taskExecutor;
 	}
 
-	/**
-	 * Return the configured {@link TaskExecutor}.
-	 */
-	@Nullable
-	public AsyncListenableTaskExecutor getTaskExecutor() {
-		return this.taskExecutor;
-	}
-
-
 	@Override
 	protected ListenableFuture<WebSocketSession> doHandshakeInternal(WebSocketHandler webSocketHandler,
-			HttpHeaders headers, final URI uri, List<String> protocols,
-			List<WebSocketExtension> extensions, Map<String, Object> attributes) {
+																	 HttpHeaders headers, final URI uri, List<String> protocols,
+																	 List<WebSocketExtension> extensions, Map<String, Object> attributes) {
 
 		int port = getPort(uri);
 		InetSocketAddress localAddress = new InetSocketAddress(getLocalHost(), port);
@@ -154,27 +159,17 @@ public class StandardWebSocketClient extends AbstractWebSocketClient {
 
 		if (this.taskExecutor != null) {
 			return this.taskExecutor.submitListenable(connectTask);
-		}
-		else {
+		} else {
 			ListenableFutureTask<WebSocketSession> task = new ListenableFutureTask<>(connectTask);
 			task.run();
 			return task;
 		}
 	}
 
-	private static List<Extension> adaptExtensions(List<WebSocketExtension> extensions) {
-		List<Extension> result = new ArrayList<>();
-		for (WebSocketExtension extension : extensions) {
-			result.add(new WebSocketToStandardExtensionAdapter(extension));
-		}
-		return result;
-	}
-
 	private InetAddress getLocalHost() {
 		try {
 			return InetAddress.getLocalHost();
-		}
-		catch (UnknownHostException ex) {
+		} catch (UnknownHostException ex) {
 			return InetAddress.getLoopbackAddress();
 		}
 	}
@@ -203,6 +198,7 @@ public class StandardWebSocketClient extends AbstractWebSocketClient {
 				logger.trace("Handshake request headers: " + requestHeaders);
 			}
 		}
+
 		@Override
 		public void afterResponse(HandshakeResponse response) {
 			if (logger.isTraceEnabled()) {

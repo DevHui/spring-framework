@@ -16,18 +16,20 @@
 
 package org.springframework.messaging.simp;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.beans.factory.ObjectFactory;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Unit tests for {@link org.springframework.messaging.simp.SimpSessionScope}.

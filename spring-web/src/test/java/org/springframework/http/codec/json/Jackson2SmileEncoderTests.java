@@ -16,17 +16,8 @@
 
 package org.springframework.http.codec.json;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.AbstractEncoderTestCase;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -35,8 +26,18 @@ import org.springframework.http.codec.Pojo;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.MimeType;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.core.io.buffer.DataBufferUtils.release;
 import static org.springframework.http.MediaType.APPLICATION_XML;
 
@@ -66,8 +67,7 @@ public class Jackson2SmileEncoderTests extends AbstractEncoderTestCase<Jackson2S
 						.readValue(DataBufferTestUtils.dumpBytes(dataBuffer));
 				assertEquals(expected, actual);
 				release(dataBuffer);
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new UncheckedIOException(ex);
 			}
 		};
@@ -128,11 +128,11 @@ public class Jackson2SmileEncoderTests extends AbstractEncoderTestCase<Jackson2S
 		ResolvableType type = ResolvableType.forClass(Pojo.class);
 
 		testEncodeAll(input, type, step -> step
-				.consumeNextWith(expect(pojo1, Pojo.class))
-				.consumeNextWith(expect(pojo2, Pojo.class))
-				.consumeNextWith(expect(pojo3, Pojo.class))
-				.verifyComplete(),
-		STREAM_SMILE_MIME_TYPE, null);
+						.consumeNextWith(expect(pojo1, Pojo.class))
+						.consumeNextWith(expect(pojo2, Pojo.class))
+						.consumeNextWith(expect(pojo3, Pojo.class))
+						.verifyComplete(),
+				STREAM_SMILE_MIME_TYPE, null);
 	}
 
 
@@ -142,17 +142,14 @@ public class Jackson2SmileEncoderTests extends AbstractEncoderTestCase<Jackson2S
 				Object actual = this.mapper.reader().forType(expectedType)
 						.readValue(dataBuffer.asInputStream());
 				assertEquals(expected, actual);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				throw new UncheckedIOException(e);
-			}
-			finally {
+			} finally {
 				release(dataBuffer);
 			}
 		};
 
 	}
-
 
 
 }

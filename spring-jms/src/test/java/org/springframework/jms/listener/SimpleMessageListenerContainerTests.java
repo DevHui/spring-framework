@@ -16,8 +16,12 @@
 
 package org.springframework.jms.listener;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.junit.Test;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.jms.StubQueue;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ErrorHandler;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -27,17 +31,17 @@ import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.Session;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.junit.Test;
-
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.jms.StubQueue;
-import org.springframework.lang.Nullable;
-import org.springframework.util.ErrorHandler;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Rick Evans
@@ -70,8 +74,8 @@ public class SimpleMessageListenerContainerTests {
 	@Test
 	public void testSessionTransactedModeReallyDoesDefaultToFalse() {
 		assertFalse("The [pubSubLocal] property of SimpleMessageListenerContainer " +
-				"must default to false. Change this test (and the " +
-				"attendant Javadoc) if you have changed the default.",
+						"must default to false. Change this test (and the " +
+						"attendant Javadoc) if you have changed the default.",
 				this.container.isPubSubNoLocal());
 	}
 
@@ -180,8 +184,7 @@ public class SimpleMessageListenerContainerTests {
 				try {
 					// Check correct Session passed into SessionAwareMessageListener.
 					assertSame(sess, session);
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					failure.add("MessageListener execution failed: " + ex);
 				}
 			}

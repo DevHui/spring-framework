@@ -18,7 +18,6 @@ package org.springframework.test.context.junit.jupiter;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.TestPropertySource;
@@ -37,12 +36,26 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  * @author Tadaya Tsuyukubo
  * @author Sam Brannen
- * @since 5.0
  * @see EnabledIfConditionTests
  * @see EnabledIf
  * @see SpringExtension
+ * @since 5.0
  */
 class EnabledIfTests {
+
+	@Configuration
+	static class Config {
+
+		@Bean
+		Boolean booleanFalseBean() {
+			return Boolean.FALSE;
+		}
+
+		@Bean
+		String stringFalseBean() {
+			return "false";
+		}
+	}
 
 	@SpringJUnitConfig(Config.class)
 	@TestPropertySource(properties = "foo = false")
@@ -144,20 +157,6 @@ class EnabledIfTests {
 		@EnabledIf("true")
 		void bar() {
 			fail("This test must be disabled due to class-level condition");
-		}
-	}
-
-	@Configuration
-	static class Config {
-
-		@Bean
-		Boolean booleanFalseBean() {
-			return Boolean.FALSE;
-		}
-
-		@Bean
-		String stringFalseBean() {
-			return "false";
 		}
 	}
 

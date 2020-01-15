@@ -16,6 +16,9 @@
 
 package org.springframework.http;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.MultiValueMap;
+
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,9 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.MultiValueMap;
 
 /**
  * {@code HttpHeaders} object that can only be read, not written to.
@@ -55,8 +55,7 @@ class ReadOnlyHttpHeaders extends HttpHeaders {
 	public MediaType getContentType() {
 		if (this.cachedContentType != null) {
 			return this.cachedContentType;
-		}
-		else {
+		} else {
 			MediaType contentType = super.getContentType();
 			this.cachedContentType = contentType;
 			return contentType;
@@ -67,8 +66,7 @@ class ReadOnlyHttpHeaders extends HttpHeaders {
 	public List<MediaType> getAccept() {
 		if (this.cachedAccept != null) {
 			return this.cachedAccept;
-		}
-		else {
+		} else {
 			List<MediaType> accept = super.getAccept();
 			this.cachedAccept = accept;
 			return accept;

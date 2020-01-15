@@ -16,12 +16,8 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.net.URI;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.log.LogFormatUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -30,6 +26,9 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ClientHttpResponse;
 import org.springframework.http.codec.LoggingCodecSupport;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
 
 /**
  * Static factory methods to create an {@link ExchangeFunction}.
@@ -48,6 +47,7 @@ public abstract class ExchangeFunctions {
 	 * This is the same as calling
 	 * {@link #create(ClientHttpConnector, ExchangeStrategies)} and passing
 	 * {@link ExchangeStrategies#withDefaults()}.
+	 *
 	 * @param connector the connector to use for connecting to servers
 	 * @return the created {@code ExchangeFunction}
 	 */
@@ -58,7 +58,8 @@ public abstract class ExchangeFunctions {
 	/**
 	 * Create an {@code ExchangeFunction} with the given
 	 * {@code ClientHttpConnector} and {@code ExchangeStrategies}.
-	 * @param connector the connector to use for connecting to servers
+	 *
+	 * @param connector  the connector to use for connecting to servers
 	 * @param strategies the {@code ExchangeStrategies} to use
 	 * @return the created {@code ExchangeFunction}
 	 */

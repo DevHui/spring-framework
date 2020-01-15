@@ -16,20 +16,21 @@
 
 package org.springframework.http.server;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 import org.springframework.util.FileCopyUtils;
 
-import static org.junit.Assert.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Arjen Poutsma

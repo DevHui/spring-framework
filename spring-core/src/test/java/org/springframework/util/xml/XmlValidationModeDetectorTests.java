@@ -16,9 +16,9 @@
 
 package org.springframework.util.xml;
 
-import java.io.InputStream;
-
 import org.junit.Test;
+
+import java.io.InputStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.util.xml.XmlValidationModeDetector.VALIDATION_DTD;

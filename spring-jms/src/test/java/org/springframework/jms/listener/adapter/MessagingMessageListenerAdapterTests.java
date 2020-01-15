@@ -16,25 +16,11 @@
 
 package org.springframework.jms.listener.adapter;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.jms.StubTextMessage;
 import org.springframework.jms.support.JmsHeaders;
@@ -48,19 +34,37 @@ import org.springframework.messaging.handler.annotation.support.DefaultMessageHa
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.ReflectionUtils;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.never;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.when;
 
 /**
  * @author Stephane Nicoll
  */
 public class MessagingMessageListenerAdapterTests {
 
+	private static final Destination sharedReplyDestination = mock(Destination.class);
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
-
-	private static final Destination sharedReplyDestination = mock(Destination.class);
-
 	private final DefaultMessageHandlerMethodFactory factory = new DefaultMessageHandlerMethodFactory();
 
 	private final SampleBean sample = new SampleBean();
@@ -73,7 +77,8 @@ public class MessagingMessageListenerAdapterTests {
 
 	@Test
 	public void buildMessageWithStandardMessage() throws JMSException {
-		Destination replyTo = new Destination() {};
+		Destination replyTo = new Destination() {
+		};
 		Message<String> result = MessageBuilder.withPayload("Response")
 				.setHeader("foo", "bar")
 				.setHeader(JmsHeaders.TYPE, "msg_type")
@@ -102,11 +107,9 @@ public class MessagingMessageListenerAdapterTests {
 		try {
 			listener.onMessage(message, session);
 			fail("Should have thrown an exception");
-		}
-		catch (JMSException ex) {
+		} catch (JMSException ex) {
 			fail("Should not have thrown a JMS exception");
-		}
-		catch (ListenerExecutionFailedException ex) {
+		} catch (ListenerExecutionFailedException ex) {
 			assertEquals(IllegalArgumentException.class, ex.getCause().getClass());
 			assertEquals("Expected test exception", ex.getCause().getMessage());
 		}
@@ -121,11 +124,9 @@ public class MessagingMessageListenerAdapterTests {
 		try {
 			listener.onMessage(message, session);
 			fail("Should have thrown an exception");
-		}
-		catch (JMSException ex) {
+		} catch (JMSException ex) {
 			fail("Should not have thrown a JMS exception");
-		}
-		catch (ListenerExecutionFailedException ex) {
+		} catch (ListenerExecutionFailedException ex) {
 			assertEquals(MessageConversionException.class, ex.getCause().getClass());
 		}
 	}
@@ -364,7 +365,7 @@ public class MessagingMessageListenerAdapterTests {
 	}
 
 	protected MessagingMessageListenerAdapter getPayloadInstance(final Object payload,
-			String methodName, Class... parameterTypes) {
+																 String methodName, Class... parameterTypes) {
 
 		Method method = ReflectionUtils.findMethod(SampleBean.class, methodName, parameterTypes);
 		MessagingMessageListenerAdapter adapter = new MessagingMessageListenerAdapter() {
@@ -382,6 +383,14 @@ public class MessagingMessageListenerAdapterTests {
 		factory.afterPropertiesSet();
 	}
 
+
+	interface Summary {
+	}
+
+	interface Full extends Summary {
+	}
+
+	;
 
 	@SuppressWarnings("unused")
 	private static class SampleBean {
@@ -443,8 +452,7 @@ public class MessagingMessageListenerAdapterTests {
 		}
 	}
 
-	interface Summary {};
-	interface Full extends Summary {};
+	;
 
 	private static class SampleResponse {
 

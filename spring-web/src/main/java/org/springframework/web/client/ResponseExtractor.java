@@ -16,11 +16,11 @@
 
 package org.springframework.web.client;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.lang.Nullable;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 
 /**
  * Generic callback interface used by {@link RestTemplate}'s retrieval methods
@@ -32,16 +32,17 @@ import org.springframework.lang.Nullable;
  * application code. There is one available factory method, see
  * {@link RestTemplate#responseEntityExtractor(Type)}.
  *
- * @author Arjen Poutsma
- * @since 3.0
  * @param <T> the data type
+ * @author Arjen Poutsma
  * @see RestTemplate#execute
+ * @since 3.0
  */
 @FunctionalInterface
 public interface ResponseExtractor<T> {
 
 	/**
 	 * Extract data from the given {@code ClientHttpResponse} and return it.
+	 *
 	 * @param response the HTTP response
 	 * @return the extracted data
 	 * @throws IOException in case of I/O errors

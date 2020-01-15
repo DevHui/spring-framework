@@ -16,18 +16,17 @@
 
 package org.springframework.jmx.export.assembler;
 
+import org.springframework.jmx.export.metadata.JmxMetadataUtils;
+import org.springframework.jmx.export.metadata.ManagedNotification;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
+
+import javax.management.modelmbean.ModelMBeanNotificationInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.management.modelmbean.ModelMBeanNotificationInfo;
-
-import org.springframework.jmx.export.metadata.JmxMetadataUtils;
-import org.springframework.jmx.export.metadata.ManagedNotification;
-import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 /**
  * Base class for MBeanInfoAssemblers that support configurable
@@ -39,11 +38,9 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AbstractConfigurableMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAssembler {
 
+	private final Map<String, ModelMBeanNotificationInfo[]> notificationInfoMappings = new HashMap<>();
 	@Nullable
 	private ModelMBeanNotificationInfo[] notificationInfos;
-
-	private final Map<String, ModelMBeanNotificationInfo[]> notificationInfoMappings = new HashMap<>();
-
 
 	public void setNotificationInfos(ManagedNotification[] notificationInfos) {
 		ModelMBeanNotificationInfo[] infos = new ModelMBeanNotificationInfo[notificationInfos.length];
@@ -75,9 +72,8 @@ public abstract class AbstractConfigurableMBeanInfoAssembler extends AbstractRef
 	private ModelMBeanNotificationInfo[] extractNotificationMetadata(Object mapValue) {
 		if (mapValue instanceof ManagedNotification) {
 			ManagedNotification mn = (ManagedNotification) mapValue;
-			return new ModelMBeanNotificationInfo[] {JmxMetadataUtils.convertToModelMBeanNotificationInfo(mn)};
-		}
-		else if (mapValue instanceof Collection) {
+			return new ModelMBeanNotificationInfo[]{JmxMetadataUtils.convertToModelMBeanNotificationInfo(mn)};
+		} else if (mapValue instanceof Collection) {
 			Collection<?> col = (Collection<?>) mapValue;
 			List<ModelMBeanNotificationInfo> result = new ArrayList<>();
 			for (Object colValue : col) {
@@ -89,8 +85,7 @@ public abstract class AbstractConfigurableMBeanInfoAssembler extends AbstractRef
 				result.add(JmxMetadataUtils.convertToModelMBeanNotificationInfo(mn));
 			}
 			return result.toArray(new ModelMBeanNotificationInfo[0]);
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException(
 					"Property 'notificationInfoMappings' only accepts ManagedNotifications for Map values");
 		}

@@ -16,11 +16,13 @@
 
 package org.springframework.util;
 
-import java.math.BigInteger;
-
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.math.BigInteger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test for static utility to help with serialization.
@@ -32,7 +34,7 @@ public class SerializationUtilsTests {
 
 	private static BigInteger FOO = new BigInteger(
 			"-9702942423549012526722364838327831379660941553432801565505143675386108883970811292563757558516603356009681061" +
-			"5697574744209306031461371833798723505120163874786203211176873686513374052845353833564048");
+					"5697574744209306031461371833798723505120163874786203211176873686513374052845353833564048");
 
 
 	@Test

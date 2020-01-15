@@ -16,11 +16,7 @@
 
 package org.springframework.web.reactive.result.view.script;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +30,9 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.adapter.DefaultServerWebExchange;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.session.DefaultWebSessionManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -84,7 +83,7 @@ public class NashornScriptTemplateTests {
 	}
 
 	private MockServerHttpResponse render(String viewUrl, Map<String, Object> model,
-			Class<?> configuration) throws Exception {
+										  Class<?> configuration) throws Exception {
 
 		ScriptTemplateView view = createViewWithUrl(viewUrl, configuration);
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/"));

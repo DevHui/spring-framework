@@ -16,16 +16,8 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanIsAbstractException;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.test.MockServletContext;
@@ -33,10 +25,19 @@ import org.springframework.web.context.support.ServletContextResource;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.servlet.View;
 
-import static org.hamcrest.CoreMatchers.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
 
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * @author Rod Johnson
@@ -45,7 +46,9 @@ import static org.junit.Assume.*;
  */
 public class ResourceBundleViewResolverTests {
 
-	/** Comes from this package */
+	/**
+	 * Comes from this package
+	 */
 	private static String PROPS_FILE = "org.springframework.web.servlet.view.testviews";
 
 	private final ResourceBundleViewResolver rb = new ResourceBundleViewResolver();
@@ -80,15 +83,13 @@ public class ResourceBundleViewResolverTests {
 		try {
 			rb.resolveViewName("debug.Parent", Locale.ENGLISH);
 			fail("Should have thrown BeanIsAbstractException");
-		}
-		catch (BeanIsAbstractException ex) {
+		} catch (BeanIsAbstractException ex) {
 			// expected
 		}
 		try {
 			rb.resolveViewName("testParent", Locale.ENGLISH);
 			fail("Should have thrown BeanIsAbstractException");
-		}
-		catch (BeanIsAbstractException ex) {
+		} catch (BeanIsAbstractException ex) {
 			// expected
 		}
 	}
@@ -123,7 +124,7 @@ public class ResourceBundleViewResolverTests {
 		rb.setBasename(PROPS_FILE);
 		rb.setCache(getCache());
 		rb.setDefaultParentView("testParent");
-		rb.setLocalesToInitialize(new Locale[] {Locale.ENGLISH, Locale.FRENCH});
+		rb.setLocalesToInitialize(new Locale[]{Locale.ENGLISH, Locale.FRENCH});
 		rb.setApplicationContext(wac);
 
 		View v = rb.resolveViewName("debugView", Locale.FRENCH);
@@ -175,7 +176,7 @@ public class ResourceBundleViewResolverTests {
 
 		@Override
 		protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
-				HttpServletResponse response) {
+											   HttpServletResponse response) {
 		}
 
 		@Override

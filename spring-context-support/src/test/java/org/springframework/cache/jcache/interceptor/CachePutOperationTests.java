@@ -16,15 +16,17 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.io.IOException;
+import org.junit.Test;
 
 import javax.cache.annotation.CacheInvocationParameter;
 import javax.cache.annotation.CacheMethodDetails;
 import javax.cache.annotation.CachePut;
+import java.io.IOException;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Stephane Nicoll

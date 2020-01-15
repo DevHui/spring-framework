@@ -18,14 +18,12 @@ package org.springframework.web.method.support;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -36,12 +34,9 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("unused")
 public class HandlerMethodReturnValueHandlerCompositeTests {
 
-	private HandlerMethodReturnValueHandlerComposite handlers;
-
-	private HandlerMethodReturnValueHandler integerHandler;
-
 	ModelAndViewContainer mavContainer;
-
+	private HandlerMethodReturnValueHandlerComposite handlers;
+	private HandlerMethodReturnValueHandler integerHandler;
 	private MethodParameter integerType;
 
 	private MethodParameter stringType;
@@ -126,6 +121,7 @@ public class HandlerMethodReturnValueHandlerCompositeTests {
 		return null;
 	}
 
-	private static class Promise<T> {}
+	private static class Promise<T> {
+	}
 
 }

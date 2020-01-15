@@ -16,18 +16,9 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
@@ -45,8 +36,20 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Arjen Poutsma

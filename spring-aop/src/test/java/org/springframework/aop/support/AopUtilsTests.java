@@ -16,10 +16,7 @@
 
 package org.springframework.aop.support;
 
-import java.lang.reflect.Method;
-
 import org.junit.Test;
-
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.MethodMatcher;
 import org.springframework.aop.Pointcut;
@@ -30,7 +27,11 @@ import org.springframework.tests.aop.interceptor.NopInterceptor;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.SerializationTestUtils;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rod Johnson

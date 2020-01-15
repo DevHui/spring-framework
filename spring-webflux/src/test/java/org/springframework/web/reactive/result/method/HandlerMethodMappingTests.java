@@ -16,15 +16,9 @@
 
 package org.springframework.web.reactive.result.method;
 
-import java.lang.reflect.Method;
-import java.util.Comparator;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.http.server.PathContainer;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
@@ -34,6 +28,11 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.lang.reflect.Method;
+import java.util.Comparator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -17,7 +17,6 @@
 package org.springframework.context.annotation.configuration;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -25,8 +24,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Phillip Webb
@@ -120,7 +120,7 @@ public class Spr10744Tests {
 	static class MyTestConfiguration extends MyConfiguration {
 
 		@Bean
-		@Scope(value = "myTestScope",  proxyMode = ScopedProxyMode.TARGET_CLASS)
+		@Scope(value = "myTestScope", proxyMode = ScopedProxyMode.TARGET_CLASS)
 		@Override
 		public Foo foo() {
 			return new Foo();

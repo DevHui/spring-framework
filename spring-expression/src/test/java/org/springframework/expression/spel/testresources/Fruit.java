@@ -18,16 +18,16 @@ public class Fruit {
 		this.colorName = colorName;
 	}
 
-	public Color getColor() {
-		return color;
-	}
-
 	public Fruit(String... strings) {
 		stringscount = strings.length;
 	}
 
 	public Fruit(int i, String... strings) {
 		stringscount = i + strings.length;
+	}
+
+	public Color getColor() {
+		return color;
 	}
 
 	public int stringscount() {

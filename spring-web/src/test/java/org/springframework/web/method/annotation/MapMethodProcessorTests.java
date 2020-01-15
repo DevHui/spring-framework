@@ -16,12 +16,8 @@
 
 package org.springframework.web.method.annotation;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.ui.ModelMap;
@@ -29,7 +25,11 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+import java.util.Map;
+
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test fixture with {@link org.springframework.web.method.annotation.MapMethodProcessor}.
@@ -80,7 +80,7 @@ public class MapMethodProcessorTests {
 		mavContainer.addAttribute("attr1", "value1");
 		Map<String, Object> returnValue = new ModelMap("attr2", "value2");
 
-		processor.handleReturnValue(returnValue , returnParamMap, mavContainer, webRequest);
+		processor.handleReturnValue(returnValue, returnParamMap, mavContainer, webRequest);
 
 		assertEquals("value1", mavContainer.getModel().get("attr1"));
 		assertEquals("value2", mavContainer.getModel().get("attr2"));

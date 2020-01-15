@@ -16,18 +16,17 @@
 
 package org.springframework.test.context;
 
+import org.junit.Test;
+
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.IntStream;
 
-import org.junit.Test;
-
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toCollection;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -40,18 +39,15 @@ import static org.junit.Assert.assertThat;
  * are only be visible to the thread in which the mutation occurred.
  *
  * @author Sam Brannen
- * @since 5.0
  * @see org.springframework.test.context.junit4.concurrency.SpringJUnit4ConcurrencyTests
+ * @since 5.0
  */
 public class TestContextConcurrencyTests {
 
-	private static Set<String> expectedMethods = stream(TestCase.class.getDeclaredMethods()).map(
-		Method::getName).collect(toCollection(TreeSet::new));
-
 	private static final Set<String> actualMethods = Collections.synchronizedSet(new TreeSet<>());
-
 	private static final TestCase testInstance = new TestCase();
-
+	private static Set<String> expectedMethods = stream(TestCase.class.getDeclaredMethods()).map(
+			Method::getName).collect(toCollection(TreeSet::new));
 
 	@Test
 	public void invokeTestContextManagerFromConcurrentThreads() {
@@ -71,8 +67,7 @@ public class TestContextConcurrencyTests {
 					// no need to invoke the actual test method
 					tcm.afterTestMethod(testInstance, testMethod, null);
 					tcm.afterTestClass();
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					throw new RuntimeException(ex);
 				}
 			});

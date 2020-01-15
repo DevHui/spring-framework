@@ -16,6 +16,9 @@
 
 package org.springframework.jdbc.core;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ParameterMetaData;
@@ -24,10 +27,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.GregorianCalendar;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.never;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Juergen Hoeller
@@ -125,7 +128,8 @@ public class StatementCreatorUtilsTests {
 		verify(preparedStatement).setObject(1, "test", Types.CHAR);
 	}
 
-	@Test public void testSetParameterValueWithStringAndUnknownType() throws SQLException {
+	@Test
+	public void testSetParameterValueWithStringAndUnknownType() throws SQLException {
 		StatementCreatorUtils.setParameterValue(preparedStatement, 1, SqlTypeValue.TYPE_UNKNOWN, null, "test");
 		verify(preparedStatement).setString(1, "test");
 	}

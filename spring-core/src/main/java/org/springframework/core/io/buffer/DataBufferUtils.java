@@ -16,6 +16,17 @@
 
 package org.springframework.core.io.buffer;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscription;
+import org.springframework.core.io.Resource;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import reactor.core.publisher.BaseSubscriber;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.SynchronousSink;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,18 +44,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscription;
-import reactor.core.publisher.BaseSubscriber;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.SynchronousSink;
-
-import org.springframework.core.io.Resource;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Utility class for working with {@link DataBuffer DataBuffers}.
@@ -66,9 +65,10 @@ public abstract class DataBufferUtils {
 	 * Obtain a {@link InputStream} from the given supplier, and read it into a
 	 * {@code Flux} of {@code DataBuffer}s. Closes the input stream when the
 	 * Flux is terminated.
+	 *
 	 * @param inputStreamSupplier the supplier for the input stream to read from
-	 * @param bufferFactory the factory to create data buffers with
-	 * @param bufferSize the maximum size of the data buffers
+	 * @param bufferFactory       the factory to create data buffers with
+	 * @param bufferSize          the maximum size of the data buffers
 	 * @return a Flux of data buffers read from the given channel
 	 */
 	public static Flux<DataBuffer> readInputStream(
@@ -82,9 +82,10 @@ public abstract class DataBufferUtils {
 	 * Obtain a {@link ReadableByteChannel} from the given supplier, and read
 	 * it into a {@code Flux} of {@code DataBuffer}s. Closes the channel when
 	 * the Flux is terminated.
+	 *
 	 * @param channelSupplier the supplier for the channel to read from
-	 * @param bufferFactory the factory to create data buffers with
-	 * @param bufferSize the maximum size of the data buffers
+	 * @param bufferFactory   the factory to create data buffers with
+	 * @param bufferSize      the maximum size of the data buffers
 	 * @return a Flux of data buffers read from the given channel
 	 */
 	public static Flux<DataBuffer> readByteChannel(
@@ -105,9 +106,10 @@ public abstract class DataBufferUtils {
 	 * Obtain a {@code AsynchronousFileChannel} from the given supplier, and read
 	 * it into a {@code Flux} of {@code DataBuffer}s. Closes the channel when
 	 * the Flux is terminated.
+	 *
 	 * @param channelSupplier the supplier for the channel to read from
-	 * @param bufferFactory the factory to create data buffers with
-	 * @param bufferSize the maximum size of the data buffers
+	 * @param bufferFactory   the factory to create data buffers with
+	 * @param bufferSize      the maximum size of the data buffers
 	 * @return a Flux of data buffers read from the given channel
 	 */
 	public static Flux<DataBuffer> readAsynchronousFileChannel(
@@ -120,10 +122,11 @@ public abstract class DataBufferUtils {
 	 * Obtain a {@code AsynchronousFileChannel} from the given supplier, and
 	 * read it into a {@code Flux} of {@code DataBuffer}s, starting at the given
 	 * position. Closes the channel when the Flux is terminated.
+	 *
 	 * @param channelSupplier the supplier for the channel to read from
-	 * @param position the position to start reading from
-	 * @param bufferFactory the factory to create data buffers with
-	 * @param bufferSize the maximum size of the data buffers
+	 * @param position        the position to start reading from
+	 * @param bufferFactory   the factory to create data buffers with
+	 * @param bufferSize      the maximum size of the data buffers
 	 * @return a Flux of data buffers read from the given channel
 	 */
 	public static Flux<DataBuffer> readAsynchronousFileChannel(
@@ -157,9 +160,10 @@ public abstract class DataBufferUtils {
 	 * {@link #readAsynchronousFileChannel(Callable, DataBufferFactory, int)} or else
 	 * fall back to {@link #readByteChannel(Callable, DataBufferFactory, int)}.
 	 * Closes the channel when the flux is terminated.
-	 * @param resource the resource to read from
+	 *
+	 * @param resource      the resource to read from
 	 * @param bufferFactory the factory to create data buffers with
-	 * @param bufferSize the maximum size of the data buffers
+	 * @param bufferSize    the maximum size of the data buffers
 	 * @return a Flux of data buffers read from the given channel
 	 */
 	public static Flux<DataBuffer> read(Resource resource, DataBufferFactory bufferFactory, int bufferSize) {
@@ -174,10 +178,11 @@ public abstract class DataBufferUtils {
 	 * {@link #readAsynchronousFileChannel(Callable, DataBufferFactory, int)} or else
 	 * fall back on {@link #readByteChannel(Callable, DataBufferFactory, int)}.
 	 * Closes the channel when the flux is terminated.
-	 * @param resource the resource to read from
-	 * @param position the position to start reading from
+	 *
+	 * @param resource      the resource to read from
+	 * @param position      the position to start reading from
 	 * @param bufferFactory the factory to create data buffers with
-	 * @param bufferSize the maximum size of the data buffers
+	 * @param bufferSize    the maximum size of the data buffers
 	 * @return a Flux of data buffers read from the given channel
 	 */
 	public static Flux<DataBuffer> read(
@@ -190,8 +195,7 @@ public abstract class DataBufferUtils {
 						() -> AsynchronousFileChannel.open(file.toPath(), StandardOpenOption.READ),
 						position, bufferFactory, bufferSize);
 			}
-		}
-		catch (IOException ignore) {
+		} catch (IOException ignore) {
 			// fallback to resource.readableChannel(), below
 		}
 		Flux<DataBuffer> result = readByteChannel(resource::readableChannel, bufferFactory, bufferSize);
@@ -212,7 +216,8 @@ public abstract class DataBufferUtils {
 	 * with a {@link #releaseConsumer()}.
 	 * <p>Note that the writing process does not start until the returned
 	 * {@code Flux} is subscribed to.
-	 * @param source the stream of data buffers to be written
+	 *
+	 * @param source       the stream of data buffers to be written
 	 * @param outputStream the output stream to write to
 	 * @return a Flux containing the same buffers as in {@code source}, that
 	 * starts the writing process when subscribed to, and that publishes any
@@ -235,7 +240,8 @@ public abstract class DataBufferUtils {
 	 * with a {@link #releaseConsumer()}.
 	 * <p>Note that the writing process does not start until the returned
 	 * {@code Flux} is subscribed to.
-	 * @param source the stream of data buffers to be written
+	 *
+	 * @param source  the stream of data buffers to be written
 	 * @param channel the channel to write to
 	 * @return a Flux containing the same buffers as in {@code source}, that
 	 * starts the writing process when subscribed to, and that publishes any
@@ -262,7 +268,8 @@ public abstract class DataBufferUtils {
 	 * with a {@link #releaseConsumer()}.
 	 * <p>Note that the writing process does not start until the returned
 	 * {@code Flux} is subscribed to.
-	 * @param source the stream of data buffers to be written
+	 *
+	 * @param source  the stream of data buffers to be written
 	 * @param channel the channel to write to
 	 * @return a Flux containing the same buffers as in {@code source}, that
 	 * starts the writing process when subscribed to, and that publishes any
@@ -282,8 +289,9 @@ public abstract class DataBufferUtils {
 	 * {@link #releaseConsumer()}.
 	 * <p>Note that the writing process does not start until the returned
 	 * {@code Flux} is subscribed to.
-	 * @param source the stream of data buffers to be written
-	 * @param channel the channel to write to
+	 *
+	 * @param source   the stream of data buffers to be written
+	 * @param channel  the channel to write to
 	 * @param position file position write write is to begin; must be non-negative
 	 * @return a flux containing the same buffers as in {@code source}, that
 	 * starts the writing process when subscribed to, and that publishes any
@@ -308,8 +316,7 @@ public abstract class DataBufferUtils {
 		if (channel != null && channel.isOpen()) {
 			try {
 				channel.close();
-			}
-			catch (IOException ignored) {
+			} catch (IOException ignored) {
 			}
 		}
 	}
@@ -323,7 +330,8 @@ public abstract class DataBufferUtils {
 	 * Relay buffers from the given {@link Publisher} until the total
 	 * {@linkplain DataBuffer#readableByteCount() byte count} reaches
 	 * the given maximum byte count, or until the publisher is complete.
-	 * @param publisher the publisher to filter
+	 *
+	 * @param publisher    the publisher to filter
 	 * @param maxByteCount the maximum byte count
 	 * @return a flux whose maximum byte count is {@code maxByteCount}
 	 */
@@ -338,8 +346,7 @@ public abstract class DataBufferUtils {
 					if (remainder < 0) {
 						int length = buffer.readableByteCount() + (int) remainder;
 						return buffer.slice(0, length);
-					}
-					else {
+					} else {
 						return buffer;
 					}
 				})
@@ -352,7 +359,8 @@ public abstract class DataBufferUtils {
 	 * Skip buffers from the given {@link Publisher} until the total
 	 * {@linkplain DataBuffer#readableByteCount() byte count} reaches
 	 * the given maximum byte count, or until the publisher is complete.
-	 * @param publisher the publisher to filter
+	 *
+	 * @param publisher    the publisher to filter
 	 * @param maxByteCount the maximum byte count
 	 * @return a flux with the remaining part of the given publisher
 	 */
@@ -371,11 +379,10 @@ public abstract class DataBufferUtils {
 						long remainder = countDown.get();
 						if (remainder < 0) {
 							countDown.set(0);
-							int start = buffer.readableByteCount() + (int)remainder;
+							int start = buffer.readableByteCount() + (int) remainder;
 							int length = (int) -remainder;
 							return buffer.slice(start, length);
-						}
-						else {
+						} else {
 							return buffer;
 						}
 					});
@@ -384,6 +391,7 @@ public abstract class DataBufferUtils {
 
 	/**
 	 * Retain the given data buffer, it it is a {@link PooledDataBuffer}.
+	 *
 	 * @param dataBuffer the data buffer to retain
 	 * @return the retained buffer
 	 */
@@ -391,8 +399,7 @@ public abstract class DataBufferUtils {
 	public static <T extends DataBuffer> T retain(T dataBuffer) {
 		if (dataBuffer instanceof PooledDataBuffer) {
 			return (T) ((PooledDataBuffer) dataBuffer).retain();
-		}
-		else {
+		} else {
 			return dataBuffer;
 		}
 	}
@@ -400,6 +407,7 @@ public abstract class DataBufferUtils {
 	/**
 	 * Release the given data buffer, if it is a {@link PooledDataBuffer} and
 	 * has been {@linkplain PooledDataBuffer#isAllocated() allocated}.
+	 *
 	 * @param dataBuffer the data buffer to release
 	 * @return {@code true} if the buffer was released; {@code false} otherwise.
 	 */
@@ -432,6 +440,7 @@ public abstract class DataBufferUtils {
 	 * {@linkplain #release(DataBuffer) released}.
 	 * <p>Note that the given data buffers do <strong>not</strong> have to be
 	 * released. They will be released as part of the returned composite.
+	 *
 	 * @param dataBuffers the data buffers that are to be composed
 	 * @return a buffer that is composed from the {@code dataBuffers} argument
 	 * @since 5.0.3
@@ -444,7 +453,8 @@ public abstract class DataBufferUtils {
 	 * Variant of {@link #join(Publisher)} that behaves the same way up until
 	 * the specified max number of bytes to buffer. Once the limit is exceeded,
 	 * {@link DataBufferLimitException} is raised.
-	 * @param buffers the data buffers that are to be composed
+	 *
+	 * @param buffers      the data buffers that are to be composed
 	 * @param maxByteCount the max number of bytes to buffer, or -1 for unlimited
 	 * @return a buffer with the aggregated content, possibly an empty Mono if
 	 * the max number of bytes to buffer is exceeded.
@@ -497,15 +507,12 @@ public abstract class DataBufferUtils {
 					dataBuffer.writePosition(read);
 					release = false;
 					sink.next(dataBuffer);
-				}
-				else {
+				} else {
 					sink.complete();
 				}
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				sink.error(ex);
-			}
-			finally {
+			} finally {
 				if (release) {
 					release(dataBuffer);
 				}
@@ -531,7 +538,7 @@ public abstract class DataBufferUtils {
 		private final AtomicBoolean disposed = new AtomicBoolean();
 
 		public ReadCompletionHandler(AsynchronousFileChannel channel,
-				FluxSink<DataBuffer> sink, long position, DataBufferFactory dataBufferFactory, int bufferSize) {
+									 FluxSink<DataBuffer> sink, long position, DataBufferFactory dataBufferFactory, int bufferSize) {
 
 			this.channel = channel;
 			this.sink = sink;
@@ -559,8 +566,7 @@ public abstract class DataBufferUtils {
 					this.sink.next(dataBuffer);
 					this.reading.set(false);
 					read();
-				}
-				else {
+				} else {
 					release(dataBuffer);
 					closeChannel(this.channel);
 					if (this.disposed.compareAndSet(false, true)) {
@@ -568,8 +574,7 @@ public abstract class DataBufferUtils {
 					}
 					this.reading.set(false);
 				}
-			}
-			else {
+			} else {
 				release(dataBuffer);
 				closeChannel(this.channel);
 				this.reading.set(false);
@@ -630,8 +635,7 @@ public abstract class DataBufferUtils {
 				}
 				this.sink.next(dataBuffer);
 				request(1);
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				this.sink.next(dataBuffer);
 				this.sink.error(ex);
 			}
@@ -716,11 +720,9 @@ public abstract class DataBufferUtils {
 			Throwable throwable = this.error.get();
 			if (throwable != null) {
 				this.sink.error(throwable);
-			}
-			else if (this.completed.get()) {
+			} else if (this.completed.get()) {
 				this.sink.complete();
-			}
-			else {
+			} else {
 				request(1);
 			}
 		}

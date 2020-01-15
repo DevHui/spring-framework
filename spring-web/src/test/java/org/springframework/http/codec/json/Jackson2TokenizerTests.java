@@ -16,11 +16,6 @@
 
 package org.springframework.http.codec.json;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,16 +24,20 @@ import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.codec.DecodingException;
 import org.springframework.core.io.buffer.AbstractLeakCheckingTestCase;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferLimitException;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
-import static java.util.Arrays.*;
-import static java.util.Collections.*;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 /**
  * @author Arjen Poutsma
@@ -101,11 +100,11 @@ public class Jackson2TokenizerTests extends AbstractLeakCheckingTestCase {
 						"{\"id\":3,\"name\":\"Ford\"}]"), false);
 
 		// SPR-16166: top-level JSON values
-		testTokenize(asList("\"foo", "bar\""),singletonList("\"foobar\""), false);
+		testTokenize(asList("\"foo", "bar\""), singletonList("\"foobar\""), false);
 
-		testTokenize(asList("12", "34"),singletonList("1234"), false);
+		testTokenize(asList("12", "34"), singletonList("1234"), false);
 
-		testTokenize(asList("12.", "34"),singletonList("12.34"), false);
+		testTokenize(asList("12.", "34"), singletonList("12.34"), false);
 
 		// note that we do not test for null, true, or false, which are also valid top-level values,
 		// but are unsupported by JSONassert
@@ -171,11 +170,11 @@ public class Jackson2TokenizerTests extends AbstractLeakCheckingTestCase {
 						"{\"id\":3,\"name\":\"Ford\"}"), true);
 
 		// SPR-16166: top-level JSON values
-		testTokenize(asList("\"foo", "bar\""),singletonList("\"foobar\""), true);
+		testTokenize(asList("\"foo", "bar\""), singletonList("\"foobar\""), true);
 
-		testTokenize(asList("12", "34"),singletonList("1234"), true);
+		testTokenize(asList("12", "34"), singletonList("1234"), true);
 
-		testTokenize(asList("12.", "34"),singletonList("12.34"), true);
+		testTokenize(asList("12.", "34"), singletonList("12.34"), true);
 
 		// SPR-16407
 		testTokenize(asList("[1", ",2,", "3]"), asList("1", "2", "3"), true);
@@ -186,8 +185,7 @@ public class Jackson2TokenizerTests extends AbstractLeakCheckingTestCase {
 		output.forEach(expected -> builder.assertNext(actual -> {
 			try {
 				JSONAssert.assertEquals(expected, actual, true);
-			}
-			catch (JSONException ex) {
+			} catch (JSONException ex) {
 				throw new RuntimeException(ex);
 			}
 		}));
@@ -271,8 +269,7 @@ public class Jackson2TokenizerTests extends AbstractLeakCheckingTestCase {
 					try {
 						TreeNode root = this.objectMapper.readTree(tokenBuffer.asParser());
 						return this.objectMapper.writeValueAsString(root);
-					}
-					catch (IOException ex) {
+					} catch (IOException ex) {
 						throw new UncheckedIOException(ex);
 					}
 				});

@@ -16,14 +16,7 @@
 
 package org.springframework.web.socket.messaging;
 
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import org.junit.Test;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
@@ -33,7 +26,15 @@ import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.web.socket.CloseStatus;
 
-import static org.junit.Assert.*;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test fixture for
@@ -178,7 +179,7 @@ public class DefaultSimpUserRegistryTests {
 	}
 
 	private Message<byte[]> createMessage(SimpMessageType type, String sessionId, String subscriptionId,
-			String destination) {
+										  String destination) {
 
 		SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.create(type);
 		accessor.setSessionId(sessionId);

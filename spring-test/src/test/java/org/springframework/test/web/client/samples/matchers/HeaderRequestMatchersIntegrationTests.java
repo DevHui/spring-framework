@@ -16,14 +16,8 @@
 
 package org.springframework.test.web.client.samples.matchers;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -32,7 +26,12 @@ import org.springframework.test.web.Person;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import static org.hamcrest.Matchers.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
@@ -67,8 +66,8 @@ public class HeaderRequestMatchersIntegrationTests {
 	@Test
 	public void testString() throws Exception {
 		this.mockServer.expect(requestTo("/person/1"))
-			.andExpect(header("Accept", "application/json, application/*+json"))
-			.andRespond(withSuccess(RESPONSE_BODY, MediaType.APPLICATION_JSON));
+				.andExpect(header("Accept", "application/json, application/*+json"))
+				.andRespond(withSuccess(RESPONSE_BODY, MediaType.APPLICATION_JSON));
 
 		executeAndVerify();
 	}
@@ -76,8 +75,8 @@ public class HeaderRequestMatchersIntegrationTests {
 	@Test
 	public void testStringContains() throws Exception {
 		this.mockServer.expect(requestTo("/person/1"))
-			.andExpect(header("Accept", containsString("json")))
-			.andRespond(withSuccess(RESPONSE_BODY, MediaType.APPLICATION_JSON));
+				.andExpect(header("Accept", containsString("json")))
+				.andRespond(withSuccess(RESPONSE_BODY, MediaType.APPLICATION_JSON));
 
 		executeAndVerify();
 	}

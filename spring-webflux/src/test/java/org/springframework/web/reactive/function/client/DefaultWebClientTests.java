@@ -16,31 +16,28 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.time.Duration;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -106,7 +103,7 @@ public class DefaultWebClientTests {
 	@Test
 	public void requestHeaderAndCookie() {
 		this.builder.build().get().uri("/path").accept(MediaType.APPLICATION_JSON)
-				.cookies(cookies -> cookies.add("id", "123"))	// SPR-16178
+				.cookies(cookies -> cookies.add("id", "123"))    // SPR-16178
 				.exchange()
 				.block(Duration.ofSeconds(10));
 
@@ -164,8 +161,7 @@ public class DefaultWebClientTests {
 		try {
 			context.set("bar");
 			client.get().uri("/path").attribute("foo", "bar").exchange().block(Duration.ofSeconds(10));
-		}
-		finally {
+		} finally {
 			context.remove();
 		}
 

@@ -16,21 +16,20 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.nio.charset.Charset;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.BodyExtractors;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Static factory methods providing access to built-in implementations of
@@ -44,6 +43,7 @@ public abstract class ExchangeFilterFunctions {
 
 	/**
 	 * Name of the request attribute with {@link Credentials} for {@link #basicAuthentication()}.
+	 *
 	 * @deprecated as of Spring 5.1 in favor of using
 	 * {@link HttpHeaders#setBasicAuth(String, String)} while building the request.
 	 */
@@ -56,6 +56,7 @@ public abstract class ExchangeFilterFunctions {
 	 * Consume up to the specified number of bytes from the response body and
 	 * cancel if any more data arrives.
 	 * <p>Internally delegates to {@link DataBufferUtils#takeUntilByteCount}.
+	 *
 	 * @param maxByteCount the limit as number of bytes
 	 * @return the filter to limit the response size with
 	 * @since 5.1
@@ -72,12 +73,13 @@ public abstract class ExchangeFilterFunctions {
 	/**
 	 * Return a filter that generates an error signal when the given
 	 * {@link HttpStatus} predicate matches.
-	 * @param statusPredicate the predicate to check the HTTP status with
+	 *
+	 * @param statusPredicate   the predicate to check the HTTP status with
 	 * @param exceptionFunction the function that to create the exception
 	 * @return the filter to generate an error signal
 	 */
 	public static ExchangeFilterFunction statusError(Predicate<HttpStatus> statusPredicate,
-			Function<ClientResponse, ? extends Throwable> exceptionFunction) {
+													 Function<ClientResponse, ? extends Throwable> exceptionFunction) {
 
 		Assert.notNull(statusPredicate, "Predicate must not be null");
 		Assert.notNull(exceptionFunction, "Function must not be null");
@@ -90,7 +92,8 @@ public abstract class ExchangeFilterFunctions {
 	/**
 	 * Return a filter that applies HTTP Basic Authentication to the request
 	 * headers via {@link HttpHeaders#setBasicAuth(String, String)}.
-	 * @param user the user
+	 *
+	 * @param user     the user
 	 * @param password the password
 	 * @return the filter to add authentication headers with
 	 * @see HttpHeaders#setBasicAuth(String, String)
@@ -108,6 +111,7 @@ public abstract class ExchangeFilterFunctions {
 	 * Variant of {@link #basicAuthentication(String, String)} that looks up
 	 * the {@link Credentials Credentials} in a
 	 * {@link #BASIC_AUTHENTICATION_CREDENTIALS_ATTRIBUTE request attribute}.
+	 *
 	 * @return the filter to use
 	 * @see Credentials
 	 * @deprecated as of Spring 5.1 in favor of using
@@ -122,8 +126,7 @@ public abstract class ExchangeFilterFunctions {
 				return next.exchange(ClientRequest.from(request)
 						.headers(headers -> headers.setBasicAuth(cred.username, cred.password))
 						.build());
-			}
-			else {
+			} else {
 				return next.exchange(request);
 			}
 		};
@@ -132,6 +135,7 @@ public abstract class ExchangeFilterFunctions {
 
 	/**
 	 * Stores user and password for HTTP basic authentication.
+	 *
 	 * @deprecated as of Spring 5.1 in favor of using
 	 * {@link HttpHeaders#setBasicAuth(String, String)} while building the request.
 	 */
@@ -144,6 +148,7 @@ public abstract class ExchangeFilterFunctions {
 
 		/**
 		 * Create a new {@code Credentials} instance with the given username and password.
+		 *
 		 * @param username the username
 		 * @param password the password
 		 */
@@ -158,7 +163,8 @@ public abstract class ExchangeFilterFunctions {
 		 * Return a {@literal Consumer} that stores the given user and password
 		 * as a request attribute of type {@code Credentials} that is in turn
 		 * used by {@link ExchangeFilterFunctions#basicAuthentication()}.
-		 * @param user the user
+		 *
+		 * @param user     the user
 		 * @param password the password
 		 * @return a consumer that can be passed into
 		 * {@linkplain ClientRequest.Builder#attributes(java.util.function.Consumer)}

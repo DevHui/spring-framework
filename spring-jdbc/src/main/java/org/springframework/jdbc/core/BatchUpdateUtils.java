@@ -16,11 +16,11 @@
 
 package org.springframework.jdbc.core;
 
+import org.springframework.lang.Nullable;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Generic utility methods for working with JDBC batch statements.
@@ -49,6 +49,7 @@ public abstract class BatchUpdateUtils {
 						Object[] values = batchArgs.get(i);
 						setStatementParameters(values, ps, columnTypes);
 					}
+
 					@Override
 					public int getBatchSize() {
 						return batchArgs.size();
@@ -65,13 +66,11 @@ public abstract class BatchUpdateUtils {
 			if (value instanceof SqlParameterValue) {
 				SqlParameterValue paramValue = (SqlParameterValue) value;
 				StatementCreatorUtils.setParameterValue(ps, colIndex, paramValue, paramValue.getValue());
-			}
-			else {
+			} else {
 				int colType;
 				if (columnTypes == null || columnTypes.length < colIndex) {
 					colType = SqlTypeValue.TYPE_UNKNOWN;
-				}
-				else {
+				} else {
 					colType = columnTypes[colIndex - 1];
 				}
 				StatementCreatorUtils.setParameterValue(ps, colIndex, colType, value);

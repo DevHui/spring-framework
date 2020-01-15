@@ -16,18 +16,18 @@
 
 package org.springframework.web.server;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Exception for errors that fit response status 405 (method not allowed).
@@ -60,6 +60,7 @@ public class MethodNotAllowedException extends ResponseStatusException {
 
 	/**
 	 * Return a Map with an "Allow" header.
+	 *
 	 * @since 5.1.11
 	 */
 	@Override

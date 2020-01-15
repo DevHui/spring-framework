@@ -16,21 +16,24 @@
 
 package org.springframework.http.client;
 
+import org.junit.Test;
+import org.springframework.util.StreamUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
-
-import org.springframework.util.StreamUtils;
-
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.doNothing;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.never;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Brian Clozel

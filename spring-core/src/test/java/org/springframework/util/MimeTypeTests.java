@@ -16,19 +16,22 @@
 
 package org.springframework.util;
 
+import org.junit.Test;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import org.junit.Test;
-
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.DefaultConversionService;
-
-import static java.util.Collections.*;
-import static org.junit.Assert.*;
+import static java.util.Collections.singletonMap;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link MimeType}.
@@ -298,7 +301,7 @@ public class MimeTypeTests {
 		String s = String.join(",", mimeTypes);
 		List<MimeType> actual = MimeTypeUtils.parseMimeTypes(s);
 		assertEquals(mimeTypes.length, actual.size());
-		for (int i=0; i < mimeTypes.length; i++) {
+		for (int i = 0; i < mimeTypes.length; i++) {
 			assertEquals(mimeTypes[i], actual.get(i).toString());
 		}
 	}
@@ -356,6 +359,7 @@ public class MimeTypeTests {
 
 	/**
 	 * SPR-13157
+	 *
 	 * @since 4.2
 	 */
 	@Test

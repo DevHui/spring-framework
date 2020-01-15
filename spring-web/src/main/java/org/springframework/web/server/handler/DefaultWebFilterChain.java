@@ -16,19 +16,18 @@
 
 package org.springframework.web.server.handler;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import org.springframework.web.server.WebHandler;
+import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Default implementation of {@link WebFilterChain}.
@@ -58,6 +57,7 @@ public class DefaultWebFilterChain implements WebFilterChain {
 
 	/**
 	 * Public constructor with the list of filters and the target handler to use.
+	 *
 	 * @param handler the target handler
 	 * @param filters the filters ahead of the handler
 	 * @since 5.1
@@ -71,20 +71,11 @@ public class DefaultWebFilterChain implements WebFilterChain {
 		this.next = chain.next;
 	}
 
-	private static DefaultWebFilterChain initChain(List<WebFilter> filters, WebHandler handler) {
-		DefaultWebFilterChain chain = new DefaultWebFilterChain(filters, handler, null, null);
-		ListIterator<? extends WebFilter> iterator = filters.listIterator(filters.size());
-		while (iterator.hasPrevious()) {
-			chain = new DefaultWebFilterChain(filters, handler, iterator.previous(), chain);
-		}
-		return chain;
-	}
-
 	/**
 	 * Private constructor to represent one link in the chain.
 	 */
 	private DefaultWebFilterChain(List<WebFilter> allFilters, WebHandler handler,
-			@Nullable WebFilter currentFilter, @Nullable DefaultWebFilterChain next) {
+								  @Nullable WebFilter currentFilter, @Nullable DefaultWebFilterChain next) {
 
 		this.allFilters = allFilters;
 		this.currentFilter = currentFilter;
@@ -94,6 +85,7 @@ public class DefaultWebFilterChain implements WebFilterChain {
 
 	/**
 	 * Public constructor with the list of filters and the target handler to use.
+	 *
 	 * @param handler the target handler
 	 * @param filters the filters ahead of the handler
 	 * @deprecated as of 5.1 this constructor is deprecated in favor of
@@ -104,6 +96,14 @@ public class DefaultWebFilterChain implements WebFilterChain {
 		this(handler, Arrays.asList(filters));
 	}
 
+	private static DefaultWebFilterChain initChain(List<WebFilter> filters, WebHandler handler) {
+		DefaultWebFilterChain chain = new DefaultWebFilterChain(filters, handler, null, null);
+		ListIterator<? extends WebFilter> iterator = filters.listIterator(filters.size());
+		while (iterator.hasPrevious()) {
+			chain = new DefaultWebFilterChain(filters, handler, iterator.previous(), chain);
+		}
+		return chain;
+	}
 
 	public List<WebFilter> getFilters() {
 		return this.allFilters;

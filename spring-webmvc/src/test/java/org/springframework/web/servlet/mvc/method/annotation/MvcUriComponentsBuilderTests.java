@@ -16,23 +16,12 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -62,8 +51,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import javax.servlet.http.HttpServletRequest;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.*;
 
 /**
@@ -257,7 +260,7 @@ public class MvcUriComponentsBuilderTests {
 	@Test  // SPR-14405
 	public void fromMethodNameWithOptionalParam() {
 		UriComponents uriComponents = fromMethodName(ControllerWithMethods.class,
-				"methodWithOptionalParam", new Object[] {null}).build();
+				"methodWithOptionalParam", new Object[]{null}).build();
 
 		assertThat(uriComponents.toUriString(), is("http://localhost/something/optional-param"));
 	}
@@ -452,6 +455,22 @@ public class MvcUriComponentsBuilderTests {
 	}
 
 
+	@RequestMapping("/people")
+	interface PersonController {
+	}
+
+
+	@RequestMapping(method = RequestMethod.POST,
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	@Target({ElementType.METHOD, ElementType.TYPE})
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	private @interface PostJson {
+
+		String[] path() default {};
+	}
+
 	static class Person {
 
 		Long id;
@@ -461,15 +480,8 @@ public class MvcUriComponentsBuilderTests {
 		}
 	}
 
-
-	@RequestMapping("/people")
-	interface PersonController {
-	}
-
-
 	static class PersonControllerImpl implements PersonController {
 	}
-
 
 	@RequestMapping("/people/{id}/addresses")
 	static class PersonsAddressesController {
@@ -479,20 +491,6 @@ public class MvcUriComponentsBuilderTests {
 			return null;
 		}
 	}
-
-
-	@RequestMapping({"/persons", "/people"})
-	private class InvalidController {
-	}
-
-
-	private class UnmappedController {
-
-		@RequestMapping
-		public void unmappedMethod() {
-		}
-	}
-
 
 	@RequestMapping("/something")
 	static class ControllerWithMethods {
@@ -515,13 +513,13 @@ public class MvcUriComponentsBuilderTests {
 
 		@RequestMapping(value = "/{id}/foo")
 		HttpEntity<Void> methodForNextPage(@PathVariable String id,
-				@RequestParam Integer offset, @RequestParam Integer limit) {
+										   @RequestParam Integer offset, @RequestParam Integer limit) {
 			return null;
 		}
 
 		@RequestMapping(value = "/{id}/foo")
 		HttpEntity<Void> methodWithMultiValueRequestParams(@PathVariable String id,
-				@RequestParam List<Integer> items, @RequestParam Integer limit) {
+														   @RequestParam List<Integer> items, @RequestParam Integer limit) {
 			return null;
 		}
 
@@ -531,12 +529,10 @@ public class MvcUriComponentsBuilderTests {
 		}
 	}
 
-
 	@RequestMapping("/extended")
 	@SuppressWarnings("WeakerAccess")
 	static class ExtendedController extends ControllerWithMethods {
 	}
-
 
 	@RequestMapping("/user/{userId}/contacts")
 	static class UserContactController {
@@ -547,12 +543,10 @@ public class MvcUriComponentsBuilderTests {
 		}
 	}
 
-
 	static abstract class AbstractCrudController<T, ID> {
 
 		abstract T get(ID id);
 	}
-
 
 	static class PersonCrudController extends AbstractCrudController<Person, Long> {
 
@@ -562,7 +556,6 @@ public class MvcUriComponentsBuilderTests {
 			return new Person();
 		}
 	}
-
 
 	@Controller
 	static class MetaAnnotationController {
@@ -576,19 +569,6 @@ public class MvcUriComponentsBuilderTests {
 		}
 	}
 
-
-	@RequestMapping(method = RequestMethod.POST,
-			produces = MediaType.APPLICATION_JSON_VALUE,
-			consumes = MediaType.APPLICATION_JSON_VALUE)
-	@Target({ElementType.METHOD, ElementType.TYPE})
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	private @interface PostJson {
-
-		String[] path() default {};
-	}
-
-
 	@EnableWebMvc
 	static class WebConfig implements WebMvcConfigurer {
 
@@ -597,7 +577,6 @@ public class MvcUriComponentsBuilderTests {
 			return new PersonsAddressesController();
 		}
 	}
-
 
 	@EnableWebMvc
 	static class PathPrefixWebConfig implements WebMvcConfigurer {
@@ -613,7 +592,6 @@ public class MvcUriComponentsBuilderTests {
 		}
 	}
 
-
 	@Controller
 	@RequestMapping("/hotels/{hotel}")
 	static class BookingControllerWithModelAndView {
@@ -623,7 +601,6 @@ public class MvcUriComponentsBuilderTests {
 			return new ModelAndView("url");
 		}
 	}
-
 
 	@Controller
 	@RequestMapping("/hotels/{hotel}")
@@ -635,7 +612,6 @@ public class MvcUriComponentsBuilderTests {
 		}
 	}
 
-
 	@Controller
 	@RequestMapping("/hotels/{hotel}")
 	static class BookingControllerWithString {
@@ -643,6 +619,17 @@ public class MvcUriComponentsBuilderTests {
 		@GetMapping("/bookings/{booking}")
 		public String getBooking(@PathVariable Long booking) {
 			return "url";
+		}
+	}
+
+	@RequestMapping({"/persons", "/people"})
+	private class InvalidController {
+	}
+
+	private class UnmappedController {
+
+		@RequestMapping
+		public void unmappedMethod() {
 		}
 	}
 

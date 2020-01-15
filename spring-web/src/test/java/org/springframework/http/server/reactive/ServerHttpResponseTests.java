@@ -16,21 +16,20 @@
 
 package org.springframework.http.server.reactive;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -134,7 +133,6 @@ public class ServerHttpResponseTests {
 	}
 
 
-
 	private DefaultDataBuffer wrap(String a) {
 		return new DefaultDataBufferFactory().wrap(ByteBuffer.wrap(a.getBytes(StandardCharsets.UTF_8)));
 	}
@@ -142,13 +140,10 @@ public class ServerHttpResponseTests {
 
 	private static class TestServerHttpResponse extends AbstractServerHttpResponse {
 
-		private boolean statusCodeWritten;
-
-		private boolean headersWritten;
-
-		private boolean cookiesWritten;
-
 		private final List<DataBuffer> body = new ArrayList<>();
+		private boolean statusCodeWritten;
+		private boolean headersWritten;
+		private boolean cookiesWritten;
 
 		public TestServerHttpResponse() {
 			super(new DefaultDataBufferFactory());
@@ -189,10 +184,10 @@ public class ServerHttpResponseTests {
 		protected Mono<Void> writeAndFlushWithInternal(
 				Publisher<? extends Publisher<? extends DataBuffer>> bodyWithFlush) {
 			return Flux.from(bodyWithFlush).flatMap(body ->
-				Flux.from(body).map(b -> {
-					this.body.add(b);
-					return b;
-				})
+					Flux.from(body).map(b -> {
+						this.body.add(b);
+						return b;
+					})
 			).then();
 		}
 	}

@@ -16,14 +16,7 @@
 
 package org.springframework.web.servlet.i18n;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-
 import org.junit.Test;
-
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.SimpleLocaleContext;
 import org.springframework.context.i18n.SimpleTimeZoneAwareLocaleContext;
@@ -32,7 +25,17 @@ import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 import org.springframework.web.util.WebUtils;
 
-import static org.junit.Assert.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Alef Arendsen
@@ -92,8 +95,7 @@ public class CookieLocaleResolverTests {
 		try {
 			resolver.resolveLocaleContext(request);
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertTrue(ex.getMessage().contains("LanguageKoekje"));
 			assertTrue(ex.getMessage().contains("++ GMT+1"));
 		}
@@ -127,8 +129,7 @@ public class CookieLocaleResolverTests {
 		try {
 			resolver.resolveLocaleContext(request);
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertTrue(ex.getMessage().contains("LanguageKoekje"));
 			assertTrue(ex.getMessage().contains("nl X-MT"));
 		}

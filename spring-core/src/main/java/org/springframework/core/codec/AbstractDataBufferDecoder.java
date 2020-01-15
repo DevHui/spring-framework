@@ -16,17 +16,16 @@
 
 package org.springframework.core.codec;
 
-import java.util.Map;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.MimeType;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 /**
  * Abstract base class for {@code Decoder} implementations that can decode
@@ -41,9 +40,9 @@ import org.springframework.util.MimeType;
  * along different boundaries (e.g. on new line characters for {@code String})
  * or always reduce to a single data buffer (e.g. {@code Resource}).
  *
+ * @param <T> the element type
  * @author Rossen Stoyanchev
  * @since 5.0
- * @param <T> the element type
  */
 public abstract class AbstractDataBufferDecoder<T> extends AbstractDecoder<T> {
 
@@ -54,6 +53,14 @@ public abstract class AbstractDataBufferDecoder<T> extends AbstractDecoder<T> {
 		super(supportedMimeTypes);
 	}
 
+	/**
+	 * Return the {@link #setMaxInMemorySize configured} byte count limit.
+	 *
+	 * @since 5.1.11
+	 */
+	public int getMaxInMemorySize() {
+		return this.maxInMemorySize;
+	}
 
 	/**
 	 * Configure a limit on the number of bytes that can be buffered whenever
@@ -65,6 +72,7 @@ public abstract class AbstractDataBufferDecoder<T> extends AbstractDecoder<T> {
 	 * in which case the limit applies to data buffered between delimiters.
 	 * <p>By default in 5.1 this is set to -1, unlimited. In 5.2 the default
 	 * value for this limit is set to 256K.
+	 *
 	 * @param byteCount the max number of bytes to buffer, or -1 for unlimited
 	 * @since 5.1.11
 	 */
@@ -72,25 +80,16 @@ public abstract class AbstractDataBufferDecoder<T> extends AbstractDecoder<T> {
 		this.maxInMemorySize = byteCount;
 	}
 
-	/**
-	 * Return the {@link #setMaxInMemorySize configured} byte count limit.
-	 * @since 5.1.11
-	 */
-	public int getMaxInMemorySize() {
-		return this.maxInMemorySize;
-	}
-
-
 	@Override
 	public Flux<T> decode(Publisher<DataBuffer> input, ResolvableType elementType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+						  @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		return Flux.from(input).map(buffer -> decodeDataBuffer(buffer, elementType, mimeType, hints));
 	}
 
 	@Override
 	public Mono<T> decodeToMono(Publisher<DataBuffer> input, ResolvableType elementType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+								@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		return DataBufferUtils.join(input, this.maxInMemorySize)
 				.map(buffer -> decodeDataBuffer(buffer, elementType, mimeType, hints));
@@ -100,6 +99,6 @@ public abstract class AbstractDataBufferDecoder<T> extends AbstractDecoder<T> {
 	 * How to decode a {@code DataBuffer} to the target element type.
 	 */
 	protected abstract T decodeDataBuffer(DataBuffer buffer, ResolvableType elementType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints);
+										  @Nullable MimeType mimeType, @Nullable Map<String, Object> hints);
 
 }

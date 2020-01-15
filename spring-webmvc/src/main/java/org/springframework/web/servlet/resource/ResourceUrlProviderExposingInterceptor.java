@@ -16,12 +16,12 @@
 
 package org.springframework.web.servlet.resource;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.util.Assert;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * An interceptor that exposes the {@link ResourceUrlProvider} instance it
@@ -51,8 +51,7 @@ public class ResourceUrlProviderExposingInterceptor extends HandlerInterceptorAd
 
 		try {
 			request.setAttribute(RESOURCE_URL_PROVIDER_ATTR, this.resourceUrlProvider);
-		}
-		catch (ResourceUrlEncodingFilter.LookupPathIndexException ex) {
+		} catch (ResourceUrlEncodingFilter.LookupPathIndexException ex) {
 			throw new ServletRequestBindingException(ex.getMessage(), ex);
 		}
 		return true;

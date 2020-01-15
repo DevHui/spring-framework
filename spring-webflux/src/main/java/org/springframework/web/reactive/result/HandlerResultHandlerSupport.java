@@ -16,17 +16,8 @@
 
 package org.springframework.web.reactive.result;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Supplier;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.Ordered;
 import org.springframework.core.ReactiveAdapter;
 import org.springframework.core.ReactiveAdapterRegistry;
@@ -37,6 +28,14 @@ import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.HandlerResult;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Base class for {@link org.springframework.web.reactive.HandlerResultHandler
@@ -62,7 +61,7 @@ public abstract class HandlerResultHandlerSupport implements Ordered {
 
 
 	protected HandlerResultHandlerSupport(RequestedContentTypeResolver contentTypeResolver,
-			ReactiveAdapterRegistry adapterRegistry) {
+										  ReactiveAdapterRegistry adapterRegistry) {
 
 		Assert.notNull(contentTypeResolver, "RequestedContentTypeResolver is required");
 		Assert.notNull(adapterRegistry, "ReactiveAdapterRegistry is required");
@@ -85,24 +84,25 @@ public abstract class HandlerResultHandlerSupport implements Ordered {
 		return this.contentTypeResolver;
 	}
 
+	@Override
+	public int getOrder() {
+		return this.order;
+	}
+
 	/**
 	 * Set the order for this result handler relative to others.
 	 * <p>By default set to {@link Ordered#LOWEST_PRECEDENCE}, however see
 	 * Javadoc of sub-classes which may change this default.
+	 *
 	 * @param order the order
 	 */
 	public void setOrder(int order) {
 		this.order = order;
 	}
 
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
-
-
 	/**
 	 * Get a {@code ReactiveAdapter} for the top-level return value type.
+	 *
 	 * @return the matching adapter, or {@code null} if none
 	 */
 	@Nullable
@@ -112,7 +112,8 @@ public abstract class HandlerResultHandlerSupport implements Ordered {
 
 	/**
 	 * Select the best media type for the current request through a content negotiation algorithm.
-	 * @param exchange the current request
+	 *
+	 * @param exchange                the current request
 	 * @param producibleTypesSupplier the media types that can be produced for the current request
 	 * @return the selected media type, or {@code null} if none
 	 */
@@ -148,8 +149,7 @@ public abstract class HandlerResultHandlerSupport implements Ordered {
 			if (mediaType.isConcrete()) {
 				selected = mediaType;
 				break;
-			}
-			else if (mediaType.isPresentIn(ALL_APPLICATION_MEDIA_TYPES)) {
+			} else if (mediaType.isPresentIn(ALL_APPLICATION_MEDIA_TYPES)) {
 				selected = MediaType.APPLICATION_OCTET_STREAM;
 				break;
 			}
@@ -160,8 +160,7 @@ public abstract class HandlerResultHandlerSupport implements Ordered {
 				logger.debug("Using '" + selected + "' given " + acceptableTypes +
 						" and supported " + producibleTypes);
 			}
-		}
-		else if (logger.isDebugEnabled()) {
+		} else if (logger.isDebugEnabled()) {
 			logger.debug(exchange.getLogPrefix() +
 					"No match for " + acceptableTypes + ", supported: " + producibleTypes);
 		}

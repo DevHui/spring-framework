@@ -16,12 +16,12 @@
 
 package org.springframework.context.event;
 
-import java.io.IOException;
-
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.ResolvableTypeProvider;
+
+import java.io.IOException;
 
 /**
  * @author Stephane Nicoll
@@ -32,12 +32,14 @@ public abstract class AbstractApplicationEventListenerTests {
 	protected ResolvableType getGenericApplicationEventType(String fieldName) {
 		try {
 			return ResolvableType.forField(TestEvents.class.getField(fieldName));
-		}
-		catch (NoSuchFieldException ex) {
+		} catch (NoSuchFieldException ex) {
 			throw new IllegalStateException("No such field on Events '" + fieldName + "'");
 		}
 	}
 
+	protected <T> GenericTestEvent<T> createGenericTestEvent(T payload) {
+		return new GenericTestEvent<>(this, payload);
+	}
 
 	protected static class GenericTestEvent<T> extends ApplicationEvent {
 
@@ -82,11 +84,6 @@ public abstract class AbstractApplicationEventListenerTests {
 			super(source, payload);
 		}
 	}
-
-	protected <T> GenericTestEvent<T> createGenericTestEvent(T payload) {
-		return new GenericTestEvent<>(this, payload);
-	}
-
 
 	static class GenericEventListener implements ApplicationListener<GenericTestEvent<?>> {
 		@Override

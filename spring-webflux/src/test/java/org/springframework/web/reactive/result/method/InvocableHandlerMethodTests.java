@@ -16,18 +16,7 @@
 
 package org.springframework.web.reactive.result.method;
 
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpStatus;
@@ -41,12 +30,28 @@ import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.HandlerResult;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.get;
 
 /**
  * Unit tests for {@link InvocableHandlerMethod}.
@@ -94,8 +99,7 @@ public class InvocableHandlerMethodTests {
 		try {
 			mono.block();
 			fail("Expected IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertThat(ex.getMessage(), is("Could not resolve parameter [0] in " +
 					method.toGenericString() + ": No suitable resolver"));
 		}
@@ -127,8 +131,7 @@ public class InvocableHandlerMethodTests {
 		try {
 			mono.block();
 			fail("Expected UnsupportedMediaTypeStatusException");
-		}
-		catch (UnsupportedMediaTypeStatusException ex) {
+		} catch (UnsupportedMediaTypeStatusException ex) {
 			assertThat(ex.getMessage(), is("415 UNSUPPORTED_MEDIA_TYPE \"boo\""));
 		}
 	}
@@ -142,8 +145,7 @@ public class InvocableHandlerMethodTests {
 		try {
 			mono.block();
 			fail("Expected IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertNotNull("Exception not wrapped", ex.getCause());
 			assertTrue(ex.getCause() instanceof IllegalArgumentException);
 			assertTrue(ex.getMessage().contains("Controller ["));
@@ -161,8 +163,7 @@ public class InvocableHandlerMethodTests {
 		try {
 			mono.block();
 			fail("Expected IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertThat(ex.getMessage(), is("boo"));
 		}
 	}

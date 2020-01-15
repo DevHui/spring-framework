@@ -16,13 +16,15 @@
 
 package org.springframework.core.io.support;
 
-import java.nio.charset.Charset;
-
 import org.junit.Test;
 import org.springframework.core.io.DescriptiveResource;
 import org.springframework.core.io.Resource;
 
-import static org.junit.Assert.*;
+import java.nio.charset.Charset;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Unit tests for {@link EncodedResource}.

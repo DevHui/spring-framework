@@ -16,27 +16,27 @@
 
 package org.springframework.messaging.simp.broker;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.support.ExecutorSubscribableChannel;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import static org.junit.Assert.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for {@link OrderedMessageSender}.
+ *
  * @author Rossen Stoyanchev
  */
 public class OrderedMessageSenderTests {
@@ -45,11 +45,8 @@ public class OrderedMessageSenderTests {
 
 
 	private OrderedMessageSender sender;
-
-	ExecutorSubscribableChannel channel = new ExecutorSubscribableChannel(this.executor);
-
 	private ThreadPoolTaskExecutor executor;
-
+	ExecutorSubscribableChannel channel = new ExecutorSubscribableChannel(this.executor);
 
 	@Before
 	public void setup() {
@@ -92,8 +89,7 @@ public class OrderedMessageSenderTests {
 			if (actual == 100 || actual == 200) {
 				try {
 					Thread.sleep(200);
-				}
-				catch (InterruptedException ex) {
+				} catch (InterruptedException ex) {
 					result.set(ex.toString());
 					latch.countDown();
 				}

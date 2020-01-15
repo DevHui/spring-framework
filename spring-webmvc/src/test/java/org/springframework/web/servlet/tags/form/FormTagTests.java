@@ -16,18 +16,20 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.util.Collections;
-
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.Tag;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.web.servlet.support.RequestDataValueProcessor;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.Tag;
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
 
 /**
  * @author Rob Harrop
@@ -47,6 +49,13 @@ public class FormTagTests extends AbstractHtmlElementTagTests {
 
 	private MockHttpServletRequest request;
 
+	private static void assertFormTagOpened(String output) {
+		assertTrue(output.startsWith("<form "));
+	}
+
+	private static void assertFormTagClosed(String output) {
+		assertTrue(output.endsWith("</form>"));
+	}
 
 	@Override
 	@SuppressWarnings("serial")
@@ -220,8 +229,7 @@ public class FormTagTests extends AbstractHtmlElementTagTests {
 			tag.setModelAttribute(null);
 			tag.doStartTag();
 			fail("Must not be able to have a command name that resolves to null");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 	}
@@ -235,7 +243,7 @@ public class FormTagTests extends AbstractHtmlElementTagTests {
 		request.setQueryString(xssQueryString);
 		tag.doStartTag();
 		assertEquals("<form id=\"command\" action=\"/my/form?foo=bar&amp;stuff=&quot;&gt;&lt;" +
-						"script&gt;alert(&#39;XSS!&#39;)&lt;/script&gt;\" method=\"post\">", getOutput());
+				"script&gt;alert(&#39;XSS!&#39;)&lt;/script&gt;\" method=\"post\">", getOutput());
 	}
 
 	@Test
@@ -380,15 +388,6 @@ public class FormTagTests extends AbstractHtmlElementTagTests {
 		int inputStart = output.indexOf("<", 1);
 		int inputEnd = output.lastIndexOf(">", output.length() - 2);
 		return output.substring(inputStart, inputEnd + 1);
-	}
-
-
-	private static void assertFormTagOpened(String output) {
-		assertTrue(output.startsWith("<form "));
-	}
-
-	private static void assertFormTagClosed(String output) {
-		assertTrue(output.endsWith("</form>"));
 	}
 
 }

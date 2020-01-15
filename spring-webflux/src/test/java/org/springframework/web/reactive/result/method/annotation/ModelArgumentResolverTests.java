@@ -15,11 +15,7 @@
  */
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.time.Duration;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
@@ -29,6 +25,9 @@ import org.springframework.web.method.ResolvableMethod;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.server.ServerWebExchange;
 
+import java.time.Duration;
+import java.util.Map;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -36,6 +35,7 @@ import static org.springframework.mock.http.server.reactive.test.MockServerHttpR
 
 /**
  * Unit tests for {@link ModelArgumentResolver}.
+ *
  * @author Rossen Stoyanchev
  */
 public class ModelArgumentResolverTests {
@@ -70,6 +70,7 @@ public class ModelArgumentResolverTests {
 	}
 
 	@SuppressWarnings("unused")
-	void handle(Model model, Map<String, Object> map, ModelMap modelMap, Object object) {}
+	void handle(Model model, Map<String, Object> map, ModelMap modelMap, Object object) {
+	}
 
 }

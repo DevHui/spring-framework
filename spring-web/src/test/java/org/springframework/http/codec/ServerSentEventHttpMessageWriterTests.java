@@ -16,20 +16,10 @@
 
 package org.springframework.http.codec;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.AbstractDataBufferAllocatingTestCase;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -38,8 +28,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpResponse;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.core.ResolvableType.forClass;
 
 /**
@@ -63,7 +64,6 @@ public class ServerSentEventHttpMessageWriterTests extends AbstractDataBufferAll
 	public void setUp() {
 		this.outputMessage = new MockServerHttpResponse(this.bufferFactory);
 	}
-
 
 
 	@Test

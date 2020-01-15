@@ -16,34 +16,34 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.apache.commons.logging.Log;
 import org.reactivestreams.Processor;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-
 import org.springframework.core.log.LogDelegateFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An alternative to {@link AbstractListenerWriteProcessor} but instead writing
  * a {@code Publisher<Publisher<T>>} with flush boundaries enforces after
  * the completion of each nested Publisher.
  *
+ * @param <T> the type of element signaled to the {@link Subscriber}
  * @author Arjen Poutsma
  * @author Violeta Georgieva
  * @author Rossen Stoyanchev
  * @since 5.0
- * @param <T> the type of element signaled to the {@link Subscriber}
  */
 public abstract class AbstractListenerWriteFlushProcessor<T> implements Processor<Publisher<? extends T>, Void> {
 
 	/**
 	 * Special logger for debugging Reactive Streams signals.
+	 *
 	 * @see LogDelegateFactory#getHiddenLog(Class)
 	 * @see AbstractListenerReadPublisher#rsReadLogger
 	 * @see AbstractListenerWriteProcessor#rsWriteLogger
@@ -54,15 +54,11 @@ public abstract class AbstractListenerWriteFlushProcessor<T> implements Processo
 
 
 	private final AtomicReference<State> state = new AtomicReference<>(State.UNSUBSCRIBED);
-
+	private final WriteResultPublisher resultPublisher;
+	private final String logPrefix;
 	@Nullable
 	private Subscription subscription;
-
 	private volatile boolean subscriberCompleted;
-
-	private final WriteResultPublisher resultPublisher;
-
-	private final String logPrefix;
 
 
 	public AbstractListenerWriteFlushProcessor() {
@@ -71,6 +67,7 @@ public abstract class AbstractListenerWriteFlushProcessor<T> implements Processo
 
 	/**
 	 * Create an instance with the given log prefix.
+	 *
 	 * @since 5.1
 	 */
 	public AbstractListenerWriteFlushProcessor(String logPrefix) {
@@ -81,6 +78,7 @@ public abstract class AbstractListenerWriteFlushProcessor<T> implements Processo
 
 	/**
 	 * Create an instance with the given log prefix.
+	 *
 	 * @since 5.1
 	 */
 	public String getLogPrefix() {
@@ -241,8 +239,7 @@ public abstract class AbstractListenerWriteFlushProcessor<T> implements Processo
 				if (processor.changeState(this, REQUESTED)) {
 					processor.subscription = subscription;
 					subscription.request(1);
-				}
-				else {
+				} else {
 					super.onSubscribe(processor, subscription);
 				}
 			}
@@ -252,8 +249,7 @@ public abstract class AbstractListenerWriteFlushProcessor<T> implements Processo
 				// This can happen on (very early) completion notification from container..
 				if (processor.changeState(this, COMPLETED)) {
 					processor.resultPublisher.publishComplete();
-				}
-				else {
+				} else {
 					processor.state.get().onComplete(processor);
 				}
 			}
@@ -262,7 +258,7 @@ public abstract class AbstractListenerWriteFlushProcessor<T> implements Processo
 		REQUESTED {
 			@Override
 			public <T> void onNext(AbstractListenerWriteFlushProcessor<T> processor,
-					Publisher<? extends T> currentPublisher) {
+								   Publisher<? extends T> currentPublisher) {
 
 				if (processor.changeState(this, RECEIVED)) {
 					Processor<? super T, Void> currentProcessor = processor.createWriteProcessor();
@@ -270,12 +266,12 @@ public abstract class AbstractListenerWriteFlushProcessor<T> implements Processo
 					currentProcessor.subscribe(new WriteResultSubscriber(processor));
 				}
 			}
+
 			@Override
 			public <T> void onComplete(AbstractListenerWriteFlushProcessor<T> processor) {
 				if (processor.changeState(this, COMPLETED)) {
 					processor.resultPublisher.publishComplete();
-				}
-				else {
+				} else {
 					processor.state.get().onComplete(processor);
 				}
 			}
@@ -286,21 +282,20 @@ public abstract class AbstractListenerWriteFlushProcessor<T> implements Processo
 			public <T> void writeComplete(AbstractListenerWriteFlushProcessor<T> processor) {
 				try {
 					processor.flush();
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					processor.flushingFailed(ex);
 					return;
 				}
 				if (processor.changeState(this, REQUESTED)) {
 					if (processor.subscriberCompleted) {
 						handleSubscriberCompleted(processor);
-					}
-					else {
+					} else {
 						Assert.state(processor.subscription != null, "No subscription");
 						processor.subscription.request(1);
 					}
 				}
 			}
+
 			@Override
 			public <T> void onComplete(AbstractListenerWriteFlushProcessor<T> processor) {
 				processor.subscriberCompleted = true;
@@ -315,11 +310,9 @@ public abstract class AbstractListenerWriteFlushProcessor<T> implements Processo
 					// Ensure the final flush
 					processor.changeState(State.REQUESTED, State.FLUSHING);
 					processor.flushIfPossible();
-				}
-				else if (processor.changeState(State.REQUESTED, State.COMPLETED)) {
+				} else if (processor.changeState(State.REQUESTED, State.COMPLETED)) {
 					processor.resultPublisher.publishComplete();
-				}
-				else {
+				} else {
 					processor.state.get().onComplete(processor);
 				}
 			}
@@ -330,22 +323,22 @@ public abstract class AbstractListenerWriteFlushProcessor<T> implements Processo
 			public <T> void onFlushPossible(AbstractListenerWriteFlushProcessor<T> processor) {
 				try {
 					processor.flush();
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					processor.flushingFailed(ex);
 					return;
 				}
 				if (processor.changeState(this, COMPLETED)) {
 					processor.resultPublisher.publishComplete();
-				}
-				else {
+				} else {
 					processor.state.get().onComplete(processor);
 				}
 			}
+
 			@Override
 			public <T> void onNext(AbstractListenerWriteFlushProcessor<T> proc, Publisher<? extends T> pub) {
 				// ignore
 			}
+
 			@Override
 			public <T> void onComplete(AbstractListenerWriteFlushProcessor<T> processor) {
 				// ignore
@@ -357,10 +350,12 @@ public abstract class AbstractListenerWriteFlushProcessor<T> implements Processo
 			public <T> void onNext(AbstractListenerWriteFlushProcessor<T> proc, Publisher<? extends T> pub) {
 				// ignore
 			}
+
 			@Override
 			public <T> void onError(AbstractListenerWriteFlushProcessor<T> processor, Throwable t) {
 				// ignore
 			}
+
 			@Override
 			public <T> void onComplete(AbstractListenerWriteFlushProcessor<T> processor) {
 				// ignore
@@ -379,8 +374,7 @@ public abstract class AbstractListenerWriteFlushProcessor<T> implements Processo
 		public <T> void onError(AbstractListenerWriteFlushProcessor<T> processor, Throwable ex) {
 			if (processor.changeState(this, COMPLETED)) {
 				processor.resultPublisher.publishError(ex);
-			}
-			else {
+			} else {
 				processor.state.get().onError(processor, ex);
 			}
 		}

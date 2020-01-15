@@ -15,15 +15,14 @@
  */
 package org.springframework.core;
 
-import java.lang.reflect.Method;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.util.ReflectionUtils;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import java.lang.reflect.Method;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Tests for StandardReflectionParameterNameDiscoverer
@@ -40,7 +39,7 @@ public class StandardReflectionParameterNameDiscoverTests {
 
 	@Test
 	public void getParameterNamesOnInterface() {
-		Method method = ReflectionUtils.findMethod(MessageService.class,"sendMessage", String.class);
+		Method method = ReflectionUtils.findMethod(MessageService.class, "sendMessage", String.class);
 		String[] actualParams = parameterNameDiscoverer.getParameterNames(method);
 		assertThat(actualParams, is(new String[]{"message"}));
 	}

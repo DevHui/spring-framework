@@ -16,13 +16,13 @@
 
 package org.springframework.context.annotation;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.springframework.beans.factory.config.BeanDefinition;
 
 /**
  * Indicates the 'role' hint for a given bean.
@@ -40,11 +40,11 @@ import org.springframework.beans.factory.config.BeanDefinition;
  * is different than that of the @{@link Lazy} annotation, for example.
  *
  * @author Chris Beams
- * @since 3.1
  * @see BeanDefinition#ROLE_APPLICATION
  * @see BeanDefinition#ROLE_INFRASTRUCTURE
  * @see BeanDefinition#ROLE_SUPPORT
  * @see Bean
+ * @since 3.1
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -53,6 +53,7 @@ public @interface Role {
 
 	/**
 	 * Set the role hint for the associated bean.
+	 *
 	 * @see BeanDefinition#ROLE_APPLICATION
 	 * @see BeanDefinition#ROLE_INFRASTRUCTURE
 	 * @see BeanDefinition#ROLE_SUPPORT

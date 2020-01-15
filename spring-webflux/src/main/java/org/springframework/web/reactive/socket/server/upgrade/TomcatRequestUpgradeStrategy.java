@@ -16,19 +16,7 @@
 
 package org.springframework.web.reactive.socket.server.upgrade;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.function.Supplier;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.websocket.Endpoint;
-import javax.websocket.server.ServerContainer;
-
 import org.apache.tomcat.websocket.server.WsServerContainer;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.server.reactive.AbstractServerHttpRequest;
 import org.springframework.http.server.reactive.AbstractServerHttpResponse;
@@ -44,6 +32,16 @@ import org.springframework.web.reactive.socket.adapter.StandardWebSocketHandlerA
 import org.springframework.web.reactive.socket.adapter.TomcatWebSocketSession;
 import org.springframework.web.reactive.socket.server.RequestUpgradeStrategy;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.websocket.Endpoint;
+import javax.websocket.server.ServerContainer;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.function.Supplier;
 
 /**
  * A {@link RequestUpgradeStrategy} for use with Tomcat.
@@ -72,6 +70,32 @@ public class TomcatRequestUpgradeStrategy implements RequestUpgradeStrategy {
 	@Nullable
 	private WsServerContainer serverContainer;
 
+	private static HttpServletRequest getNativeRequest(ServerHttpRequest request) {
+		if (request instanceof AbstractServerHttpRequest) {
+			return ((AbstractServerHttpRequest) request).getNativeRequest();
+		} else if (request instanceof ServerHttpRequestDecorator) {
+			return getNativeRequest(((ServerHttpRequestDecorator) request).getDelegate());
+		} else {
+			throw new IllegalArgumentException(
+					"Couldn't find HttpServletRequest in " + request.getClass().getName());
+		}
+	}
+
+	private static HttpServletResponse getNativeResponse(ServerHttpResponse response) {
+		if (response instanceof AbstractServerHttpResponse) {
+			return ((AbstractServerHttpResponse) response).getNativeResponse();
+		} else if (response instanceof ServerHttpResponseDecorator) {
+			return getNativeResponse(((ServerHttpResponseDecorator) response).getDelegate());
+		} else {
+			throw new IllegalArgumentException(
+					"Couldn't find HttpServletResponse in " + response.getClass().getName());
+		}
+	}
+
+	@Nullable
+	public Long getAsyncSendTimeout() {
+		return this.asyncSendTimeout;
+	}
 
 	/**
 	 * Exposes the underlying config option on
@@ -82,8 +106,8 @@ public class TomcatRequestUpgradeStrategy implements RequestUpgradeStrategy {
 	}
 
 	@Nullable
-	public Long getAsyncSendTimeout() {
-		return this.asyncSendTimeout;
+	public Long getMaxSessionIdleTimeout() {
+		return this.maxSessionIdleTimeout;
 	}
 
 	/**
@@ -95,8 +119,8 @@ public class TomcatRequestUpgradeStrategy implements RequestUpgradeStrategy {
 	}
 
 	@Nullable
-	public Long getMaxSessionIdleTimeout() {
-		return this.maxSessionIdleTimeout;
+	public Integer getMaxTextMessageBufferSize() {
+		return this.maxTextMessageBufferSize;
 	}
 
 	/**
@@ -108,8 +132,8 @@ public class TomcatRequestUpgradeStrategy implements RequestUpgradeStrategy {
 	}
 
 	@Nullable
-	public Integer getMaxTextMessageBufferSize() {
-		return this.maxTextMessageBufferSize;
+	public Integer getMaxBinaryMessageBufferSize() {
+		return this.maxBinaryMessageBufferSize;
 	}
 
 	/**
@@ -120,15 +144,9 @@ public class TomcatRequestUpgradeStrategy implements RequestUpgradeStrategy {
 		this.maxBinaryMessageBufferSize = bufferSize;
 	}
 
-	@Nullable
-	public Integer getMaxBinaryMessageBufferSize() {
-		return this.maxBinaryMessageBufferSize;
-	}
-
-
 	@Override
 	public Mono<Void> upgrade(ServerWebExchange exchange, WebSocketHandler handler,
-			@Nullable String subProtocol, Supplier<HandshakeInfo> handshakeInfoFactory){
+							  @Nullable String subProtocol, Supplier<HandshakeInfo> handshakeInfoFactory) {
 
 		ServerHttpRequest request = exchange.getRequest();
 		ServerHttpResponse response = exchange.getResponse();
@@ -150,38 +168,11 @@ public class TomcatRequestUpgradeStrategy implements RequestUpgradeStrategy {
 		try {
 			WsServerContainer container = getContainer(servletRequest);
 			container.doUpgrade(servletRequest, servletResponse, config, Collections.emptyMap());
-		}
-		catch (ServletException | IOException ex) {
+		} catch (ServletException | IOException ex) {
 			return Mono.error(ex);
 		}
 
 		return Mono.empty();
-	}
-
-	private static HttpServletRequest getNativeRequest(ServerHttpRequest request) {
-		if (request instanceof AbstractServerHttpRequest) {
-			return ((AbstractServerHttpRequest) request).getNativeRequest();
-		}
-		else if (request instanceof ServerHttpRequestDecorator) {
-			return getNativeRequest(((ServerHttpRequestDecorator) request).getDelegate());
-		}
-		else {
-			throw new IllegalArgumentException(
-					"Couldn't find HttpServletRequest in " + request.getClass().getName());
-		}
-	}
-
-	private static HttpServletResponse getNativeResponse(ServerHttpResponse response) {
-		if (response instanceof AbstractServerHttpResponse) {
-			return ((AbstractServerHttpResponse) response).getNativeResponse();
-		}
-		else if (response instanceof ServerHttpResponseDecorator) {
-			return getNativeResponse(((ServerHttpResponseDecorator) response).getDelegate());
-		}
-		else {
-			throw new IllegalArgumentException(
-					"Couldn't find HttpServletResponse in " + response.getClass().getName());
-		}
 	}
 
 	private WsServerContainer getContainer(HttpServletRequest request) {

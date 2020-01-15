@@ -16,18 +16,21 @@
 
 package org.springframework.http;
 
+import org.junit.Test;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-import org.junit.Test;
-
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.DefaultConversionService;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Arjen Poutsma
@@ -236,7 +239,7 @@ public class MediaTypeTests {
 		Comparator<MediaType> comp = MediaType.SPECIFICITY_COMPARATOR;
 
 		// equal
-		assertEquals("Invalid comparison result", 0, comp.compare(audioBasic,audioBasic));
+		assertEquals("Invalid comparison result", 0, comp.compare(audioBasic, audioBasic));
 		assertEquals("Invalid comparison result", 0, comp.compare(audio, audio));
 		assertEquals("Invalid comparison result", 0, comp.compare(audio07, audio07));
 		assertEquals("Invalid comparison result", 0, comp.compare(audio03, audio03));
@@ -340,7 +343,7 @@ public class MediaTypeTests {
 		Comparator<MediaType> comp = MediaType.QUALITY_VALUE_COMPARATOR;
 
 		// equal
-		assertEquals("Invalid comparison result", 0, comp.compare(audioBasic,audioBasic));
+		assertEquals("Invalid comparison result", 0, comp.compare(audioBasic, audioBasic));
 		assertEquals("Invalid comparison result", 0, comp.compare(audio, audio));
 		assertEquals("Invalid comparison result", 0, comp.compare(audio07, audio07));
 		assertEquals("Invalid comparison result", 0, comp.compare(audio03, audio03));

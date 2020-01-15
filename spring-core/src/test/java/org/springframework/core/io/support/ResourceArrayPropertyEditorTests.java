@@ -16,14 +16,15 @@
 
 package org.springframework.core.io.support;
 
-import java.beans.PropertyEditor;
-
 import org.junit.Test;
-
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
 
-import static org.junit.Assert.*;
+import java.beans.PropertyEditor;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Dave Syer
@@ -61,8 +62,7 @@ public class ResourceArrayPropertyEditorTests {
 			editor.setAsText("${test.prop}");
 			Resource[] resources = (Resource[]) editor.getValue();
 			assertEquals("foo", resources[0].getFilename());
-		}
-		finally {
+		} finally {
 			System.getProperties().remove("test.prop");
 		}
 	}
@@ -75,8 +75,7 @@ public class ResourceArrayPropertyEditorTests {
 		System.setProperty("test.prop", "foo");
 		try {
 			editor.setAsText("${test.prop}-${bar}");
-		}
-		finally {
+		} finally {
 			System.getProperties().remove("test.prop");
 		}
 	}

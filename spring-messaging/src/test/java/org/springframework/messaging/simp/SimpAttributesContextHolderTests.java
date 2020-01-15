@@ -16,21 +16,24 @@
 
 package org.springframework.messaging.simp;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.messaging.support.MessageBuilder;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.startsWith;
 
 /**
  * Unit tests for
@@ -41,11 +44,9 @@ import static org.hamcrest.Matchers.*;
  */
 public class SimpAttributesContextHolderTests {
 
-	private SimpAttributes simpAttributes;
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-
+	private SimpAttributes simpAttributes;
 
 	@Before
 	public void setUp() {

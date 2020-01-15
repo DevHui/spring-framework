@@ -17,7 +17,6 @@
 package org.springframework.context.support;
 
 import org.junit.Test;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -36,7 +35,9 @@ import org.springframework.core.PriorityOrdered;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.Assert;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests the interaction between {@link ApplicationContext} implementations and
@@ -160,12 +161,11 @@ public class BeanFactoryPostProcessorTests {
 	public static class TestBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 		public String initValue;
+		public boolean wasCalled = false;
 
 		public void setInitValue(String initValue) {
 			this.initValue = initValue;
 		}
-
-		public boolean wasCalled = false;
 
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
@@ -265,12 +265,12 @@ public class BeanFactoryPostProcessorTests {
 
 		private ListeningBean listeningBean;
 
-		public void setListeningBean(ListeningBean listeningBean) {
-			this.listeningBean = listeningBean;
-		}
-
 		public ListeningBean getListeningBean() {
 			return listeningBean;
+		}
+
+		public void setListeningBean(ListeningBean listeningBean) {
+			this.listeningBean = listeningBean;
 		}
 
 		@Override

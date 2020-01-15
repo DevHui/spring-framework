@@ -16,16 +16,15 @@
 
 package org.springframework.cache.jcache;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
-import javax.cache.CacheManager;
-import javax.cache.Caching;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManager;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.cache.CacheManager;
+import javax.cache.Caching;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 /**
  * {@link org.springframework.cache.CacheManager} implementation
@@ -57,17 +56,10 @@ public class JCacheCacheManager extends AbstractTransactionSupportingCacheManage
 	/**
 	 * Create a new {@code JCacheCacheManager} for the given backing JCache
 	 * {@link CacheManager javax.cache.CacheManager}.
+	 *
 	 * @param cacheManager the backing JCache {@code javax.cache.CacheManager}
 	 */
 	public JCacheCacheManager(CacheManager cacheManager) {
-		this.cacheManager = cacheManager;
-	}
-
-
-	/**
-	 * Set the backing JCache {@link CacheManager javax.cache.CacheManager}.
-	 */
-	public void setCacheManager(@Nullable CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
 	}
 
@@ -80,13 +72,10 @@ public class JCacheCacheManager extends AbstractTransactionSupportingCacheManage
 	}
 
 	/**
-	 * Specify whether to accept and convert {@code null} values for all caches
-	 * in this cache manager.
-	 * <p>Default is "true", despite JSR-107 itself not supporting {@code null} values.
-	 * An internal holder object will be used to store user-level {@code null}s.
+	 * Set the backing JCache {@link CacheManager javax.cache.CacheManager}.
 	 */
-	public void setAllowNullValues(boolean allowNullValues) {
-		this.allowNullValues = allowNullValues;
+	public void setCacheManager(@Nullable CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
 	}
 
 	/**
@@ -95,6 +84,16 @@ public class JCacheCacheManager extends AbstractTransactionSupportingCacheManage
 	 */
 	public boolean isAllowNullValues() {
 		return this.allowNullValues;
+	}
+
+	/**
+	 * Specify whether to accept and convert {@code null} values for all caches
+	 * in this cache manager.
+	 * <p>Default is "true", despite JSR-107 itself not supporting {@code null} values.
+	 * An internal holder object will be used to store user-level {@code null}s.
+	 */
+	public void setAllowNullValues(boolean allowNullValues) {
+		this.allowNullValues = allowNullValues;
 	}
 
 	@Override

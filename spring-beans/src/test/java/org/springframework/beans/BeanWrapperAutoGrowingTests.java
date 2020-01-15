@@ -16,14 +16,19 @@
 
 package org.springframework.beans;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Keith Donald
@@ -127,8 +132,7 @@ public class BeanWrapperAutoGrowingTests {
 		try {
 			assertNotNull(wrapper.getPropertyValue("list[4]"));
 			fail("Should have thrown InvalidPropertyException");
-		}
-		catch (InvalidPropertyException ex) {
+		} catch (InvalidPropertyException ex) {
 			// expected
 			assertTrue(ex.getRootCause() instanceof IndexOutOfBoundsException);
 		}

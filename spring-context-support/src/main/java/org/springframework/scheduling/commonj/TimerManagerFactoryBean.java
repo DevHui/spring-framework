@@ -16,19 +16,17 @@
 
 package org.springframework.scheduling.commonj;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.naming.NamingException;
-
 import commonj.timers.Timer;
 import commonj.timers.TimerManager;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.Lifecycle;
 import org.springframework.lang.Nullable;
+
+import javax.naming.NamingException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * {@link org.springframework.beans.factory.FactoryBean} that retrieves a
@@ -48,10 +46,10 @@ import org.springframework.lang.Nullable;
  * instantiates a new Job for each execution.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see ScheduledTimerListener
  * @see commonj.timers.TimerManager
  * @see commonj.timers.TimerListener
+ * @since 2.0
  * @deprecated as of 5.1, in favor of EE 7's
  * {@link org.springframework.scheduling.concurrent.DefaultManagedTaskScheduler}
  */
@@ -59,16 +57,15 @@ import org.springframework.lang.Nullable;
 public class TimerManagerFactoryBean extends TimerManagerAccessor
 		implements FactoryBean<TimerManager>, InitializingBean, DisposableBean, Lifecycle {
 
+	private final List<Timer> timers = new LinkedList<>();
 	@Nullable
 	private ScheduledTimerListener[] scheduledTimerListeners;
-
-	private final List<Timer> timers = new LinkedList<>();
-
 
 	/**
 	 * Register a list of ScheduledTimerListener objects with the TimerManager
 	 * that this FactoryBean creates. Depending on each ScheduledTimerListener's settings,
 	 * it will be registered via one of TimerManager's schedule methods.
+	 *
 	 * @see commonj.timers.TimerManager#schedule(commonj.timers.TimerListener, long)
 	 * @see commonj.timers.TimerManager#schedule(commonj.timers.TimerListener, long, long)
 	 * @see commonj.timers.TimerManager#scheduleAtFixedRate(commonj.timers.TimerListener, long, long)
@@ -92,13 +89,11 @@ public class TimerManagerFactoryBean extends TimerManagerAccessor
 				Timer timer;
 				if (scheduledTask.isOneTimeTask()) {
 					timer = timerManager.schedule(scheduledTask.getTimerListener(), scheduledTask.getDelay());
-				}
-				else {
+				} else {
 					if (scheduledTask.isFixedRate()) {
 						timer = timerManager.scheduleAtFixedRate(
 								scheduledTask.getTimerListener(), scheduledTask.getDelay(), scheduledTask.getPeriod());
-					}
-					else {
+					} else {
 						timer = timerManager.schedule(
 								scheduledTask.getTimerListener(), scheduledTask.getDelay(), scheduledTask.getPeriod());
 					}
@@ -138,6 +133,7 @@ public class TimerManagerFactoryBean extends TimerManagerAccessor
 	/**
 	 * Cancels all statically registered Timers on shutdown,
 	 * and stops the underlying TimerManager (if not shared).
+	 *
 	 * @see commonj.timers.Timer#cancel()
 	 * @see commonj.timers.TimerManager#stop()
 	 */
@@ -147,8 +143,7 @@ public class TimerManagerFactoryBean extends TimerManagerAccessor
 		for (Timer timer : this.timers) {
 			try {
 				timer.cancel();
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				logger.debug("Could not cancel CommonJ Timer", ex);
 			}
 		}

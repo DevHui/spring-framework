@@ -16,17 +16,10 @@
 
 package org.springframework.format.datetime;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.TypeDescriptor;
@@ -36,8 +29,16 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.DataBinder;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Phillip Webb
@@ -251,29 +252,21 @@ public class DateFormattingTests {
 	@SuppressWarnings("unused")
 	private static class SimpleDateBean {
 
-		private Long millis;
-
-		private Long millisAnnotated;
-
-		@DateTimeFormat(style="S-")
-		private Calendar calendarAnnotated;
-
-		@DateTimeFormat(style="S-")
-		private Date dateAnnotated;
-
-		@DateTimeFormat(pattern="M/d/yy h:mm")
-		private Date dateAnnotatedPattern;
-
-		@DateTimeFormat(iso=ISO.DATE)
-		private Date isoDate;
-
-		@DateTimeFormat(iso=ISO.TIME)
-		private Date isoTime;
-
-		@DateTimeFormat(iso=ISO.DATE_TIME)
-		private Date isoDateTime;
-
 		private final List<SimpleDateBean> children = new ArrayList<>();
+		private Long millis;
+		private Long millisAnnotated;
+		@DateTimeFormat(style = "S-")
+		private Calendar calendarAnnotated;
+		@DateTimeFormat(style = "S-")
+		private Date dateAnnotated;
+		@DateTimeFormat(pattern = "M/d/yy h:mm")
+		private Date dateAnnotatedPattern;
+		@DateTimeFormat(iso = ISO.DATE)
+		private Date isoDate;
+		@DateTimeFormat(iso = ISO.TIME)
+		private Date isoTime;
+		@DateTimeFormat(iso = ISO.DATE_TIME)
+		private Date isoDateTime;
 
 		public Long getMillis() {
 			return millis;
@@ -283,12 +276,12 @@ public class DateFormattingTests {
 			this.millis = millis;
 		}
 
-		@DateTimeFormat(style="S-")
+		@DateTimeFormat(style = "S-")
 		public Long getMillisAnnotated() {
 			return millisAnnotated;
 		}
 
-		public void setMillisAnnotated(@DateTimeFormat(style="S-") Long millisAnnotated) {
+		public void setMillisAnnotated(@DateTimeFormat(style = "S-") Long millisAnnotated) {
 			this.millisAnnotated = millisAnnotated;
 		}
 

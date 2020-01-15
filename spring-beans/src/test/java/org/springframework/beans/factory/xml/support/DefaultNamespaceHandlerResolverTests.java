@@ -17,12 +17,13 @@
 package org.springframework.beans.factory.xml.support;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.xml.DefaultNamespaceHandlerResolver;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.UtilNamespaceHandler;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * Unit and integration tests for the {@link DefaultNamespaceHandlerResolver} class.
@@ -54,8 +55,7 @@ public class DefaultNamespaceHandlerResolverTests {
 		try {
 			new DefaultNamespaceHandlerResolver(getClass().getClassLoader(), mappingPath);
 			// pass
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			fail("Non-existent handler classes must be ignored: " + ex);
 		}
 	}

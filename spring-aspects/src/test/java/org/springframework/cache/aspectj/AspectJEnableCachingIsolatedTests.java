@@ -19,7 +19,6 @@ package org.springframework.cache.aspectj;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.CacheTestUtils;
@@ -43,7 +42,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Stephane Nicoll
@@ -91,8 +92,7 @@ public class AspectJEnableCachingIsolatedTests {
 	public void multipleCacheManagerBeans() {
 		try {
 			load(MultiCacheManagerConfig.class);
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertTrue(ex.getMessage().contains("bean of type CacheManager"));
 		}
 	}
@@ -106,8 +106,7 @@ public class AspectJEnableCachingIsolatedTests {
 	public void multipleCachingConfigurers() {
 		try {
 			load(MultiCacheManagerConfigurer.class, EnableCachingConfig.class);
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			Throwable root = ex.getRootCause();
 			assertTrue(root instanceof IllegalStateException);
 			assertTrue(ex.getMessage().contains("implementations of CachingConfigurer"));
@@ -118,8 +117,7 @@ public class AspectJEnableCachingIsolatedTests {
 	public void noCacheManagerBeans() {
 		try {
 			load(EmptyConfig.class);
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertTrue(ex.getMessage().contains("no bean of type CacheManager"));
 		}
 	}

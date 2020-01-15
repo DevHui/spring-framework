@@ -16,19 +16,20 @@
 
 package org.springframework.messaging.core;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.ExecutorSubscribableChannel;
 import org.springframework.messaging.support.GenericMessage;
 
-import static org.junit.Assert.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Unit tests for {@link AbstractDestinationResolvingMessagingTemplate}.

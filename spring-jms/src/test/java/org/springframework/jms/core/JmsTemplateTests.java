@@ -16,27 +16,8 @@
 
 package org.springframework.jms.core;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.TemporaryQueue;
-import javax.jms.TextMessage;
-import javax.naming.Context;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.jms.InvalidClientIDException;
 import org.springframework.jms.InvalidDestinationException;
 import org.springframework.jms.InvalidSelectorException;
@@ -61,8 +42,32 @@ import org.springframework.jndi.JndiTemplate;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.TemporaryQueue;
+import javax.jms.TextMessage;
+import javax.naming.Context;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.reset;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.willThrow;
 
 /**
  * Unit tests for the JmsTemplate implemented using JMS 1.1.
@@ -73,12 +78,9 @@ import static org.mockito.BDDMockito.*;
  */
 public class JmsTemplateTests {
 
-	private Context jndiContext;
-
-	private ConnectionFactory connectionFactory;
-
 	protected Connection connection;
-
+	private Context jndiContext;
+	private ConnectionFactory connectionFactory;
 	private Session session;
 
 	private Destination queue;
@@ -247,8 +249,7 @@ public class JmsTemplateTests {
 			synch.beforeCompletion();
 			synch.afterCommit();
 			synch.afterCompletion(TransactionSynchronization.STATUS_UNKNOWN);
-		}
-		finally {
+		} finally {
 			TransactionSynchronizationManager.clearSynchronization();
 			scf.destroy();
 		}
@@ -334,6 +335,7 @@ public class JmsTemplateTests {
 	/**
 	 * Common method for testing a send method that uses the MessageCreator
 	 * callback but with different QOS options.
+	 *
 	 * @param ignoreQOS test using default QOS options.
 	 */
 	private void doTestSendDestination(
@@ -348,8 +350,7 @@ public class JmsTemplateTests {
 		if (useDefaultDestination) {
 			if (explicitDestination) {
 				template.setDefaultDestination(this.queue);
-			}
-			else {
+			} else {
 				template.setDefaultDestinationName(destinationName);
 			}
 		}
@@ -375,8 +376,7 @@ public class JmsTemplateTests {
 					return session.createTextMessage("just testing");
 				}
 			});
-		}
-		else {
+		} else {
 			if (explicitDestination) {
 				template.send(this.queue, new MessageCreator() {
 					@Override
@@ -384,8 +384,7 @@ public class JmsTemplateTests {
 						return session.createTextMessage("just testing");
 					}
 				});
-			}
-			else {
+			} else {
 				template.send(destinationName, new MessageCreator() {
 					@Override
 					public Message createMessage(Session session) throws JMSException {
@@ -406,8 +405,7 @@ public class JmsTemplateTests {
 
 		if (ignoreQOS) {
 			verify(messageProducer).send(textMessage);
-		}
-		else {
+		} else {
 			verify(messageProducer).send(textMessage, this.qosSettings.getDeliveryMode(),
 					this.qosSettings.getPriority(), this.qosSettings.getTimeToLive());
 		}
@@ -538,8 +536,7 @@ public class JmsTemplateTests {
 		if (useDefaultDestination) {
 			if (explicitDestination) {
 				template.setDefaultDestination(this.queue);
-			}
-			else {
+			} else {
 				template.setDefaultDestinationName(destinationName);
 			}
 		}
@@ -568,11 +565,9 @@ public class JmsTemplateTests {
 
 		if (timeout == JmsTemplate.RECEIVE_TIMEOUT_NO_WAIT) {
 			given(messageConsumer.receiveNoWait()).willReturn(textMessage);
-		}
-		else if (timeout == JmsTemplate.RECEIVE_TIMEOUT_INDEFINITE_WAIT) {
+		} else if (timeout == JmsTemplate.RECEIVE_TIMEOUT_INDEFINITE_WAIT) {
 			given(messageConsumer.receive()).willReturn(textMessage);
-		}
-		else {
+		} else {
 			given(messageConsumer.receive(timeout)).willReturn(textMessage);
 		}
 
@@ -583,30 +578,25 @@ public class JmsTemplateTests {
 			if (testConverter) {
 				textFromMessage = (String)
 						(messageSelector ? template.receiveSelectedAndConvert(selectorString) :
-						template.receiveAndConvert());
-			}
-			else {
+								template.receiveAndConvert());
+			} else {
 				message = (messageSelector ? template.receiveSelected(selectorString) : template.receive());
 			}
-		}
-		else if (explicitDestination) {
+		} else if (explicitDestination) {
 			if (testConverter) {
 				textFromMessage = (String)
 						(messageSelector ? template.receiveSelectedAndConvert(this.queue, selectorString) :
-						template.receiveAndConvert(this.queue));
-			}
-			else {
+								template.receiveAndConvert(this.queue));
+			} else {
 				message = (messageSelector ? template.receiveSelected(this.queue, selectorString) :
 						template.receive(this.queue));
 			}
-		}
-		else {
+		} else {
 			if (testConverter) {
 				textFromMessage = (String)
 						(messageSelector ? template.receiveSelectedAndConvert(destinationName, selectorString) :
-						template.receiveAndConvert(destinationName));
-			}
-			else {
+								template.receiveAndConvert(destinationName));
+			} else {
 				message = (messageSelector ? template.receiveSelected(destinationName, selectorString) :
 						template.receive(destinationName));
 			}
@@ -614,8 +604,7 @@ public class JmsTemplateTests {
 
 		if (testConverter) {
 			assertEquals("Message text should be equal", "Hello World!", textFromMessage);
-		}
-		else {
+		} else {
 			assertEquals("Messages should refer to the same object", message, textMessage);
 		}
 
@@ -661,8 +650,7 @@ public class JmsTemplateTests {
 		if (useDefaultDestination) {
 			if (explicitDestination) {
 				template.setDefaultDestination(this.queue);
-			}
-			else {
+			} else {
 				template.setDefaultDestinationName(destinationName);
 			}
 		}
@@ -685,22 +673,18 @@ public class JmsTemplateTests {
 		TextMessage reply = mock(TextMessage.class);
 		if (timeout == JmsTemplate.RECEIVE_TIMEOUT_NO_WAIT) {
 			given(messageConsumer.receiveNoWait()).willReturn(reply);
-		}
-		else if (timeout == JmsTemplate.RECEIVE_TIMEOUT_INDEFINITE_WAIT) {
+		} else if (timeout == JmsTemplate.RECEIVE_TIMEOUT_INDEFINITE_WAIT) {
 			given(messageConsumer.receive()).willReturn(reply);
-		}
-		else {
+		} else {
 			given(messageConsumer.receive(timeout)).willReturn(reply);
 		}
 
 		Message message = null;
 		if (useDefaultDestination) {
 			message = template.sendAndReceive(messageCreator);
-		}
-		else if (explicitDestination) {
+		} else if (explicitDestination) {
 			message = template.sendAndReceive(this.queue, messageCreator);
-		}
-		else {
+		} else {
 			message = template.sendAndReceive(destinationName, messageCreator);
 		}
 
@@ -797,8 +781,7 @@ public class JmsTemplateTests {
 		try {
 			template.convertAndSend(this.queue, s);
 			fail("Should have thrown JmsException");
-		}
-		catch (JmsException wrappedEx) {
+		} catch (JmsException wrappedEx) {
 			// expected
 			assertEquals(thrownExceptionClass, wrappedEx.getClass());
 			assertEquals(original, wrappedEx.getCause());

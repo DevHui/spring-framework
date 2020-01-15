@@ -20,14 +20,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 import static org.springframework.http.HttpStatus.*;
 
 /**
@@ -36,6 +37,13 @@ import static org.springframework.http.HttpStatus.*;
  */
 @RunWith(Parameterized.class)
 public class DefaultResponseErrorHandlerHttpStatusTests {
+
+	private final DefaultResponseErrorHandler handler = new DefaultResponseErrorHandler();
+	private final ClientHttpResponse response = mock(ClientHttpResponse.class);
+	@Parameterized.Parameter
+	public HttpStatus httpStatus;
+	@Parameterized.Parameter(1)
+	public Class<? extends Throwable> expectedExceptionClass;
 
 	@Parameters(name = "error: [{0}], exception: [{1}]")
 	public static Object[][] errorCodes() {
@@ -61,17 +69,6 @@ public class DefaultResponseErrorHandlerHttpStatusTests {
 		};
 	}
 
-	@Parameterized.Parameter
-	public HttpStatus httpStatus;
-
-	@Parameterized.Parameter(1)
-	public Class<? extends Throwable> expectedExceptionClass;
-
-	private final DefaultResponseErrorHandler handler = new DefaultResponseErrorHandler();
-
-	private final ClientHttpResponse response = mock(ClientHttpResponse.class);
-
-
 	@Test
 	public void hasErrorTrue() throws Exception {
 		given(this.response.getRawStatusCode()).willReturn(this.httpStatus.value());
@@ -89,8 +86,7 @@ public class DefaultResponseErrorHandlerHttpStatusTests {
 		try {
 			this.handler.handleError(this.response);
 			fail("expected " + this.expectedExceptionClass.getSimpleName());
-		}
-		catch (HttpStatusCodeException ex) {
+		} catch (HttpStatusCodeException ex) {
 			assertEquals("Expected " + this.expectedExceptionClass.getSimpleName(),
 					this.expectedExceptionClass, ex.getClass());
 		}

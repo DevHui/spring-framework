@@ -16,18 +16,17 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -106,8 +105,7 @@ public class DefaultClientResponseBuilderTests {
 		try {
 			result.statusCode();
 			fail("Expected IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 	}

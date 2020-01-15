@@ -16,18 +16,21 @@
 
 package org.springframework.test.context.hierarchies.web;
 
-import javax.servlet.ServletContext;
-
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.Assert.*;
+import javax.servlet.ServletContext;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sam Brannen
@@ -80,9 +83,9 @@ public class DispatcherWacRootWacEarTests extends RootWacEarTests {
 		assertSame(dispatcherServletContext, rootServletContext);
 
 		assertSame(parent,
-			rootServletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE));
+				rootServletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE));
 		assertSame(parent,
-			dispatcherServletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE));
+				dispatcherServletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE));
 
 		assertEquals("ear", ear);
 		assertEquals("root", root);

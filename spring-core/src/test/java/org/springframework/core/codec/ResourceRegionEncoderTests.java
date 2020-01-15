@@ -16,17 +16,9 @@
 
 package org.springframework.core.codec;
 
-import java.util.Collections;
-import java.util.function.Consumer;
-
 import org.junit.After;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
-import reactor.core.publisher.BaseSubscriber;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -37,15 +29,25 @@ import org.springframework.core.io.buffer.support.DataBufferTestUtils;
 import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
+import reactor.core.publisher.BaseSubscriber;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static java.nio.charset.StandardCharsets.*;
-import static org.junit.Assert.*;
+import java.util.Collections;
+import java.util.function.Consumer;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test cases for {@link ResourceRegionEncoder} class.
+ *
  * @author Brian Clozel
  */
-public class ResourceRegionEncoderTests  {
+public class ResourceRegionEncoderTests {
 
 	private ResourceRegionEncoder encoder = new ResourceRegionEncoder();
 

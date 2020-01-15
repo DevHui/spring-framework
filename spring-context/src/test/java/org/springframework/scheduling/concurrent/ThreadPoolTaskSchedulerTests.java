@@ -16,6 +16,12 @@
 
 package org.springframework.scheduling.concurrent;
 
+import org.junit.Test;
+import org.springframework.core.task.AsyncListenableTaskExecutor;
+import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.TriggerContext;
+import org.springframework.util.ErrorHandler;
+
 import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -24,14 +30,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-
-import org.springframework.core.task.AsyncListenableTaskExecutor;
-import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.TriggerContext;
-import org.springframework.util.ErrorHandler;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Mark Fisher
@@ -101,8 +103,7 @@ public class ThreadPoolTaskSchedulerTests extends AbstractSchedulingTaskExecutor
 		Future<?> future = scheduler.schedule(task, new Date());
 		try {
 			future.get(1000, TimeUnit.MILLISECONDS);
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			assertTrue(future.isDone());
 			throw ex;
 		}
@@ -153,8 +154,7 @@ public class ThreadPoolTaskSchedulerTests extends AbstractSchedulingTaskExecutor
 	private void await(CountDownLatch latch) {
 		try {
 			latch.await(1000, TimeUnit.MILLISECONDS);
-		}
-		catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 			throw new IllegalStateException(ex);
 		}
 		assertEquals("latch did not count down,", 0, latch.getCount());

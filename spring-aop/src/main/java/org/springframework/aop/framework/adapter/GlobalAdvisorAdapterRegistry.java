@@ -26,14 +26,14 @@ package org.springframework.aop.framework.adapter;
  */
 public final class GlobalAdvisorAdapterRegistry {
 
-	private GlobalAdvisorAdapterRegistry() {
-	}
-
-
 	/**
 	 * Keep track of a single instance so we can return it to classes that request it.
 	 */
 	private static AdvisorAdapterRegistry instance = new DefaultAdvisorAdapterRegistry();
+
+
+	private GlobalAdvisorAdapterRegistry() {
+	}
 
 	/**
 	 * Return the singleton {@link DefaultAdvisorAdapterRegistry} instance.

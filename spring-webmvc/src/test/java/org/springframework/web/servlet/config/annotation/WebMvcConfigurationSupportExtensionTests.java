@@ -16,16 +16,9 @@
 
 package org.springframework.web.servlet.config.annotation;
 
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.convert.converter.Converter;
@@ -86,13 +79,19 @@ import org.springframework.web.servlet.view.ViewResolverComposite;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.util.UrlPathHelper;
 
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.MapperFeature.DEFAULT_VIEW_INCLUSION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.http.MediaType.APPLICATION_ATOM_XML;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_XML;
@@ -100,7 +99,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML;
 /**
  * A test fixture with a sub-class of {@link WebMvcConfigurationSupport} that also
  * implements the various {@link WebMvcConfigurer} extension points.
- *
+ * <p>
  * The former doesn't implement the latter but the two must have compatible
  * callback method signatures to support moving from simple to advanced
  * configuration -- i.e. dropping @EnableWebMvc + WebMvcConfigurer and extending
@@ -215,11 +214,11 @@ public class WebMvcConfigurationSupportExtensionTests {
 
 		// Custom argument resolvers and return value handlers
 		List<HandlerMethodArgumentResolver> argResolvers =
-			(List<HandlerMethodArgumentResolver>) fieldAccessor.getPropertyValue("customArgumentResolvers");
+				(List<HandlerMethodArgumentResolver>) fieldAccessor.getPropertyValue("customArgumentResolvers");
 		assertEquals(1, argResolvers.size());
 
 		List<HandlerMethodReturnValueHandler> handlers =
-			(List<HandlerMethodReturnValueHandler>) fieldAccessor.getPropertyValue("customReturnValueHandlers");
+				(List<HandlerMethodReturnValueHandler>) fieldAccessor.getPropertyValue("customReturnValueHandlers");
 		assertEquals(1, handlers.size());
 
 		// Async support options
@@ -310,12 +309,12 @@ public class WebMvcConfigurationSupportExtensionTests {
 		assertFalse((Boolean) accessor.getPropertyValue("useNotAcceptableStatusCode"));
 		assertNotNull(accessor.getPropertyValue("contentNegotiationManager"));
 
-		List<View> defaultViews = (List<View>)accessor.getPropertyValue("defaultViews");
+		List<View> defaultViews = (List<View>) accessor.getPropertyValue("defaultViews");
 		assertNotNull(defaultViews);
 		assertEquals(1, defaultViews.size());
 		assertEquals(MappingJackson2JsonView.class, defaultViews.get(0).getClass());
 
-		viewResolvers = (List<ViewResolver>)accessor.getPropertyValue("viewResolvers");
+		viewResolvers = (List<ViewResolver>) accessor.getPropertyValue("viewResolvers");
 		assertNotNull(viewResolvers);
 		assertEquals(1, viewResolvers.size());
 		assertEquals(InternalResourceViewResolver.class, viewResolvers.get(0).getClass());
@@ -337,6 +336,16 @@ public class WebMvcConfigurationSupportExtensionTests {
 
 		@RequestMapping("/")
 		public void handle() {
+		}
+	}
+
+	@RestController
+	@RequestMapping("/user")
+	static class UserController {
+
+		@GetMapping("/{id}")
+		public Principal getUser() {
+			return mock(Principal.class);
 		}
 	}
 
@@ -376,6 +385,7 @@ public class WebMvcConfigurationSupportExtensionTests {
 				public void validate(@Nullable Object target, Errors errors) {
 					errors.reject("invalid");
 				}
+
 				@Override
 				public boolean supports(Class<?> clazz) {
 					return true;
@@ -391,8 +401,10 @@ public class WebMvcConfigurationSupportExtensionTests {
 		@Override
 		public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
 			configurer.setDefaultTimeout(2500).setTaskExecutor(new ConcurrentTaskExecutor())
-				.registerCallableInterceptors(new CallableProcessingInterceptor() { })
-				.registerDeferredResultInterceptors(new DeferredResultProcessingInterceptor() {});
+					.registerCallableInterceptors(new CallableProcessingInterceptor() {
+					})
+					.registerDeferredResultInterceptors(new DeferredResultProcessingInterceptor() {
+					});
 		}
 
 		@Override
@@ -433,7 +445,7 @@ public class WebMvcConfigurationSupportExtensionTests {
 			return new DefaultMessageCodesResolver() {
 				@Override
 				public String[] resolveMessageCodes(String errorCode, String objectName) {
-					return new String[] { "custom." + errorCode };
+					return new String[]{"custom." + errorCode};
 				}
 			};
 		}
@@ -468,19 +480,10 @@ public class WebMvcConfigurationSupportExtensionTests {
 
 	}
 
-	private class TestPathHelper extends UrlPathHelper {}
+	private class TestPathHelper extends UrlPathHelper {
+	}
 
-	private class TestPathMatcher extends AntPathMatcher {}
-
-
-	@RestController
-	@RequestMapping("/user")
-	static class UserController {
-
-		@GetMapping("/{id}")
-		public Principal getUser() {
-			return mock(Principal.class);
-		}
+	private class TestPathMatcher extends AntPathMatcher {
 	}
 
 }

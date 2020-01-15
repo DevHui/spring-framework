@@ -16,10 +16,7 @@
 
 package org.springframework.web.servlet.mvc.annotation;
 
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -30,6 +27,8 @@ import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.method.ControllerAdviceBean;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 

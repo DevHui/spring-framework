@@ -16,12 +16,10 @@
 
 package org.springframework.transaction.jta;
 
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.UserTransaction;
-
+import com.ibm.wsspi.uow.UOWAction;
+import com.ibm.wsspi.uow.UOWException;
+import com.ibm.wsspi.uow.UOWManager;
 import org.junit.Test;
-
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.tests.mock.jndi.ExpectedLookupTemplate;
 import org.springframework.transaction.IllegalTransactionStateException;
@@ -33,12 +31,18 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import com.ibm.wsspi.uow.UOWAction;
-import com.ibm.wsspi.uow.UOWException;
-import com.ibm.wsspi.uow.UOWManager;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.UserTransaction;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Juergen Hoeller
@@ -70,7 +74,7 @@ public class WebSphereUowTransactionManagerTests {
 	@Test
 	public void uowManagerAndUserTransactionFoundInJndi() throws Exception {
 		UserTransaction ut = mock(UserTransaction.class);
-		given(ut.getStatus()).willReturn( Status.STATUS_NO_TRANSACTION, Status.STATUS_ACTIVE, Status.STATUS_ACTIVE);
+		given(ut.getStatus()).willReturn(Status.STATUS_NO_TRANSACTION, Status.STATUS_ACTIVE, Status.STATUS_ACTIVE);
 
 		MockUOWManager manager = new MockUOWManager();
 		ExpectedLookupTemplate jndiTemplate = new ExpectedLookupTemplate();
@@ -112,8 +116,7 @@ public class WebSphereUowTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown IllegalTransactionStateException");
-		}
-		catch (IllegalTransactionStateException ex) {
+		} catch (IllegalTransactionStateException ex) {
 			// expected
 		}
 	}
@@ -191,8 +194,7 @@ public class WebSphereUowTransactionManagerTests {
 					assertTrue(TransactionSynchronizationManager.isSynchronizationActive());
 					assertFalse(TransactionSynchronizationManager.isActualTransactionActive());
 					assertTrue(TransactionSynchronizationManager.isCurrentTransactionReadOnly());
-				}
-				else {
+				} else {
 					assertFalse(TransactionSynchronizationManager.isSynchronizationActive());
 					assertFalse(TransactionSynchronizationManager.isActualTransactionActive());
 					assertFalse(TransactionSynchronizationManager.isCurrentTransactionReadOnly());
@@ -284,8 +286,7 @@ public class WebSphereUowTransactionManagerTests {
 					assertTrue(TransactionSynchronizationManager.isSynchronizationActive());
 					assertTrue(TransactionSynchronizationManager.isActualTransactionActive());
 					assertTrue(TransactionSynchronizationManager.isCurrentTransactionReadOnly());
-				}
-				else {
+				} else {
 					assertFalse(TransactionSynchronizationManager.isSynchronizationActive());
 					assertFalse(TransactionSynchronizationManager.isActualTransactionActive());
 					assertFalse(TransactionSynchronizationManager.isCurrentTransactionReadOnly());
@@ -363,8 +364,7 @@ public class WebSphereUowTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown TransactionSystemException");
-		}
-		catch (TransactionSystemException ex) {
+		} catch (TransactionSystemException ex) {
 			// expected
 			assertTrue(ex.getCause() instanceof UOWException);
 			assertSame(rex, ex.getRootCause());
@@ -399,8 +399,7 @@ public class WebSphereUowTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown OptimisticLockingFailureException");
-		}
-		catch (OptimisticLockingFailureException ex) {
+		} catch (OptimisticLockingFailureException ex) {
 			// expected
 		}
 
@@ -492,8 +491,7 @@ public class WebSphereUowTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown IllegalTransactionStateException");
-		}
-		catch (IllegalTransactionStateException ex) {
+		} catch (IllegalTransactionStateException ex) {
 			// expected
 		}
 	}
@@ -514,8 +512,7 @@ public class WebSphereUowTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown NestedTransactionNotSupportedException");
-		}
-		catch (NestedTransactionNotSupportedException ex) {
+		} catch (NestedTransactionNotSupportedException ex) {
 			// expected
 		}
 	}
@@ -625,8 +622,7 @@ public class WebSphereUowTransactionManagerTests {
 		assertEquals(0, manager.getUOWTimeout());
 		if (propagationBehavior == TransactionDefinition.PROPAGATION_REQUIRES_NEW) {
 			assertEquals(UOWManager.UOW_TYPE_GLOBAL_TRANSACTION, manager.getUOWType());
-		}
-		else {
+		} else {
 			assertEquals(UOWManager.UOW_TYPE_LOCAL_TRANSACTION, manager.getUOWType());
 		}
 		assertFalse(manager.getJoined());

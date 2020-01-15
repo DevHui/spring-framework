@@ -16,22 +16,9 @@
 
 package org.springframework.messaging.handler;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.target.EmptyTargetSource;
 import org.springframework.cglib.core.SpringNamingPolicy;
@@ -54,7 +41,19 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
-import static java.util.stream.Collectors.*;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * Convenience class to resolve method parameters from hints.
@@ -72,7 +71,7 @@ import static java.util.stream.Collectors.*;
  * typed and explicit about what is being tested.
  *
  * <h2>1. Declared Return Type</h2>
- *
+ * <p>
  * When testing return types it's likely to have many methods with a unique
  * return type, possibly with or without an annotation.
  *
@@ -96,7 +95,7 @@ import static java.util.stream.Collectors.*;
  * </pre>
  *
  * <h2>2. Method Arguments</h2>
- *
+ * <p>
  * When testing method arguments it's more likely to have one or a small number
  * of methods with a wide array of argument types and parameter annotations.
  *
@@ -112,7 +111,7 @@ import static java.util.stream.Collectors.*;
  * </pre>
  *
  * <h3>3. Mock Handler Method Invocation</h3>
- *
+ * <p>
  * Locate a method by invoking it through a proxy of the target handler:
  *
  * <pre>
@@ -142,6 +141,65 @@ public class ResolvableMethod {
 		this.method = method;
 	}
 
+	private static ResolvableType toResolvableType(Class<?> type, Class<?>... generics) {
+		return (ObjectUtils.isEmpty(generics) ? ResolvableType.forClass(type) :
+				ResolvableType.forClassWithGenerics(type, generics));
+	}
+
+	private static ResolvableType toResolvableType(Class<?> type, ResolvableType generic, ResolvableType... generics) {
+		ResolvableType[] genericTypes = new ResolvableType[generics.length + 1];
+		genericTypes[0] = generic;
+		System.arraycopy(generics, 0, genericTypes, 1, generics.length);
+		return ResolvableType.forClassWithGenerics(type, genericTypes);
+	}
+
+	/**
+	 * Create a {@code ResolvableMethod} builder for the given handler class.
+	 */
+	public static <T> Builder<T> on(Class<T> objectClass) {
+		return new Builder<>(objectClass);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> T initProxy(Class<?> type, MethodInvocationInterceptor interceptor) {
+		Assert.notNull(type, "'type' must not be null");
+		if (type.isInterface()) {
+			ProxyFactory factory = new ProxyFactory(EmptyTargetSource.INSTANCE);
+			factory.addInterface(type);
+			factory.addInterface(Supplier.class);
+			factory.addAdvice(interceptor);
+			return (T) factory.getProxy();
+		} else {
+			Enhancer enhancer = new Enhancer();
+			enhancer.setSuperclass(type);
+			enhancer.setInterfaces(new Class<?>[]{Supplier.class});
+			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
+			enhancer.setCallbackType(org.springframework.cglib.proxy.MethodInterceptor.class);
+
+			Class<?> proxyClass = enhancer.createClass();
+			Object proxy = null;
+
+			if (objenesis.isWorthTrying()) {
+				try {
+					proxy = objenesis.newInstance(proxyClass, enhancer.getUseCache());
+				} catch (ObjenesisException ex) {
+					logger.debug("Objenesis failed, falling back to default constructor", ex);
+				}
+			}
+
+			if (proxy == null) {
+				try {
+					proxy = ReflectionUtils.accessibleConstructor(proxyClass).newInstance();
+				} catch (Throwable ex) {
+					throw new IllegalStateException("Unable to instantiate proxy " +
+							"via both Objenesis and default constructor fails as well", ex);
+				}
+			}
+
+			((Factory) proxy).setCallbacks(new Callback[]{interceptor});
+			return (T) proxy;
+		}
+	}
 
 	/**
 	 * Return the resolved method.
@@ -159,7 +217,8 @@ public class ResolvableMethod {
 
 	/**
 	 * Find a unique argument matching the given type.
-	 * @param type the expected type
+	 *
+	 * @param type     the expected type
 	 * @param generics optional array of generic types
 	 */
 	public MethodParameter arg(Class<?> type, Class<?>... generics) {
@@ -168,8 +227,9 @@ public class ResolvableMethod {
 
 	/**
 	 * Find a unique argument matching the given type.
-	 * @param type the expected type
-	 * @param generic at least one generic type
+	 *
+	 * @param type     the expected type
+	 * @param generic  at least one generic type
 	 * @param generics optional array of generic types
 	 */
 	public MethodParameter arg(Class<?> type, ResolvableType generic, ResolvableType... generics) {
@@ -178,6 +238,7 @@ public class ResolvableMethod {
 
 	/**
 	 * Find a unique argument matching the given type.
+	 *
 	 * @param type the expected type
 	 */
 	public MethodParameter arg(ResolvableType type) {
@@ -199,6 +260,7 @@ public class ResolvableMethod {
 
 	/**
 	 * Filter on method arguments that don't have the given annotation type(s).
+	 *
 	 * @param annotationTypes the annotation types
 	 */
 	@SafeVarargs
@@ -206,12 +268,10 @@ public class ResolvableMethod {
 		return new ArgResolver().annotNotPresent(annotationTypes);
 	}
 
-
 	@Override
 	public String toString() {
 		return "ResolvableMethod=" + formatMethod();
 	}
-
 
 	private String formatMethod() {
 		return (method().getName() +
@@ -236,27 +296,6 @@ public class ResolvableMethod {
 		});
 		return annotation.annotationType().getName() + map;
 	}
-
-	private static ResolvableType toResolvableType(Class<?> type, Class<?>... generics) {
-		return (ObjectUtils.isEmpty(generics) ? ResolvableType.forClass(type) :
-				ResolvableType.forClassWithGenerics(type, generics));
-	}
-
-	private static ResolvableType toResolvableType(Class<?> type, ResolvableType generic, ResolvableType... generics) {
-		ResolvableType[] genericTypes = new ResolvableType[generics.length + 1];
-		genericTypes[0] = generic;
-		System.arraycopy(generics, 0, genericTypes, 1, generics.length);
-		return ResolvableType.forClassWithGenerics(type, genericTypes);
-	}
-
-
-	/**
-	 * Create a {@code ResolvableMethod} builder for the given handler class.
-	 */
-	public static <T> Builder<T> on(Class<T> objectClass) {
-		return new Builder<>(objectClass);
-	}
-
 
 	/**
 	 * Builder for {@code ResolvableMethod}.
@@ -307,6 +346,7 @@ public class ResolvableMethod {
 
 		/**
 		 * Filter on methods annotated with the given annotation type.
+		 *
 		 * @see #annot(Predicate[])
 		 */
 		@SafeVarargs
@@ -328,8 +368,7 @@ public class ResolvableMethod {
 				if (annotationTypes.length != 0) {
 					return Arrays.stream(annotationTypes).noneMatch(annotType ->
 							AnnotatedElementUtils.findMergedAnnotation(method, annotType) != null);
-				}
-				else {
+				} else {
 					return method.getAnnotations().length == 0;
 				}
 			});
@@ -338,8 +377,9 @@ public class ResolvableMethod {
 
 		/**
 		 * Filter on methods returning the given type.
+		 *
 		 * @param returnType the return type
-		 * @param generics optional array of generic types
+		 * @param generics   optional array of generic types
 		 */
 		public Builder<T> returning(Class<?> returnType, Class<?>... generics) {
 			return returning(toResolvableType(returnType, generics));
@@ -347,9 +387,10 @@ public class ResolvableMethod {
 
 		/**
 		 * Filter on methods returning the given type with generics.
+		 *
 		 * @param returnType the return type
-		 * @param generic at least one generic type
-		 * @param generics optional extra generic types
+		 * @param generic    at least one generic type
+		 * @param generics   optional extra generic types
 		 */
 		public Builder<T> returning(Class<?> returnType, ResolvableType generic, ResolvableType... generics) {
 			return returning(toResolvableType(returnType, generic, generics));
@@ -357,6 +398,7 @@ public class ResolvableMethod {
 
 		/**
 		 * Filter on methods returning the given type.
+		 *
 		 * @param returnType the return type
 		 */
 		public Builder<T> returning(ResolvableType returnType) {
@@ -371,6 +413,7 @@ public class ResolvableMethod {
 		 * resolve to a unique, single method.
 		 * <p>See additional resolveXxx shortcut methods going directly to
 		 * {@link Method} or return type parameter.
+		 *
 		 * @throws IllegalStateException for no match or multiple matches
 		 */
 		public ResolvableMethod build() {
@@ -427,8 +470,9 @@ public class ResolvableMethod {
 		/**
 		 * Shortcut to the unique return type equivalent to:
 		 * <p>{@code returning(returnType).build().returnType()}
+		 *
 		 * @param returnType the return type
-		 * @param generics optional array of generic types
+		 * @param generics   optional array of generic types
 		 */
 		public MethodParameter resolveReturnType(Class<?> returnType, Class<?>... generics) {
 			return returning(returnType, generics).build().returnType();
@@ -437,12 +481,13 @@ public class ResolvableMethod {
 		/**
 		 * Shortcut to the unique return type equivalent to:
 		 * <p>{@code returning(returnType).build().returnType()}
+		 *
 		 * @param returnType the return type
-		 * @param generic at least one generic type
-		 * @param generics optional extra generic types
+		 * @param generic    at least one generic type
+		 * @param generics   optional extra generic types
 		 */
 		public MethodParameter resolveReturnType(Class<?> returnType, ResolvableType generic,
-				ResolvableType... generics) {
+												 ResolvableType... generics) {
 
 			return returning(returnType, generic, generics).build().returnType();
 		}
@@ -464,7 +509,6 @@ public class ResolvableMethod {
 					.collect(joining(",\n\t\t", "[\n\t\t", "\n\t]"));
 		}
 	}
-
 
 	/**
 	 * Predicate with a descriptive label.
@@ -508,6 +552,33 @@ public class ResolvableMethod {
 		}
 	}
 
+	private static class MethodInvocationInterceptor
+			implements org.springframework.cglib.proxy.MethodInterceptor, MethodInterceptor {
+
+		private Method invokedMethod;
+
+
+		Method getInvokedMethod() {
+			return this.invokedMethod;
+		}
+
+		@Override
+		@Nullable
+		public Object intercept(Object object, Method method, Object[] args, MethodProxy proxy) {
+			if (ReflectionUtils.isObjectMethod(method)) {
+				return ReflectionUtils.invokeMethod(method, object, args);
+			} else {
+				this.invokedMethod = method;
+				return null;
+			}
+		}
+
+		@Override
+		@Nullable
+		public Object invoke(org.aopalliance.intercept.MethodInvocation inv) throws Throwable {
+			return intercept(inv.getThis(), inv.getMethod(), inv.getArguments(), null);
+		}
+	}
 
 	/**
 	 * Resolver for method arguments.
@@ -533,6 +604,7 @@ public class ResolvableMethod {
 
 		/**
 		 * Filter on method arguments that have the given annotations.
+		 *
 		 * @param annotationTypes the annotation types
 		 * @see #annot(Predicate[])
 		 */
@@ -544,6 +616,7 @@ public class ResolvableMethod {
 
 		/**
 		 * Filter on method arguments that don't have the given annotations.
+		 *
 		 * @param annotationTypes the annotation types
 		 */
 		@SafeVarargs
@@ -557,6 +630,7 @@ public class ResolvableMethod {
 
 		/**
 		 * Resolve the argument also matching to the given type.
+		 *
 		 * @param type the expected type
 		 */
 		public MethodParameter arg(Class<?> type, Class<?>... generics) {
@@ -565,6 +639,7 @@ public class ResolvableMethod {
 
 		/**
 		 * Resolve the argument also matching to the given type.
+		 *
 		 * @param type the expected type
 		 */
 		public MethodParameter arg(Class<?> type, ResolvableType generic, ResolvableType... generics) {
@@ -573,6 +648,7 @@ public class ResolvableMethod {
 
 		/**
 		 * Resolve the argument also matching to the given type.
+		 *
 		 * @param type the expected type
 		 */
 		public MethodParameter arg(ResolvableType type) {
@@ -603,81 +679,6 @@ public class ResolvableMethod {
 				}
 			}
 			return matches;
-		}
-	}
-
-
-	private static class MethodInvocationInterceptor
-			implements org.springframework.cglib.proxy.MethodInterceptor, MethodInterceptor {
-
-		private Method invokedMethod;
-
-
-		Method getInvokedMethod() {
-			return this.invokedMethod;
-		}
-
-		@Override
-		@Nullable
-		public Object intercept(Object object, Method method, Object[] args, MethodProxy proxy) {
-			if (ReflectionUtils.isObjectMethod(method)) {
-				return ReflectionUtils.invokeMethod(method, object, args);
-			}
-			else {
-				this.invokedMethod = method;
-				return null;
-			}
-		}
-
-		@Override
-		@Nullable
-		public Object invoke(org.aopalliance.intercept.MethodInvocation inv) throws Throwable {
-			return intercept(inv.getThis(), inv.getMethod(), inv.getArguments(), null);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T> T initProxy(Class<?> type, MethodInvocationInterceptor interceptor) {
-		Assert.notNull(type, "'type' must not be null");
-		if (type.isInterface()) {
-			ProxyFactory factory = new ProxyFactory(EmptyTargetSource.INSTANCE);
-			factory.addInterface(type);
-			factory.addInterface(Supplier.class);
-			factory.addAdvice(interceptor);
-			return (T) factory.getProxy();
-		}
-
-		else {
-			Enhancer enhancer = new Enhancer();
-			enhancer.setSuperclass(type);
-			enhancer.setInterfaces(new Class<?>[] {Supplier.class});
-			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
-			enhancer.setCallbackType(org.springframework.cglib.proxy.MethodInterceptor.class);
-
-			Class<?> proxyClass = enhancer.createClass();
-			Object proxy = null;
-
-			if (objenesis.isWorthTrying()) {
-				try {
-					proxy = objenesis.newInstance(proxyClass, enhancer.getUseCache());
-				}
-				catch (ObjenesisException ex) {
-					logger.debug("Objenesis failed, falling back to default constructor", ex);
-				}
-			}
-
-			if (proxy == null) {
-				try {
-					proxy = ReflectionUtils.accessibleConstructor(proxyClass).newInstance();
-				}
-				catch (Throwable ex) {
-					throw new IllegalStateException("Unable to instantiate proxy " +
-							"via both Objenesis and default constructor fails as well", ex);
-				}
-			}
-
-			((Factory) proxy).setCallbacks(new Callback[] {interceptor});
-			return (T) proxy;
 		}
 	}
 

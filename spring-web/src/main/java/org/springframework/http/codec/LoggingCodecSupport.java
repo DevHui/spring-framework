@@ -17,7 +17,6 @@
 package org.springframework.http.codec;
 
 import org.apache.commons.logging.Log;
-
 import org.springframework.http.HttpLogging;
 
 /**
@@ -33,19 +32,10 @@ public class LoggingCodecSupport {
 
 	protected final Log logger = HttpLogging.forLogName(getClass());
 
-	/** Whether to log potentially sensitive info (form data at DEBUG and headers at TRACE). */
-	private boolean enableLoggingRequestDetails = false;
-
-
 	/**
-	 * Whether to log form data at DEBUG level, and headers at TRACE level.
-	 * Both may contain sensitive information.
-	 * <p>By default set to {@code false} so that request details are not shown.
-	 * @param enable whether to enable or not
+	 * Whether to log potentially sensitive info (form data at DEBUG and headers at TRACE).
 	 */
-	public void setEnableLoggingRequestDetails(boolean enable) {
-		this.enableLoggingRequestDetails = enable;
-	}
+	private boolean enableLoggingRequestDetails = false;
 
 	/**
 	 * Whether any logging of values being encoded or decoded is explicitly
@@ -53,6 +43,17 @@ public class LoggingCodecSupport {
 	 */
 	public boolean isEnableLoggingRequestDetails() {
 		return this.enableLoggingRequestDetails;
+	}
+
+	/**
+	 * Whether to log form data at DEBUG level, and headers at TRACE level.
+	 * Both may contain sensitive information.
+	 * <p>By default set to {@code false} so that request details are not shown.
+	 *
+	 * @param enable whether to enable or not
+	 */
+	public void setEnableLoggingRequestDetails(boolean enable) {
+		this.enableLoggingRequestDetails = enable;
 	}
 
 }

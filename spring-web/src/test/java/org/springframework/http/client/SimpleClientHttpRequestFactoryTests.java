@@ -16,13 +16,14 @@
 
 package org.springframework.http.client;
 
-import java.net.HttpURLConnection;
-
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 
-import static org.mockito.Mockito.*;
+import java.net.HttpURLConnection;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Stephane Nicoll

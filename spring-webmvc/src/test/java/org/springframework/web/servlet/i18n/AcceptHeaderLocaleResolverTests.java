@@ -16,18 +16,23 @@
 
 package org.springframework.web.servlet.i18n;
 
+import org.junit.Test;
+import org.springframework.mock.web.test.MockHttpServletRequest;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.junit.Test;
-
-import org.springframework.mock.web.test.MockHttpServletRequest;
-
-import static java.util.Locale.*;
-import static org.junit.Assert.*;
+import static java.util.Locale.CANADA;
+import static java.util.Locale.ENGLISH;
+import static java.util.Locale.GERMAN;
+import static java.util.Locale.GERMANY;
+import static java.util.Locale.JAPAN;
+import static java.util.Locale.JAPANESE;
+import static java.util.Locale.KOREA;
+import static java.util.Locale.UK;
+import static java.util.Locale.US;
 
 /**
  * Unit tests for {@link AcceptHeaderLocaleResolver}.

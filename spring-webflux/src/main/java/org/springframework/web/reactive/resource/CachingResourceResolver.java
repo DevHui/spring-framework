@@ -16,14 +16,6 @@
 
 package org.springframework.web.reactive.resource;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.core.io.Resource;
@@ -31,6 +23,13 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A {@link ResourceResolver} that resolves resources from a {@link Cache} or
@@ -80,12 +79,22 @@ public class CachingResourceResolver extends AbstractResourceResolver {
 	}
 
 	/**
+	 * Return a read-only list with the supported content codings.
+	 *
+	 * @since 5.1
+	 */
+	public List<String> getContentCodings() {
+		return Collections.unmodifiableList(this.contentCodings);
+	}
+
+	/**
 	 * Configure the supported content codings from the
 	 * {@literal "Accept-Encoding"} header for which to cache resource variations.
 	 * <p>The codings configured here are generally expected to match those
 	 * configured on {@link EncodedResourceResolver#setContentCodings(List)}.
 	 * <p>By default this property is set to {@literal ["br", "gzip"]} based on
 	 * the value of {@link EncodedResourceResolver#DEFAULT_CODINGS}.
+	 *
 	 * @param codings one or more supported content codings
 	 * @since 5.1
 	 */
@@ -95,18 +104,9 @@ public class CachingResourceResolver extends AbstractResourceResolver {
 		this.contentCodings.addAll(codings);
 	}
 
-	/**
-	 * Return a read-only list with the supported content codings.
-	 * @since 5.1
-	 */
-	public List<String> getContentCodings() {
-		return Collections.unmodifiableList(this.contentCodings);
-	}
-
-
 	@Override
 	protected Mono<Resource> resolveResourceInternal(@Nullable ServerWebExchange exchange,
-			String requestPath, List<? extends Resource> locations, ResourceResolverChain chain) {
+													 String requestPath, List<? extends Resource> locations, ResourceResolverChain chain) {
 
 		String key = computeKey(exchange, requestPath);
 		Resource cachedResource = this.cache.get(key, Resource.class);
@@ -151,7 +151,7 @@ public class CachingResourceResolver extends AbstractResourceResolver {
 
 	@Override
 	protected Mono<String> resolveUrlPathInternal(String resourceUrlPath,
-			List<? extends Resource> locations, ResourceResolverChain chain) {
+												  List<? extends Resource> locations, ResourceResolverChain chain) {
 
 		String key = RESOLVED_URL_PATH_CACHE_KEY_PREFIX + resourceUrlPath;
 		String cachedUrlPath = this.cache.get(key, String.class);

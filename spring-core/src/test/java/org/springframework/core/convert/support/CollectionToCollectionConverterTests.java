@@ -16,6 +16,15 @@
 
 package org.springframework.core.convert.support;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.core.convert.ConverterNotFoundException;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,17 +39,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.core.convert.ConversionFailedException;
-import org.springframework.core.convert.ConverterNotFoundException;
-import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Keith Donald
@@ -49,14 +51,21 @@ import static org.junit.Assert.*;
  */
 public class CollectionToCollectionConverterTests {
 
+	public ArrayList<Integer> scalarListTarget;
+	public List<Integer> emptyListTarget;
+	public LinkedList<Integer> emptyListDifferentTarget;
+	public List<List<List<Integer>>> objectToCollection;
+	public List<String> strings;
+	public List<?> list = Collections.emptyList();
+	public Collection<?> wildcardCollection = Collections.emptyList();
+	public List<Resource> resources;
+	public EnumSet<MyEnum> enumSet;
 	private GenericConversionService conversionService = new GenericConversionService();
-
 
 	@Before
 	public void setUp() {
 		conversionService.addConverter(new CollectionToCollectionConverter(conversionService));
 	}
-
 
 	@Test
 	public void scalarList() throws Exception {
@@ -68,8 +77,7 @@ public class CollectionToCollectionConverterTests {
 		assertTrue(conversionService.canConvert(sourceType, targetType));
 		try {
 			conversionService.convert(list, sourceType, targetType);
-		}
-		catch (ConversionFailedException ex) {
+		} catch (ConversionFailedException ex) {
 			assertTrue(ex.getCause() instanceof ConverterNotFoundException);
 		}
 		conversionService.addConverterFactory(new StringToNumberConverterFactory());
@@ -262,24 +270,7 @@ public class CollectionToCollectionConverterTests {
 	}
 
 
-	public ArrayList<Integer> scalarListTarget;
-
-	public List<Integer> emptyListTarget;
-
-	public LinkedList<Integer> emptyListDifferentTarget;
-
-	public List<List<List<Integer>>> objectToCollection;
-
-	public List<String> strings;
-
-	public List<?> list = Collections.emptyList();
-
-	public Collection<?> wildcardCollection = Collections.emptyList();
-
-	public List<Resource> resources;
-
-	public EnumSet<MyEnum> enumSet;
-
+	public enum MyEnum {A, B, C}
 
 	public static abstract class BaseResource implements Resource {
 
@@ -349,11 +340,7 @@ public class CollectionToCollectionConverterTests {
 		}
 	}
 
-
 	public static class TestResource extends BaseResource {
 	}
-
-
-	public enum MyEnum {A, B, C}
 
 }

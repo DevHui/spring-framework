@@ -16,20 +16,18 @@
 
 package org.springframework.test.web.reactive.server;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
-
-import javax.xml.xpath.XPathExpressionException;
-
 import org.hamcrest.Matcher;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
 import org.springframework.test.util.XpathExpectationsHelper;
 import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
+
+import javax.xml.xpath.XPathExpressionException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * XPath assertions for the {@link WebTestClient}.
@@ -46,7 +44,7 @@ public class XpathAssertions {
 
 
 	XpathAssertions(WebTestClient.BodyContentSpec spec,
-			String expression, @Nullable Map<String, String> namespaces, Object... args) {
+					String expression, @Nullable Map<String, String> namespaces, Object... args) {
 
 		this.bodySpec = spec;
 		this.xpathHelper = initXpathHelper(expression, namespaces, args);
@@ -57,8 +55,7 @@ public class XpathAssertions {
 
 		try {
 			return new XpathExpectationsHelper(expression, namespaces, args);
-		}
-		catch (XPathExpressionException ex) {
+		} catch (XPathExpressionException ex) {
 			throw new AssertionError("XML parsing error", ex);
 		}
 	}
@@ -108,33 +105,37 @@ public class XpathAssertions {
 
 	/**
 	 * Delegates to {@link XpathExpectationsHelper#assertString(byte[], String, Matcher)}.
+	 *
 	 * @since 5.1
 	 */
-	public WebTestClient.BodyContentSpec string(Matcher<? super String> matcher){
+	public WebTestClient.BodyContentSpec string(Matcher<? super String> matcher) {
 		return assertWith(() -> this.xpathHelper.assertString(getContent(), getCharset(), matcher));
 	}
 
 	/**
 	 * Delegates to {@link XpathExpectationsHelper#assertNumber(byte[], String, Matcher)}.
+	 *
 	 * @since 5.1
 	 */
-	public WebTestClient.BodyContentSpec number(Matcher<? super Double> matcher){
+	public WebTestClient.BodyContentSpec number(Matcher<? super Double> matcher) {
 		return assertWith(() -> this.xpathHelper.assertNumber(getContent(), getCharset(), matcher));
 	}
 
 	/**
 	 * Delegates to {@link XpathExpectationsHelper#assertNodeCount(byte[], String, Matcher)}.
+	 *
 	 * @since 5.1
 	 */
-	public WebTestClient.BodyContentSpec nodeCount(Matcher<Integer> matcher){
+	public WebTestClient.BodyContentSpec nodeCount(Matcher<Integer> matcher) {
 		return assertWith(() -> this.xpathHelper.assertNodeCount(getContent(), getCharset(), matcher));
 	}
 
 	/**
 	 * Consume the result of the XPath evaluation as a String.
+	 *
 	 * @since 5.1
 	 */
-	public WebTestClient.BodyContentSpec string(Consumer<String> consumer){
+	public WebTestClient.BodyContentSpec string(Consumer<String> consumer) {
 		return assertWith(() -> {
 			String value = this.xpathHelper.evaluateXpath(getContent(), getCharset(), String.class);
 			consumer.accept(value);
@@ -143,9 +144,10 @@ public class XpathAssertions {
 
 	/**
 	 * Consume the result of the XPath evaluation as a Double.
+	 *
 	 * @since 5.1
 	 */
-	public WebTestClient.BodyContentSpec number(Consumer<Double> consumer){
+	public WebTestClient.BodyContentSpec number(Consumer<Double> consumer) {
 		return assertWith(() -> {
 			Double value = this.xpathHelper.evaluateXpath(getContent(), getCharset(), Double.class);
 			consumer.accept(value);
@@ -154,9 +156,10 @@ public class XpathAssertions {
 
 	/**
 	 * Consume the count of nodes as result of the XPath evaluation.
+	 *
 	 * @since 5.1
 	 */
-	public WebTestClient.BodyContentSpec nodeCount(Consumer<Integer> consumer){
+	public WebTestClient.BodyContentSpec nodeCount(Consumer<Integer> consumer) {
 		return assertWith(() -> {
 			Integer value = this.xpathHelper.evaluateXpath(getContent(), getCharset(), Integer.class);
 			consumer.accept(value);
@@ -166,8 +169,7 @@ public class XpathAssertions {
 	private WebTestClient.BodyContentSpec assertWith(CheckedExceptionTask task) {
 		try {
 			task.run();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new AssertionError("XML parsing error", ex);
 		}
 		return this.bodySpec;

@@ -16,16 +16,7 @@
 
 package org.springframework.web.util;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -35,7 +26,17 @@ import org.springframework.mock.web.test.MockHttpServletResponse;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
-import static org.junit.Assert.*;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Juergen Hoeller
@@ -51,7 +52,7 @@ public class WebUtilsTests {
 		params.put("myKey1", "myValue1");
 		params.put("myKey2_myValue2", "xxx");
 		params.put("myKey3_myValue3.x", "xxx");
-		params.put("myKey4_myValue4.y", new String[] {"yyy"});
+		params.put("myKey4_myValue4.y", new String[]{"yyy"});
 
 		assertNull(WebUtils.findParameterValue(params, "myKey0"));
 		assertEquals("myValue1", WebUtils.findParameterValue(params, "myKey1"));
@@ -190,7 +191,7 @@ public class WebUtilsTests {
 	}
 
 	private void testWithXForwardedHeaders(String serverName, int port, String forwardedProto,
-			String forwardedHost, int forwardedPort, String originHeader) throws Exception {
+										   String forwardedHost, int forwardedPort, String originHeader) throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setServerName(serverName);
@@ -215,7 +216,7 @@ public class WebUtilsTests {
 	}
 
 	private void testWithForwardedHeader(String serverName, int port, String forwardedHeader,
-			String originHeader) throws Exception {
+										 String originHeader) throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setServerName(serverName);

@@ -16,12 +16,6 @@
 
 package org.springframework.web.servlet.view.xml;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JavaType;
@@ -38,15 +32,25 @@ import org.junit.Test;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.ScriptableObject;
-
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.View;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Sebastien Deleuze
@@ -280,7 +284,7 @@ public class MappingJackson2XmlViewTests {
 	}
 
 
-	@JsonSerialize(using=TestBeanSimpleSerializer.class)
+	@JsonSerialize(using = TestBeanSimpleSerializer.class)
 	public static class TestBeanSimpleAnnotated extends TestBeanSimple {
 	}
 
@@ -334,8 +338,7 @@ public class MappingJackson2XmlViewTests {
 		public JsonSerializer<Object> createSerializer(SerializerProvider prov, JavaType type) throws JsonMappingException {
 			if (type.getRawClass() == TestBeanSimple.class) {
 				return new TestBeanSimpleSerializer();
-			}
-			else {
+			} else {
 				return super.createSerializer(prov, type);
 			}
 		}

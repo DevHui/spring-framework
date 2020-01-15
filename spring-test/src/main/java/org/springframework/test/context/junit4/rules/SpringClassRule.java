@@ -16,20 +16,19 @@
 
 package org.springframework.test.context.junit4.rules;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
 import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.junit4.statements.ProfileValueChecker;
 import org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks;
 import org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks;
 import org.springframework.util.Assert;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@code SpringClassRule} is a custom JUnit {@link TestRule} that supports
@@ -76,11 +75,11 @@ import org.springframework.util.Assert;
  *
  * @author Sam Brannen
  * @author Philippe Marschall
- * @since 4.2
  * @see #apply(Statement, Description)
  * @see SpringMethodRule
  * @see org.springframework.test.context.TestContextManager
  * @see org.springframework.test.context.junit4.SpringJUnit4ClassRunner
+ * @since 4.2
  */
 public class SpringClassRule implements TestRule {
 
@@ -91,6 +90,15 @@ public class SpringClassRule implements TestRule {
 	 */
 	private static final Map<Class<?>, TestContextManager> testContextManagerCache = new ConcurrentHashMap<>(64);
 
+	/**
+	 * Get the {@link TestContextManager} associated with the supplied test class.
+	 *
+	 * @param testClass the test class to be managed; never {@code null}
+	 */
+	static TestContextManager getTestContextManager(Class<?> testClass) {
+		Assert.notNull(testClass, "Test Class must not be null");
+		return testContextManagerCache.computeIfAbsent(testClass, TestContextManager::new);
+	}
 
 	/**
 	 * Apply <em>class-level</em> features of the <em>Spring TestContext
@@ -105,7 +113,8 @@ public class SpringClassRule implements TestRule {
 	 * non-matching {@code @IfProfileValue} annotation from running altogether,
 	 * even skipping the execution of {@code beforeTestClass()} methods
 	 * in {@code TestExecutionListeners}.
-	 * @param base the base {@code Statement} that this rule should be applied to
+	 *
+	 * @param base        the base {@code Statement} that this rule should be applied to
 	 * @param description a {@code Description} of the current test execution
 	 * @return a statement that wraps the supplied {@code base} with class-level
 	 * features of the Spring TestContext Framework
@@ -133,6 +142,7 @@ public class SpringClassRule implements TestRule {
 
 	/**
 	 * Wrap the supplied {@link Statement} with a {@code RunBeforeTestClassCallbacks} statement.
+	 *
 	 * @see RunBeforeTestClassCallbacks
 	 */
 	private Statement withBeforeTestClassCallbacks(Statement next, TestContextManager testContextManager) {
@@ -141,6 +151,7 @@ public class SpringClassRule implements TestRule {
 
 	/**
 	 * Wrap the supplied {@link Statement} with a {@code RunAfterTestClassCallbacks} statement.
+	 *
 	 * @see RunAfterTestClassCallbacks
 	 */
 	private Statement withAfterTestClassCallbacks(Statement next, TestContextManager testContextManager) {
@@ -149,6 +160,7 @@ public class SpringClassRule implements TestRule {
 
 	/**
 	 * Wrap the supplied {@link Statement} with a {@code ProfileValueChecker} statement.
+	 *
 	 * @see ProfileValueChecker
 	 */
 	private Statement withProfileValueCheck(Statement next, Class<?> testClass) {
@@ -157,21 +169,12 @@ public class SpringClassRule implements TestRule {
 
 	/**
 	 * Wrap the supplied {@link Statement} with a {@code TestContextManagerCacheEvictor} statement.
+	 *
 	 * @see TestContextManagerCacheEvictor
 	 */
 	private Statement withTestContextManagerCacheEviction(Statement next, Class<?> testClass) {
 		return new TestContextManagerCacheEvictor(next, testClass);
 	}
-
-	/**
-	 * Get the {@link TestContextManager} associated with the supplied test class.
-	 * @param testClass the test class to be managed; never {@code null}
-	 */
-	static TestContextManager getTestContextManager(Class<?> testClass) {
-		Assert.notNull(testClass, "Test Class must not be null");
-		return testContextManagerCache.computeIfAbsent(testClass, TestContextManager::new);
-	}
-
 
 	private static class TestContextManagerCacheEvictor extends Statement {
 
@@ -188,8 +191,7 @@ public class SpringClassRule implements TestRule {
 		public void evaluate() throws Throwable {
 			try {
 				this.next.evaluate();
-			}
-			finally {
+			} finally {
 				testContextManagerCache.remove(this.testClass);
 			}
 		}

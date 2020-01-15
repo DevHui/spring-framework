@@ -19,7 +19,6 @@ package org.springframework.test.web.servlet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
@@ -71,28 +70,28 @@ public class MockMvcReuseTests {
 	public void sessionAttributesAreClearedBetweenInvocations() throws Exception {
 
 		this.mvc.perform(get("/"))
-			.andExpect(content().string(HELLO))
-			.andExpect(request().sessionAttribute(FOO, nullValue()));
+				.andExpect(content().string(HELLO))
+				.andExpect(request().sessionAttribute(FOO, nullValue()));
 
 		this.mvc.perform(get("/").sessionAttr(FOO, BAR))
-			.andExpect(content().string(HELLO))
-			.andExpect(request().sessionAttribute(FOO, BAR));
+				.andExpect(content().string(HELLO))
+				.andExpect(request().sessionAttribute(FOO, BAR));
 
 		this.mvc.perform(get("/"))
-			.andExpect(content().string(HELLO))
-			.andExpect(request().sessionAttribute(FOO, nullValue()));
+				.andExpect(content().string(HELLO))
+				.andExpect(request().sessionAttribute(FOO, nullValue()));
 	}
 
 	@Test
 	public void requestParametersAreClearedBetweenInvocations() throws Exception {
 		this.mvc.perform(get("/"))
-			.andExpect(content().string(HELLO));
+				.andExpect(content().string(HELLO));
 
 		this.mvc.perform(get("/").param(ENIGMA, ""))
-			.andExpect(content().string(ENIGMA));
+				.andExpect(content().string(ENIGMA));
 
 		this.mvc.perform(get("/"))
-			.andExpect(content().string(HELLO));
+				.andExpect(content().string(HELLO));
 	}
 
 

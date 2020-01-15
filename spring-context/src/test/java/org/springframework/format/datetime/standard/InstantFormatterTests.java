@@ -16,13 +16,13 @@
 
 package org.springframework.format.datetime.standard;
 
+import org.junit.Test;
+
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
 import java.util.stream.Stream;
-
-import org.junit.Test;
 
 import static java.time.Instant.MAX;
 import static java.time.Instant.MIN;
@@ -50,8 +50,7 @@ public class InstantFormatterTests {
 				Instant actual = instantFormatter.parse(input, null);
 
 				assertEquals(expected, actual);
-			}
-			catch (ParseException ex) {
+			} catch (ParseException ex) {
 				throw new RuntimeException(ex);
 			}
 		});
@@ -66,8 +65,7 @@ public class InstantFormatterTests {
 				Instant actual = instantFormatter.parse(input, null);
 
 				assertEquals(expected, actual);
-			}
-			catch (ParseException ex) {
+			} catch (ParseException ex) {
 				throw new RuntimeException(ex);
 			}
 		});
@@ -93,7 +91,7 @@ public class InstantFormatterTests {
 
 		Stream<Instant> randomInstantStream(Instant min, Instant max) {
 			return Stream.concat(Stream.of(Instant.now()), // make sure that the data set includes current instant
-				random.longs(min.getEpochSecond(), max.getEpochSecond()).limit(DATA_SET_SIZE).mapToObj(Instant::ofEpochSecond));
+					random.longs(min.getEpochSecond(), max.getEpochSecond()).limit(DATA_SET_SIZE).mapToObj(Instant::ofEpochSecond));
 		}
 	}
 

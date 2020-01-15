@@ -16,14 +16,17 @@
 
 package org.springframework.web.context.request.async;
 
-import java.util.function.Consumer;
-
 import org.junit.Test;
-
 import org.springframework.web.context.request.async.DeferredResult.DeferredResultHandler;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.util.function.Consumer;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * DeferredResult tests.

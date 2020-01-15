@@ -16,23 +16,6 @@
 
 package org.springframework.mock.web.reactive.function.server;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalLong;
-import java.util.concurrent.ConcurrentHashMap;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
@@ -56,6 +39,22 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalLong;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Mock implementation of {@link ServerRequest}.
@@ -86,25 +85,21 @@ public final class MockServerRequest implements ServerRequest {
 
 	@Nullable
 	private final WebSession session;
-
+	@Nullable
+	private final InetSocketAddress remoteAddress;
+	private final List<HttpMessageReader<?>> messageReaders;
+	@Nullable
+	private final ServerWebExchange exchange;
 	@Nullable
 	private Principal principal;
 
-	@Nullable
-	private final InetSocketAddress remoteAddress;
-
-	private final List<HttpMessageReader<?>> messageReaders;
-
-	@Nullable
-	private final ServerWebExchange exchange;
-
 
 	private MockServerRequest(HttpMethod method, URI uri, String contextPath, MockHeaders headers,
-			MultiValueMap<String, HttpCookie> cookies, @Nullable Object body,
-			Map<String, Object> attributes, MultiValueMap<String, String> queryParams,
-			Map<String, String> pathVariables, @Nullable WebSession session, @Nullable Principal principal,
-			@Nullable InetSocketAddress remoteAddress, List<HttpMessageReader<?>> messageReaders,
-			@Nullable ServerWebExchange exchange) {
+							  MultiValueMap<String, HttpCookie> cookies, @Nullable Object body,
+							  Map<String, Object> attributes, MultiValueMap<String, String> queryParams,
+							  Map<String, String> pathVariables, @Nullable WebSession session, @Nullable Principal principal,
+							  @Nullable InetSocketAddress remoteAddress, List<HttpMessageReader<?>> messageReaders,
+							  @Nullable ServerWebExchange exchange) {
 
 		this.method = method;
 		this.uri = uri;
@@ -122,6 +117,9 @@ public final class MockServerRequest implements ServerRequest {
 		this.exchange = exchange;
 	}
 
+	public static Builder builder() {
+		return new BuilderImpl();
+	}
 
 	@Override
 	public HttpMethod method() {
@@ -255,10 +253,6 @@ public final class MockServerRequest implements ServerRequest {
 		return this.exchange;
 	}
 
-	public static Builder builder() {
-		return new BuilderImpl();
-	}
-
 	/**
 	 * Builder for {@link MockServerRequest}.
 	 */
@@ -294,6 +288,7 @@ public final class MockServerRequest implements ServerRequest {
 
 		/**
 		 * Sets the request {@link Principal}.
+		 *
 		 * @deprecated in favor of {@link #principal(Principal)}
 		 */
 		@Deprecated

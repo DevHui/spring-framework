@@ -16,21 +16,23 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Unit tests for
@@ -46,6 +48,9 @@ public class CachingResourceResolverTests {
 
 	private List<Resource> locations;
 
+	private static String resourceKey(String key) {
+		return CachingResourceResolver.RESOLVED_RESOURCE_CACHE_KEY_PREFIX + key;
+	}
 
 	@Before
 	public void setup() {
@@ -60,7 +65,6 @@ public class CachingResourceResolverTests {
 		this.locations = new ArrayList<>();
 		this.locations.add(new ClassPathResource("test/", getClass()));
 	}
-
 
 	@Test
 	public void resolveResourceInternal() {
@@ -124,7 +128,7 @@ public class CachingResourceResolverTests {
 		// 2. Resolve with Accept-Encoding
 
 		request = new MockHttpServletRequest("GET", file);
-		request.addHeader("Accept-Encoding",  "gzip ; a=b  , deflate ,  br  ; c=d ");
+		request.addHeader("Accept-Encoding", "gzip ; a=b  , deflate ,  br  ; c=d ");
 		expected = this.chain.resolveResource(request, file, this.locations);
 
 		cacheKey = resourceKey(file + "+encoding=br,gzip");
@@ -160,15 +164,11 @@ public class CachingResourceResolverTests {
 		this.cache.put(resourceKey("bar.css+encoding=gzip"), gzipped);
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "bar.css");
-		assertSame(resource, this.chain.resolveResource(request,"bar.css", this.locations));
+		assertSame(resource, this.chain.resolveResource(request, "bar.css", this.locations));
 
 		request = new MockHttpServletRequest("GET", "bar.css");
 		request.addHeader("Accept-Encoding", "gzip");
 		assertSame(gzipped, this.chain.resolveResource(request, "bar.css", this.locations));
-	}
-
-	private static String resourceKey(String key) {
-		return CachingResourceResolver.RESOLVED_RESOURCE_CACHE_KEY_PREFIX + key;
 	}
 
 }

@@ -16,6 +16,10 @@
 
 package org.springframework.orm.jpa;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.ParameterMode;
@@ -23,14 +27,14 @@ import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TransactionRequiredException;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.verifyNoMoreInteractions;
+import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.withSettings;
@@ -179,8 +183,7 @@ public class SharedEntityManagerCreatorTests {
 		try {
 			spq.getOutputParameterValue(1);
 			fail("Should have thrown IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 		assertEquals("z", spq.getOutputParameterValue(2));
@@ -215,8 +218,7 @@ public class SharedEntityManagerCreatorTests {
 		try {
 			spq.getOutputParameterValue("b");
 			fail("Should have thrown IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 		assertEquals("z", spq.getOutputParameterValue("c"));

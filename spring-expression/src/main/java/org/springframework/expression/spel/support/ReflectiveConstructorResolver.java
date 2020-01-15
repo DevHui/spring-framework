@@ -16,11 +16,6 @@
 
 package org.springframework.expression.spel.support;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.AccessException;
@@ -30,6 +25,11 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.EvaluationException;
 import org.springframework.expression.TypeConverter;
 import org.springframework.lang.Nullable;
+
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A constructor resolver that uses reflection to locate the constructor that should be invoked.
@@ -83,19 +83,16 @@ public class ReflectiveConstructorResolver implements ConstructorResolver {
 					// or the final parameter
 					// we are supplied does match exactly (it is an array already).
 					matchInfo = ReflectionHelper.compareArgumentsVarargs(paramDescriptors, argumentTypes, typeConverter);
-				}
-				else if (paramTypes.length == argumentTypes.size()) {
+				} else if (paramTypes.length == argumentTypes.size()) {
 					// worth a closer look
 					matchInfo = ReflectionHelper.compareArguments(paramDescriptors, argumentTypes, typeConverter);
 				}
 				if (matchInfo != null) {
 					if (matchInfo.isExactMatch()) {
 						return new ReflectiveConstructorExecutor(ctor);
-					}
-					else if (matchInfo.isCloseMatch()) {
+					} else if (matchInfo.isCloseMatch()) {
 						closeMatch = ctor;
-					}
-					else if (matchInfo.isMatchRequiringConversion()) {
+					} else if (matchInfo.isMatchRequiringConversion()) {
 						matchRequiringConversion = ctor;
 					}
 				}
@@ -103,15 +100,12 @@ public class ReflectiveConstructorResolver implements ConstructorResolver {
 
 			if (closeMatch != null) {
 				return new ReflectiveConstructorExecutor(closeMatch);
-			}
-			else if (matchRequiringConversion != null) {
+			} else if (matchRequiringConversion != null) {
 				return new ReflectiveConstructorExecutor(matchRequiringConversion);
-			}
-			else {
+			} else {
 				return null;
 			}
-		}
-		catch (EvaluationException ex) {
+		} catch (EvaluationException ex) {
 			throw new AccessException("Failed to resolve constructor", ex);
 		}
 	}

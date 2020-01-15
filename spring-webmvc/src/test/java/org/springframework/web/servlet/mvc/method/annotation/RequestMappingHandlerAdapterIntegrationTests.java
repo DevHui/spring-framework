@@ -16,30 +16,10 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.awt.Color;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.security.Principal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.MethodParameter;
@@ -86,7 +66,31 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static org.junit.Assert.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.awt.Color;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * A test fixture with a controller with all supported method signature styles
@@ -143,7 +147,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 
 	@Test
 	public void handle() throws Exception {
-		Class<?>[] parameterTypes = new Class<?>[] {int.class, String.class, String.class, String.class, Map.class,
+		Class<?>[] parameterTypes = new Class<?>[]{int.class, String.class, String.class, String.class, Map.class,
 				Date.class, Map.class, String.class, String.class, TestBean.class, Errors.class, TestBean.class,
 				Color.class, HttpServletRequest.class, HttpServletResponse.class, TestBean.class, TestBean.class,
 				User.class, OtherUser.class, Model.class, UriComponentsBuilder.class};
@@ -224,7 +228,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 
 	@Test
 	public void handleInInterface() throws Exception {
-		Class<?>[] parameterTypes = new Class<?>[] {int.class, String.class, String.class, String.class, Map.class,
+		Class<?>[] parameterTypes = new Class<?>[]{int.class, String.class, String.class, String.class, Map.class,
 				Date.class, Map.class, String.class, String.class, TestBean.class, Errors.class, TestBean.class,
 				Color.class, HttpServletRequest.class, HttpServletResponse.class, TestBean.class, TestBean.class,
 				User.class, OtherUser.class, Model.class, UriComponentsBuilder.class};
@@ -305,7 +309,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 
 	@Test
 	public void handleRequestBody() throws Exception {
-		Class<?>[] parameterTypes = new Class<?>[] {byte[].class};
+		Class<?>[] parameterTypes = new Class<?>[]{byte[].class};
 
 		request.setMethod("POST");
 		request.addHeader("Content-Type", "text/plain; charset=utf-8");
@@ -322,7 +326,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 
 	@Test
 	public void handleAndValidateRequestBody() throws Exception {
-		Class<?>[] parameterTypes = new Class<?>[] {TestBean.class, Errors.class};
+		Class<?>[] parameterTypes = new Class<?>[]{TestBean.class, Errors.class};
 
 		request.addHeader("Content-Type", "text/plain; charset=utf-8");
 		request.setContent("Hello Server".getBytes("UTF-8"));
@@ -338,7 +342,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 
 	@Test
 	public void handleHttpEntity() throws Exception {
-		Class<?>[] parameterTypes = new Class<?>[] {HttpEntity.class};
+		Class<?>[] parameterTypes = new Class<?>[]{HttpEntity.class};
 
 		request.addHeader("Content-Type", "text/plain; charset=utf-8");
 		request.setContent("Hello Server".getBytes("UTF-8"));
@@ -358,7 +362,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 	// SPR-13867
 	@Test
 	public void handleHttpEntityWithCacheControl() throws Exception {
-		Class<?>[] parameterTypes = new Class<?>[] {HttpEntity.class};
+		Class<?>[] parameterTypes = new Class<?>[]{HttpEntity.class};
 		request.addHeader("Content-Type", "text/plain; charset=utf-8");
 		request.setContent("Hello Server".getBytes("UTF-8"));
 
@@ -566,7 +570,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 		}
 
 		public void handleAndValidateRequestPart(@RequestPart @Valid String requestPart,
-				Errors errors, Model model) throws Exception {
+												 Errors errors, Model model) throws Exception {
 
 			model.addAttribute("error count", errors.getErrorCount());
 		}

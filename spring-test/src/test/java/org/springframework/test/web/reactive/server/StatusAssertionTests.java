@@ -16,23 +16,24 @@
 
 package org.springframework.test.web.reactive.server;
 
-import java.net.URI;
-import java.time.Duration;
-
 import org.junit.Test;
-import reactor.core.publisher.MonoProcessor;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.client.reactive.MockClientHttpRequest;
 import org.springframework.mock.http.client.reactive.MockClientHttpResponse;
+import reactor.core.publisher.MonoProcessor;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.net.URI;
+import java.time.Duration;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link StatusAssertions}.
+ *
  * @author Rossen Stoyanchev
  */
 public class StatusAssertionTests {
@@ -48,16 +49,14 @@ public class StatusAssertionTests {
 		try {
 			assertions.isEqualTo(HttpStatus.REQUEST_TIMEOUT);
 			fail("Wrong status expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// Expected
 		}
 
 		try {
 			assertions.isEqualTo(408);
 			fail("Wrong status value expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// Expected
 		}
 	}
@@ -77,8 +76,7 @@ public class StatusAssertionTests {
 		try {
 			assertions.reasonEquals("Request Timeout");
 			fail("Wrong reason expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// Expected
 		}
 	}
@@ -93,8 +91,7 @@ public class StatusAssertionTests {
 		try {
 			assertions.is2xxSuccessful();
 			fail("Wrong series expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// Expected
 		}
 	}
@@ -109,8 +106,7 @@ public class StatusAssertionTests {
 		try {
 			assertions.is5xxServerError();
 			fail("Wrong series expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// Expected
 		}
 	}
@@ -125,8 +121,7 @@ public class StatusAssertionTests {
 		try {
 			assertions.is2xxSuccessful();
 			fail("Wrong series expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// Expected
 		}
 	}
@@ -141,8 +136,7 @@ public class StatusAssertionTests {
 		try {
 			assertions.is2xxSuccessful();
 			fail("Wrong series expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// Expected
 		}
 	}
@@ -157,8 +151,7 @@ public class StatusAssertionTests {
 		try {
 			assertions.is2xxSuccessful();
 			fail("Wrong series expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// Expected
 		}
 	}
@@ -174,8 +167,7 @@ public class StatusAssertionTests {
 		try {
 			assertions.value(equalTo(200));
 			fail("Wrong status expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// Expected
 		}
 	}

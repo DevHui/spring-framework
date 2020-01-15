@@ -16,17 +16,14 @@
 
 package org.springframework.test.context.jdbc;
 
-import java.lang.annotation.Repeatable;
-
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import static org.junit.Assert.*;
+import java.lang.annotation.Repeatable;
 
 /**
  * This is a copy of {@link TransactionalSqlScriptsTests} that verifies proper

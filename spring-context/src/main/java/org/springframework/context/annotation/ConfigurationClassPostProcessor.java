@@ -16,18 +16,8 @@
 
 package org.springframework.context.annotation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -63,6 +53,15 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import static org.springframework.context.annotation.AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR;
 
 /**
@@ -91,27 +90,17 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 
 	private final Log logger = LogFactory.getLog(getClass());
-
+	private final Set<Integer> registriesPostProcessed = new HashSet<>();
+	private final Set<Integer> factoriesPostProcessed = new HashSet<>();
 	private SourceExtractor sourceExtractor = new PassThroughSourceExtractor();
-
 	private ProblemReporter problemReporter = new FailFastProblemReporter();
-
 	@Nullable
 	private Environment environment;
-
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
-
 	@Nullable
 	private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
-
 	private MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory();
-
 	private boolean setMetadataReaderFactoryCalled = false;
-
-	private final Set<Integer> registriesPostProcessed = new HashSet<>();
-
-	private final Set<Integer> factoriesPostProcessed = new HashSet<>();
-
 	@Nullable
 	private ConfigurationClassBeanDefinitionReader reader;
 
@@ -178,9 +167,10 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 * {@code AnnotationConfig*} application contexts or the {@code
 	 * <context:annotation-config>} element. Any bean name generator specified against
 	 * the application context will take precedence over any value set here.
-	 * @since 3.1.1
+	 *
 	 * @see AnnotationConfigApplicationContext#setBeanNameGenerator(BeanNameGenerator)
 	 * @see AnnotationConfigUtils#CONFIGURATION_BEAN_NAME_GENERATOR
+	 * @since 3.1.1
 	 */
 	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		Assert.notNull(beanNameGenerator, "BeanNameGenerator must not be null");
@@ -269,8 +259,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				if (logger.isDebugEnabled()) {
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
 				}
-			}
-			else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
+			} else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
 				configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));
 			}
 		}
@@ -365,6 +354,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 * Post-processes a BeanFactory in search of Configuration class BeanDefinitions;
 	 * any candidates are then enhanced by a {@link ConfigurationClassEnhancer}.
 	 * Candidate status is determined by BeanDefinition attribute metadata.
+	 *
 	 * @see ConfigurationClassEnhancer
 	 */
 	public void enhanceConfigurationClasses(ConfigurableListableBeanFactory beanFactory) {
@@ -375,8 +365,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				if (!(beanDef instanceof AbstractBeanDefinition)) {
 					throw new BeanDefinitionStoreException("Cannot enhance @Configuration bean definition '" +
 							beanName + "' since it is not stored in an AbstractBeanDefinition subclass");
-				}
-				else if (logger.isInfoEnabled() && beanFactory.containsSingleton(beanName)) {
+				} else if (logger.isInfoEnabled() && beanFactory.containsSingleton(beanName)) {
 					logger.info("Cannot enhance @Configuration bean definition '" + beanName +
 							"' since its singleton instance has been created too early. The typical cause " +
 							"is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor " +
@@ -408,8 +397,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 						beanDef.setBeanClass(enhancedClass);
 					}
 				}
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				throw new IllegalStateException("Cannot load configuration class: " + beanDef.getBeanClassName(), ex);
 			}
 		}

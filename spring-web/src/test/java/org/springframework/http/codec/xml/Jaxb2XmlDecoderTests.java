@@ -16,18 +16,7 @@
 
 package org.springframework.http.codec.xml;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.events.XMLEvent;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.AbstractLeakCheckingTestCase;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -39,8 +28,19 @@ import org.springframework.http.codec.xml.jaxb.XmlRootElementWithNameAndNamespac
 import org.springframework.http.codec.xml.jaxb.XmlType;
 import org.springframework.http.codec.xml.jaxb.XmlTypeWithName;
 import org.springframework.http.codec.xml.jaxb.XmlTypeWithNameAndNamespace;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import javax.xml.namespace.QName;
+import javax.xml.stream.events.XMLEvent;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sebastien Deleuze
@@ -71,6 +71,20 @@ public class Jaxb2XmlDecoderTests extends AbstractLeakCheckingTestCase {
 
 	private final XmlEventDecoder xmlEventDecoder = new XmlEventDecoder();
 
+	private static void assertStartElement(XMLEvent event, String expectedLocalName) {
+		assertTrue(event.isStartElement());
+		assertEquals(expectedLocalName, event.asStartElement().getName().getLocalPart());
+	}
+
+	private static void assertEndElement(XMLEvent event, String expectedLocalName) {
+		assertTrue(event.isEndElement());
+		assertEquals(expectedLocalName, event.asEndElement().getName().getLocalPart());
+	}
+
+	private static void assertCharacters(XMLEvent event, String expectedData) {
+		assertTrue(event.isCharacters());
+		assertEquals(expectedData, event.asCharacters().getData());
+	}
 
 	@Test
 	public void canDecode() {
@@ -140,21 +154,6 @@ public class Jaxb2XmlDecoderTests extends AbstractLeakCheckingTestCase {
 				})
 				.expectComplete()
 				.verify();
-	}
-
-	private static void assertStartElement(XMLEvent event, String expectedLocalName) {
-		assertTrue(event.isStartElement());
-		assertEquals(expectedLocalName, event.asStartElement().getName().getLocalPart());
-	}
-
-	private static void assertEndElement(XMLEvent event, String expectedLocalName) {
-		assertTrue(event.isEndElement());
-		assertEquals(expectedLocalName, event.asEndElement().getName().getLocalPart());
-	}
-
-	private static void assertCharacters(XMLEvent event, String expectedData) {
-		assertTrue(event.isCharacters());
-		assertEquals(expectedData, event.asCharacters().getData());
 	}
 
 	@Test

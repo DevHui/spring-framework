@@ -16,37 +16,29 @@
 
 package org.springframework.transaction.jta;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.transaction.Synchronization;
-
 import com.ibm.wsspi.uow.UOWAction;
 import com.ibm.wsspi.uow.UOWActionException;
 import com.ibm.wsspi.uow.UOWException;
 import com.ibm.wsspi.uow.UOWManager;
+
+import javax.transaction.Synchronization;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Juergen Hoeller
  */
 public class MockUOWManager implements UOWManager {
 
-	private int type = UOW_TYPE_GLOBAL_TRANSACTION;
-
-	private boolean joined;
-
-	private int timeout;
-
-	private boolean rollbackOnly;
-
-	private int status = UOW_STATUS_NONE;
-
 	private final Map<Object, Object> resources = new HashMap<>();
-
 	private final List<Synchronization> synchronizations = new LinkedList<>();
-
+	private int type = UOW_TYPE_GLOBAL_TRANSACTION;
+	private boolean joined;
+	private int timeout;
+	private boolean rollbackOnly;
+	private int status = UOW_STATUS_NONE;
 
 	@Override
 	public void runUnderUOW(int type, boolean join, UOWAction action) throws UOWActionException, UOWException {
@@ -56,8 +48,7 @@ public class MockUOWManager implements UOWManager {
 			this.status = UOW_STATUS_ACTIVE;
 			action.run();
 			this.status = (this.rollbackOnly ? UOW_STATUS_ROLLEDBACK : UOW_STATUS_COMMITTED);
-		}
-		catch (Error | RuntimeException ex) {
+		} catch (Error | RuntimeException ex) {
 			this.status = UOW_STATUS_ROLLEDBACK;
 			throw ex;
 		} catch (Exception ex) {
@@ -100,13 +91,13 @@ public class MockUOWManager implements UOWManager {
 		return this.rollbackOnly;
 	}
 
-	public void setUOWStatus(int status) {
-		this.status = status;
-	}
-
 	@Override
 	public int getUOWStatus() {
 		return this.status;
+	}
+
+	public void setUOWStatus(int status) {
+		this.status = status;
 	}
 
 	@Override

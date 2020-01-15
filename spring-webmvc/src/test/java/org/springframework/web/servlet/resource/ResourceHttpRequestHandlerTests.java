@@ -16,18 +16,9 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -43,8 +34,21 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.servlet.HandlerMapping;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link ResourceHttpRequestHandler}.
@@ -285,6 +289,7 @@ public class ResourceHttpRequestHandlerTests {
 			public String getMimeType(String filePath) {
 				return "foo/bar";
 			}
+
 			@Override
 			public String getVirtualServerName() {
 				return "";
@@ -672,11 +677,9 @@ public class ResourceHttpRequestHandlerTests {
 		public String getMimeType(String filePath) {
 			if (filePath.endsWith(".css")) {
 				return "text/css";
-			}
-			else if (filePath.endsWith(".js")) {
+			} else if (filePath.endsWith(".js")) {
 				return "text/javascript";
-			}
-			else {
+			} else {
 				return super.getMimeType(filePath);
 			}
 		}

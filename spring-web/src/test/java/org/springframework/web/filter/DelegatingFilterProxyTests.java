@@ -16,7 +16,13 @@
 
 package org.springframework.web.filter;
 
-import java.io.IOException;
+import org.junit.Test;
+import org.springframework.mock.web.test.MockFilterConfig;
+import org.springframework.mock.web.test.MockHttpServletRequest;
+import org.springframework.mock.web.test.MockHttpServletResponse;
+import org.springframework.mock.web.test.MockServletContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -25,17 +31,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import java.io.IOException;
 
-import org.junit.Test;
-
-import org.springframework.mock.web.test.MockFilterConfig;
-import org.springframework.mock.web.test.MockHttpServletRequest;
-import org.springframework.mock.web.test.MockHttpServletResponse;
-import org.springframework.mock.web.test.MockServletContext;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.StaticWebApplicationContext;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Juergen Hoeller

@@ -16,17 +16,19 @@
 
 package org.springframework.context.annotation;
 
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.aop.interceptor.SimpleTraceInterceptor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests regarding overloading and overriding of bean methods.
@@ -194,7 +196,8 @@ public class BeanMethodPolymorphismTests {
 	@Configuration
 	static class OverridingConfig extends BaseConfig {
 
-		@Bean @Lazy
+		@Bean
+		@Lazy
 		@Override
 		public TestBean testBean() {
 			return new TestBean() {
@@ -214,7 +217,8 @@ public class BeanMethodPolymorphismTests {
 	@Configuration
 	static class NarrowedOverridingConfig extends BaseConfig {
 
-		@Bean @Lazy
+		@Bean
+		@Lazy
 		@Override
 		public ExtendedTestBean testBean() {
 			return new ExtendedTestBean() {
@@ -245,12 +249,14 @@ public class BeanMethodPolymorphismTests {
 	@Configuration
 	static class ConfigWithOverloadingAndAdditionalMetadata {
 
-		@Bean @Lazy
+		@Bean
+		@Lazy
 		String aString() {
 			return "regular";
 		}
 
-		@Bean @Lazy
+		@Bean
+		@Lazy
 		String aString(Integer dependency) {
 			return "overloaded" + dependency;
 		}
@@ -275,7 +281,8 @@ public class BeanMethodPolymorphismTests {
 			return 5;
 		}
 
-		@Bean @Lazy
+		@Bean
+		@Lazy
 		String aString(Integer dependency) {
 			return "overloaded" + dependency;
 		}
@@ -290,7 +297,8 @@ public class BeanMethodPolymorphismTests {
 			return 5;
 		}
 
-		@Bean @Lazy
+		@Bean
+		@Lazy
 		String aString(List<Integer> dependency) {
 			return "overloaded" + dependency.get(0);
 		}

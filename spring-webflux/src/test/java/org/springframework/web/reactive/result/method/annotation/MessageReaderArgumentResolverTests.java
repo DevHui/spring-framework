@@ -16,29 +16,10 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-import rx.Observable;
-import rx.Single;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.Decoder;
@@ -59,6 +40,23 @@ import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+import rx.Observable;
+import rx.Single;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -104,7 +102,8 @@ public class MessageReaderArgumentResolverTests {
 
 	// More extensive "empty body" tests in RequestBody- and HttpEntityArgumentResolverTests
 
-	@Test @SuppressWarnings("unchecked") // SPR-9942
+	@Test
+	@SuppressWarnings("unchecked") // SPR-9942
 	public void emptyBody() throws Exception {
 		MockServerHttpRequest request = post("/path").contentType(MediaType.APPLICATION_JSON).build();
 		ServerWebExchange exchange = MockServerWebExchange.from(request);
@@ -259,7 +258,7 @@ public class MessageReaderArgumentResolverTests {
 		MethodParameter param = this.testMethod.arg(TestBean[].class);
 		TestBean[] value = resolveValue(param, body);
 
-		assertArrayEquals(new TestBean[] {new TestBean("f1", "b1"), new TestBean("f2", "b2")}, value);
+		assertArrayEquals(new TestBean[]{new TestBean("f1", "b1"), new TestBean("f2", "b2")}, value);
 	}
 
 	@Test
@@ -321,6 +320,7 @@ public class MessageReaderArgumentResolverTests {
 			public boolean supportsParameter(MethodParameter parameter) {
 				return false;
 			}
+
 			@Override
 			public Mono<Object> resolveArgument(MethodParameter p, BindingContext bc, ServerWebExchange e) {
 				return null;
@@ -348,6 +348,13 @@ public class MessageReaderArgumentResolverTests {
 			TestBean[] array) {
 	}
 
+
+	private interface Identifiable extends Serializable {
+
+		Long getId();
+
+		void setId(Long id);
+	}
 
 	@XmlRootElement
 	@SuppressWarnings("unused")
@@ -404,7 +411,6 @@ public class MessageReaderArgumentResolverTests {
 		}
 	}
 
-
 	private static class TestBeanValidator implements Validator {
 
 		@Override
@@ -421,25 +427,15 @@ public class MessageReaderArgumentResolverTests {
 		}
 	}
 
-
 	private static abstract class AbstractParameterizedController<DTO extends Identifiable> {
 
 		@SuppressWarnings("unused")
-		public void handleDto(DTO dto) {}
+		public void handleDto(DTO dto) {
+		}
 	}
-
 
 	private static class ConcreteParameterizedController extends AbstractParameterizedController<SimpleBean> {
 	}
-
-
-	private interface Identifiable extends Serializable {
-
-		Long getId();
-
-		void setId(Long id);
-	}
-
 
 	@SuppressWarnings({"serial", "unused"})
 	private static class SimpleBean implements Identifiable {

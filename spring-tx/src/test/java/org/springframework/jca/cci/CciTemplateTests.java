@@ -16,7 +16,14 @@
 
 package org.springframework.jca.cci;
 
-import java.sql.SQLException;
+import org.junit.Test;
+import org.springframework.jca.cci.connection.ConnectionSpecConnectionFactoryAdapter;
+import org.springframework.jca.cci.connection.NotSupportedRecordFactory;
+import org.springframework.jca.cci.core.CciTemplate;
+import org.springframework.jca.cci.core.ConnectionCallback;
+import org.springframework.jca.cci.core.InteractionCallback;
+import org.springframework.jca.cci.core.RecordCreator;
+import org.springframework.jca.cci.core.RecordExtractor;
 
 import javax.resource.NotSupportedException;
 import javax.resource.ResourceException;
@@ -30,19 +37,13 @@ import javax.resource.cci.MappedRecord;
 import javax.resource.cci.Record;
 import javax.resource.cci.RecordFactory;
 import javax.resource.cci.ResultSet;
+import java.sql.SQLException;
 
-import org.junit.Test;
-
-import org.springframework.jca.cci.connection.ConnectionSpecConnectionFactoryAdapter;
-import org.springframework.jca.cci.connection.NotSupportedRecordFactory;
-import org.springframework.jca.cci.core.CciTemplate;
-import org.springframework.jca.cci.core.ConnectionCallback;
-import org.springframework.jca.cci.core.InteractionCallback;
-import org.springframework.jca.cci.core.RecordCreator;
-import org.springframework.jca.cci.core.RecordExtractor;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Thierry Templier
@@ -462,12 +463,12 @@ public class CciTemplateTests {
 
 		given(connectionFactory.getConnection()).willReturn(connection);
 		given(connection.createInteraction()).willReturn(interaction);
-		given(interactionCallback.doInInteraction(interaction,connectionFactory)).willReturn(new Object());
+		given(interactionCallback.doInInteraction(interaction, connectionFactory)).willReturn(new Object());
 
 		CciTemplate ct = new CciTemplate(connectionFactory);
 		ct.execute(interactionCallback);
 
-		verify(interactionCallback).doInInteraction(interaction,connectionFactory);
+		verify(interactionCallback).doInInteraction(interaction, connectionFactory);
 		verify(interaction).close();
 		verify(connection).close();
 	}

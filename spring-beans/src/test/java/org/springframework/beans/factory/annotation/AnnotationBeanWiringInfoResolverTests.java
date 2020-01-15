@@ -17,10 +17,13 @@
 package org.springframework.beans.factory.annotation;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.wiring.BeanWiringInfo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * @author Rick Evans
@@ -33,8 +36,7 @@ public class AnnotationBeanWiringInfoResolverTests {
 		try {
 			new AnnotationBeanWiringInfoResolver().resolveWiringInfo(null);
 			fail("Must have thrown an IllegalArgumentException by this point (null argument)");
-		}
-		catch (IllegalArgumentException expected) {
+		} catch (IllegalArgumentException expected) {
 		}
 	}
 

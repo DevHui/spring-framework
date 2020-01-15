@@ -16,13 +16,8 @@
 
 package org.springframework.transaction;
 
-import javax.transaction.Status;
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
-
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.tests.mock.jndi.ExpectedLookupTemplate;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.transaction.jta.UserTransactionAdapter;
@@ -30,8 +25,16 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.transaction.Status;
+import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Juergen Hoeller
@@ -66,8 +69,7 @@ public class JndiJtaTransactionManagerTests {
 		TransactionManager tm = mock(TransactionManager.class);
 		if (defaultUt) {
 			given(ut.getStatus()).willReturn(Status.STATUS_NO_TRANSACTION, Status.STATUS_ACTIVE, Status.STATUS_ACTIVE);
-		}
-		else {
+		} else {
 			given(tm.getStatus()).willReturn(Status.STATUS_NO_TRANSACTION, Status.STATUS_ACTIVE, Status.STATUS_ACTIVE);
 		}
 
@@ -82,15 +84,13 @@ public class JndiJtaTransactionManagerTests {
 
 		if (tmFound) {
 			assertEquals(tm, ptm.getTransactionManager());
-		}
-		else {
+		} else {
 			assertNull(ptm.getTransactionManager());
 		}
 
 		if (defaultUt) {
 			assertEquals(ut, ptm.getUserTransaction());
-		}
-		else {
+		} else {
 			assertTrue(ptm.getUserTransaction() instanceof UserTransactionAdapter);
 			UserTransactionAdapter uta = (UserTransactionAdapter) ptm.getUserTransaction();
 			assertEquals(tm, uta.getTransactionManager());
@@ -114,8 +114,7 @@ public class JndiJtaTransactionManagerTests {
 		if (defaultUt) {
 			verify(ut).begin();
 			verify(ut).commit();
-		}
-		else {
+		} else {
 			verify(tm).begin();
 			verify(tm).commit();
 		}

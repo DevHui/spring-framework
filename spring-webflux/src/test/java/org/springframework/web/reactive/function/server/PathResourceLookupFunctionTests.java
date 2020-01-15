@@ -16,17 +16,16 @@
 
 package org.springframework.web.reactive.function.server;
 
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.function.Function;
-
-import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 /**
  * @author Arjen Poutsma
@@ -49,8 +48,7 @@ public class PathResourceLookupFunctionTests {
 				.expectNextMatches(resource -> {
 					try {
 						return expected.equals(resource.getFile());
-					}
-					catch (IOException ex) {
+					} catch (IOException ex) {
 						return false;
 					}
 				})
@@ -73,8 +71,7 @@ public class PathResourceLookupFunctionTests {
 				.expectNextMatches(resource -> {
 					try {
 						return expected.equals(resource.getFile());
-					}
-					catch (IOException ex) {
+					} catch (IOException ex) {
 						return false;
 					}
 				})
@@ -106,7 +103,7 @@ public class PathResourceLookupFunctionTests {
 
 		Function<ServerRequest, Mono<Resource>> customLookupFunction =
 				lookupFunction.andThen(resourceMono -> resourceMono
-								.switchIfEmpty(Mono.just(defaultResource)));
+						.switchIfEmpty(Mono.just(defaultResource)));
 
 		MockServerRequest request = MockServerRequest.builder()
 				.uri(new URI("http://localhost/resources/foo"))
@@ -117,8 +114,7 @@ public class PathResourceLookupFunctionTests {
 				.expectNextMatches(resource -> {
 					try {
 						return defaultResource.getFile().equals(resource.getFile());
-					}
-					catch (IOException ex) {
+					} catch (IOException ex) {
 						return false;
 					}
 				})

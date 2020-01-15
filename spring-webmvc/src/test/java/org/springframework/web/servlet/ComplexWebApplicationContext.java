@@ -16,20 +16,6 @@
 
 package org.springframework.web.servlet;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -70,6 +56,19 @@ import org.springframework.web.servlet.theme.ThemeChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.ResourceBundleViewResolver;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * @author Juergen Hoeller
@@ -115,7 +114,7 @@ public class ComplexWebApplicationContext extends StaticWebApplicationContext {
 		pvs = new MutablePropertyValues();
 		pvs.add(
 				"mappings", "/head.do=headController\n" +
-				"body.do=bodyController\n/noview*=noviewController\n/noview/simple*=noviewController");
+						"body.do=bodyController\n/noview*=noviewController\n/noview/simple*=noviewController");
 		pvs.add("order", "1");
 		registerSingleton("handlerMapping", SimpleUrlHandlerMapping.class, pvs);
 
@@ -152,7 +151,7 @@ public class ComplexWebApplicationContext extends StaticWebApplicationContext {
 		pvs.add("order", "1");
 		pvs.add("exceptionMappings",
 				"java.lang.IllegalAccessException=failed2\n" +
-				"ServletRequestBindingException=failed3");
+						"ServletRequestBindingException=failed3");
 		pvs.add("defaultErrorView", "failed0");
 		registerSingleton("exceptionResolver1", SimpleMappingExceptionResolver.class, pvs);
 
@@ -176,6 +175,13 @@ public class ComplexWebApplicationContext extends StaticWebApplicationContext {
 	}
 
 
+	public interface MyHandler {
+
+		void doSomething(HttpServletRequest request) throws ServletException, IllegalAccessException;
+
+		long lastModified();
+	}
+
 	public static class HeadController implements Controller {
 
 		@Override
@@ -187,7 +193,6 @@ public class ComplexWebApplicationContext extends StaticWebApplicationContext {
 		}
 	}
 
-
 	public static class BodyController implements Controller {
 
 		@Override
@@ -197,7 +202,6 @@ public class ComplexWebApplicationContext extends StaticWebApplicationContext {
 		}
 	}
 
-
 	public static class NoViewController implements Controller {
 
 		@Override
@@ -205,7 +209,6 @@ public class ComplexWebApplicationContext extends StaticWebApplicationContext {
 			return new ModelAndView();
 		}
 	}
-
 
 	public static class MyServlet implements Servlet {
 
@@ -236,15 +239,6 @@ public class ComplexWebApplicationContext extends StaticWebApplicationContext {
 			this.servletConfig = null;
 		}
 	}
-
-
-	public interface MyHandler {
-
-		void doSomething(HttpServletRequest request) throws ServletException, IllegalAccessException;
-
-		long lastModified();
-	}
-
 
 	public static class MyHandlerAdapter extends ApplicationObjectSupport implements HandlerAdapter, Ordered {
 
@@ -282,7 +276,7 @@ public class ComplexWebApplicationContext extends StaticWebApplicationContext {
 
 		@Override
 		public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object delegate)
-			throws IOException, ServletException {
+				throws IOException, ServletException {
 			throw new ServletException("dummy");
 		}
 
@@ -503,6 +497,7 @@ public class ComplexWebApplicationContext extends StaticWebApplicationContext {
 				public HttpHeaders getMultipartHeaders(String paramOrFileName) {
 					return null;
 				}
+
 				@Override
 				public String getMultipartContentType(String paramOrFileName) {
 					return null;

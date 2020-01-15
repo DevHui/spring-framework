@@ -16,10 +16,6 @@
 
 package org.springframework.test.context.junit.jupiter;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestTemplate;
@@ -34,7 +30,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * This class demonstrates how to have a JUnit Jupiter extension managed as a
@@ -111,13 +111,13 @@ class SpringManagedJupiterExtensionTests {
 
 						@Override
 						public boolean supportsParameter(ParameterContext parameterContext,
-								ExtensionContext extensionContext) {
+														 ExtensionContext extensionContext) {
 							return parameterContext.getParameter().getType() == String.class;
 						}
 
 						@Override
 						public Object resolveParameter(ParameterContext parameterContext,
-								ExtensionContext extensionContext) {
+													   ExtensionContext extensionContext) {
 							return parameter;
 						}
 					});

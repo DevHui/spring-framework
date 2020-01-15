@@ -16,18 +16,20 @@
 
 package org.springframework.orm.jpa;
 
-import java.lang.reflect.Proxy;
-import java.util.List;
+import org.junit.Test;
+import org.springframework.orm.jpa.domain.Person;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
+import java.lang.reflect.Proxy;
+import java.util.List;
 
-import org.junit.Test;
-
-import org.springframework.orm.jpa.domain.Person;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * An application-managed entity manager can join an existing transaction,
@@ -72,8 +74,7 @@ public class ApplicationManagedEntityManagerIntegrationTests extends AbstractEnt
 		try {
 			doInstantiateAndSave(em);
 			fail("Should have thrown TransactionRequiredException");
-		}
-		catch (TransactionRequiredException ex) {
+		} catch (TransactionRequiredException ex) {
 			// expected
 		}
 
@@ -123,7 +124,7 @@ public class ApplicationManagedEntityManagerIntegrationTests extends AbstractEnt
 
 		doInstantiateAndSave(em);
 		setComplete();
-		endTransaction();	// Should rollback
+		endTransaction();    // Should rollback
 		assertEquals("Tx must have committed back", 1, countRowsInTable(em, "person"));
 
 		// Now clean up the database
@@ -143,7 +144,7 @@ public class ApplicationManagedEntityManagerIntegrationTests extends AbstractEnt
 		EntityManager em = entityManagerFactory.createEntityManager();
 		em.joinTransaction();
 		doInstantiateAndSave(em);
-		endTransaction();	// Should rollback
+		endTransaction();    // Should rollback
 		assertEquals("Tx must have been rolled back", 0, countRowsInTable(em, "person"));
 	}
 
@@ -154,7 +155,7 @@ public class ApplicationManagedEntityManagerIntegrationTests extends AbstractEnt
 		doInstantiateAndSave(em);
 
 		setComplete();
-		endTransaction();	// Should rollback
+		endTransaction();    // Should rollback
 		assertEquals("Tx must have committed back", 1, countRowsInTable(em, "person"));
 
 		// Now clean up the database

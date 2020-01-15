@@ -16,17 +16,19 @@
 
 package org.springframework.jmx.export.annotation;
 
-import javax.management.modelmbean.ModelMBeanAttributeInfo;
-import javax.management.modelmbean.ModelMBeanInfo;
-import javax.management.modelmbean.ModelMBeanOperationInfo;
-
 import org.junit.Test;
-
 import org.springframework.jmx.IJmxTestBean;
 import org.springframework.jmx.export.assembler.AbstractMetadataAssemblerTests;
 import org.springframework.jmx.export.metadata.JmxAttributeSource;
 
-import static org.junit.Assert.*;
+import javax.management.modelmbean.ModelMBeanAttributeInfo;
+import javax.management.modelmbean.ModelMBeanInfo;
+import javax.management.modelmbean.ModelMBeanOperationInfo;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rob Harrop

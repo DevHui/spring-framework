@@ -16,16 +16,19 @@
 
 package org.springframework.jdbc.datasource.init;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.EncodedResource;
 
-import static org.junit.Assert.*;
-import static org.springframework.jdbc.datasource.init.ScriptUtils.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.jdbc.datasource.init.ScriptUtils.DEFAULT_STATEMENT_SEPARATOR;
+import static org.springframework.jdbc.datasource.init.ScriptUtils.containsSqlScriptDelimiters;
+import static org.springframework.jdbc.datasource.init.ScriptUtils.splitSqlScript;
 
 /**
  * Unit tests for {@link ScriptUtils}.
@@ -35,8 +38,8 @@ import static org.springframework.jdbc.datasource.init.ScriptUtils.*;
  * @author Phillip Webb
  * @author Chris Baldwin
  * @author Nicolas Debeissat
- * @since 4.0.3
  * @see ScriptUtilsIntegrationTests
+ * @since 4.0.3
  */
 public class ScriptUtilsUnitTests {
 
@@ -83,7 +86,7 @@ public class ScriptUtilsUnitTests {
 		splitSqlScript(script, DEFAULT_STATEMENT_SEPARATOR, statements);
 		assertEquals("wrong number of statements", 1, statements.size());
 		assertEquals("script should have been 'stripped' but not actually 'split'", script.replace('\n', ' '),
-			statements.get(0));
+				statements.get(0));
 	}
 
 	@Test  // SPR-13218
@@ -202,7 +205,7 @@ public class ScriptUtilsUnitTests {
 
 		assertFalse(containsSqlScriptDelimiters("select 1; select '\\n\n';", "\n"));
 		assertTrue(containsSqlScriptDelimiters("select 1\n select 2", "\n"));
-		
+
 		assertFalse(containsSqlScriptDelimiters("select 1\n select 2", "\n\n"));
 		assertTrue(containsSqlScriptDelimiters("select 1\n\n select 2", "\n\n"));
 

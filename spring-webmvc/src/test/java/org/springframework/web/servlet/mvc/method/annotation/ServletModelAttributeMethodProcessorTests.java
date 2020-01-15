@@ -16,14 +16,8 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -36,7 +30,15 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test fixture for {@link ServletModelAttributeMethodProcessor} specific tests.
@@ -187,7 +189,7 @@ public class ServletModelAttributeMethodProcessorTests {
 		assertNull(processor.resolveArgument(
 				testBeanWithoutStringConstructorModelAttr, mavContainer, webRequest, binderFactory));
 
-		Optional<TestBean> testBean =(Optional<TestBean>) processor.resolveArgument(
+		Optional<TestBean> testBean = (Optional<TestBean>) processor.resolveArgument(
 				testBeanWithOptionalModelAttr, mavContainer, webRequest, binderFactory);
 		assertFalse(testBean.isPresent());
 	}

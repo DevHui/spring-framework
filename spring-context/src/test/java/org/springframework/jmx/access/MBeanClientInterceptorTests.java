@@ -16,21 +16,7 @@
 
 package org.springframework.jmx.access;
 
-import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.BindException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.management.Descriptor;
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXConnectorServerFactory;
-import javax.management.remote.JMXServiceURL;
-
 import org.junit.Test;
-
 import org.springframework.jmx.AbstractMBeanServerTests;
 import org.springframework.jmx.IJmxTestBean;
 import org.springframework.jmx.JmxException;
@@ -41,8 +27,23 @@ import org.springframework.tests.Assume;
 import org.springframework.tests.TestGroup;
 import org.springframework.util.SocketUtils;
 
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
+import javax.management.Descriptor;
+import javax.management.MBeanServerConnection;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
+import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.BindException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * To run the tests in the class, set the following Java system property:
@@ -196,8 +197,7 @@ public class MBeanClientInterceptorTests extends AbstractMBeanServerTests {
 		// now start the connector
 		try {
 			connector.start();
-		}
-		catch (BindException ex) {
+		} catch (BindException ex) {
 			System.out.println("Skipping remainder of JMX LazyConnectionToRemote test because binding to local port ["
 					+ port + "] failed: " + ex.getMessage());
 			return;
@@ -207,15 +207,13 @@ public class MBeanClientInterceptorTests extends AbstractMBeanServerTests {
 		try {
 			assertEquals("Rob Harrop", bean.getName());
 			assertEquals(100, bean.getAge());
-		}
-		finally {
+		} finally {
 			connector.stop();
 		}
 
 		try {
 			bean.getName();
-		}
-		catch (JmxException ex) {
+		} catch (JmxException ex) {
 			// expected
 		}
 
@@ -226,8 +224,7 @@ public class MBeanClientInterceptorTests extends AbstractMBeanServerTests {
 		try {
 			assertEquals("Rob Harrop", bean.getName());
 			assertEquals(100, bean.getAge());
-		}
-		finally {
+		} finally {
 			connector.stop();
 		}
 	}
@@ -302,12 +299,12 @@ public class MBeanClientInterceptorTests extends AbstractMBeanServerTests {
 
 		}
 
-		@SuppressWarnings({ "unused", "rawtypes" })
+		@SuppressWarnings({"unused", "rawtypes"})
 		protected String getDescription(String beanKey, Class beanClass) {
 			return "";
 		}
 
-		@SuppressWarnings({ "unused", "rawtypes" })
+		@SuppressWarnings({"unused", "rawtypes"})
 		protected void populateMBeanDescriptor(Descriptor mbeanDescriptor, String beanKey, Class beanClass) {
 
 		}

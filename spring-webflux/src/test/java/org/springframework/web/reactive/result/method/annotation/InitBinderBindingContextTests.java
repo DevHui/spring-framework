@@ -16,13 +16,7 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.convert.ConversionService;
@@ -37,6 +31,11 @@ import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.result.method.SyncHandlerMethodArgumentResolver;
 import org.springframework.web.reactive.result.method.SyncInvocableHandlerMethod;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -44,6 +43,7 @@ import static org.junit.Assert.assertSame;
 
 /**
  * Unit tests for {@link InitBinderBindingContext}.
+ *
  * @author Rossen Stoyanchev
  */
 public class InitBinderBindingContextTests {
@@ -144,7 +144,7 @@ public class InitBinderBindingContextTests {
 			dataBinder.setDisallowedFields("id");
 		}
 
-		@InitBinder(value="foo")
+		@InitBinder(value = "foo")
 		public void initBinderWithAttributeName(WebDataBinder dataBinder) {
 			dataBinder.setDisallowedFields("id");
 		}

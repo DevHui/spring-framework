@@ -29,7 +29,8 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for expressions accessing beans and factory beans.
@@ -48,13 +49,12 @@ public class FactoryBeanAccessTests {
 		assertEquals(CarFactoryBean.class.getName(), expr.getValue(context));
 
 		expr = new SpelExpressionParser().parseRaw("@boat.colour");
-		assertEquals("blue",expr.getValue(context));
+		assertEquals("blue", expr.getValue(context));
 		expr = new SpelExpressionParser().parseRaw("&boat.class.name");
 		try {
 			assertEquals(Boat.class.getName(), expr.getValue(context));
 			fail("Expected BeanIsNotAFactoryException");
-		}
-		catch (BeanIsNotAFactoryException binafe) {
+		} catch (BeanIsNotAFactoryException binafe) {
 			// success
 		}
 
@@ -63,8 +63,7 @@ public class FactoryBeanAccessTests {
 			expr = new SpelExpressionParser().parseRaw("@truck");
 			assertEquals("red", expr.getValue(context));
 			fail("Expected NoSuchBeanDefinitionException");
-		}
-		catch (NoSuchBeanDefinitionException nsbde) {
+		} catch (NoSuchBeanDefinitionException nsbde) {
 			// success
 		}
 
@@ -73,45 +72,13 @@ public class FactoryBeanAccessTests {
 			expr = new SpelExpressionParser().parseRaw("&truck");
 			assertEquals(CarFactoryBean.class.getName(), expr.getValue(context));
 			fail("Expected NoSuchBeanDefinitionException");
-		}
-		catch (NoSuchBeanDefinitionException nsbde) {
+		} catch (NoSuchBeanDefinitionException nsbde) {
 			// success
 		}
 	}
 
 	static class SimpleBeanResolver
 			implements org.springframework.expression.BeanResolver {
-
-		static class Car {
-
-			public String getColour() {
-				return "red";
-			}
-		}
-
-		static class CarFactoryBean implements FactoryBean<Car> {
-
-			public Car getObject() {
-				return new Car();
-			}
-
-			public Class<Car> getObjectType() {
-				return Car.class;
-			}
-
-			public boolean isSingleton() {
-				return false;
-			}
-
-		}
-
-		static class Boat {
-
-			public String getColour() {
-				return "blue";
-			}
-
-		}
 
 		StaticApplicationContext ac = new StaticApplicationContext();
 
@@ -124,6 +91,40 @@ public class FactoryBeanAccessTests {
 		public Object resolve(EvaluationContext context, String beanName)
 				throws AccessException {
 			return ac.getBean(beanName);
+		}
+
+		static class Car {
+
+			public String getColour() {
+				return "red";
+			}
+		}
+
+		static class CarFactoryBean implements FactoryBean<Car> {
+
+			@Override
+			public Car getObject() {
+				return new Car();
+			}
+
+			@Override
+			public Class<Car> getObjectType() {
+				return Car.class;
+			}
+
+			@Override
+			public boolean isSingleton() {
+				return false;
+			}
+
+		}
+
+		static class Boat {
+
+			public String getColour() {
+				return "blue";
+			}
+
 		}
 	}
 

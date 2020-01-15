@@ -16,23 +16,22 @@
 
 package org.springframework.web.reactive;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.server.reactive.AbstractHttpHandlerIntegrationTests;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for server response flushing behavior.
@@ -80,8 +79,7 @@ public class FlushingIntegrationTests extends AbstractHttpHandlerIntegrationTest
 					.consumeNextWith(value -> assertEquals(64 * 1024, value.length()))
 					.expectComplete()
 					.verify(Duration.ofSeconds(10L));
-		}
-		catch (AssertionError err) {
+		} catch (AssertionError err) {
 			String os = System.getProperty("os.name").toLowerCase();
 			if (os.contains("windows") && err.getMessage() != null &&
 					err.getMessage().startsWith("VerifySubscriber timed out")) {

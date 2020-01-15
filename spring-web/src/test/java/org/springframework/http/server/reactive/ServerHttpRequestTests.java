@@ -16,17 +16,7 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.ByteArrayInputStream;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.Collections;
-
-import javax.servlet.AsyncContext;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
-
 import org.junit.Test;
-
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.test.DelegatingServletInputStream;
@@ -35,8 +25,19 @@ import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 import org.springframework.util.MultiValueMap;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import javax.servlet.AsyncContext;
+import javax.servlet.ReadListener;
+import javax.servlet.ServletInputStream;
+import java.io.ByteArrayInputStream;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link AbstractServerHttpRequest}.
@@ -165,7 +166,7 @@ public class ServerHttpRequestTests {
 		assertEquals(headerValue1, request.getHeaders().get(headerName).get(0));
 		assertEquals(headerValue2, request.getHeaders().get(headerName).get(1));
 
-		request = request.mutate().header(headerName, new String[] { headerValue3 }).build();
+		request = request.mutate().header(headerName, new String[]{headerValue3}).build();
 
 		assertNotNull(request.getHeaders().get(headerName));
 		assertEquals(1, request.getHeaders().get(headerName).size());

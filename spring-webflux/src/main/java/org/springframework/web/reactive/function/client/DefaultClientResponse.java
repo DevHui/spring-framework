@@ -16,15 +16,6 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalLong;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.codec.Hints;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +29,14 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyExtractor;
 import org.springframework.web.reactive.function.BodyExtractors;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalLong;
 
 /**
  * Default implementation of {@link ClientResponse}.
@@ -97,10 +96,12 @@ class DefaultClientResponse implements ClientResponse {
 			public List<HttpMessageReader<?>> messageReaders() {
 				return strategies.messageReaders();
 			}
+
 			@Override
 			public Optional<ServerHttpResponse> serverResponse() {
 				return Optional.empty();
 			}
+
 			@Override
 			public Map<String, Object> hints() {
 				return Hints.from(Hints.LOG_PREFIX_HINT, logPrefix);

@@ -16,6 +16,28 @@
 
 package org.springframework.validation.beanvalidation2;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.context.support.StaticMessageSource;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.SerializationTestUtils;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
+
+import javax.validation.Constraint;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+import javax.validation.ConstraintViolation;
+import javax.validation.Payload;
+import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -34,33 +56,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.validation.Constraint;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-import javax.validation.ConstraintViolation;
-import javax.validation.Payload;
-import javax.validation.Valid;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.context.support.StaticMessageSource;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.SerializationTestUtils;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
-
-import static org.hamcrest.core.Is.*;
-import static org.hamcrest.core.StringContains.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Kazuki Shimizu
@@ -277,6 +279,53 @@ public class SpringValidatorAdapterTests {
 	}
 
 
+	@Documented
+	@Constraint(validatedBy = {SameValidator.class})
+	@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+	@Retention(RetentionPolicy.RUNTIME)
+	@Repeatable(SameGroup.class)
+	@interface Same {
+
+		String message() default "{org.springframework.validation.beanvalidation.Same.message}";
+
+		Class<?>[] groups() default {};
+
+		Class<? extends Payload>[] payload() default {};
+
+		String field();
+
+		String comparingField();
+
+		@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+		@Retention(RetentionPolicy.RUNTIME)
+		@Documented
+		@interface List {
+			Same[] value();
+		}
+	}
+
+
+	@Documented
+	@Inherited
+	@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface SameGroup {
+
+		Same[] value();
+	}
+
+
+	@Constraint(validatedBy = AnythingValidator.class)
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface AnythingValid {
+
+		String message() default "{AnythingValid.message}";
+
+		Class<?>[] groups() default {};
+
+		Class<? extends Payload>[] payload() default {};
+	}
+
 	@Same(field = "password", comparingField = "confirmPassword")
 	@Same(field = "email", comparingField = "confirmEmail")
 	static class TestBean {
@@ -325,43 +374,6 @@ public class SpringValidatorAdapterTests {
 		}
 	}
 
-
-	@Documented
-	@Constraint(validatedBy = {SameValidator.class})
-	@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
-	@Retention(RetentionPolicy.RUNTIME)
-	@Repeatable(SameGroup.class)
-	@interface Same {
-
-		String message() default "{org.springframework.validation.beanvalidation.Same.message}";
-
-		Class<?>[] groups() default {};
-
-		Class<? extends Payload>[] payload() default {};
-
-		String field();
-
-		String comparingField();
-
-		@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
-		@Retention(RetentionPolicy.RUNTIME)
-		@Documented
-		@interface List {
-			Same[] value();
-		}
-	}
-
-
-	@Documented
-	@Inherited
-	@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface SameGroup {
-
-		Same[] value();
-	}
-
-
 	public static class SameValidator implements ConstraintValidator<Same, Object> {
 
 		private String field;
@@ -383,8 +395,7 @@ public class SpringValidatorAdapterTests {
 			boolean matched = ObjectUtils.nullSafeEquals(fieldValue, comparingFieldValue);
 			if (matched) {
 				return true;
-			}
-			else {
+			} else {
 				context.disableDefaultConstraintViolation();
 				context.buildConstraintViolationWithTemplate(message)
 						.addPropertyNode(field)
@@ -393,7 +404,6 @@ public class SpringValidatorAdapterTests {
 			}
 		}
 	}
-
 
 	public static class Parent {
 
@@ -440,7 +450,6 @@ public class SpringValidatorAdapterTests {
 			this.childList = childList;
 		}
 	}
-
 
 	@AnythingValid
 	public static class Child {
@@ -489,19 +498,6 @@ public class SpringValidatorAdapterTests {
 		}
 	}
 
-
-	@Constraint(validatedBy = AnythingValidator.class)
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface AnythingValid {
-
-		String message() default "{AnythingValid.message}";
-
-		Class<?>[] groups() default {};
-
-		Class<? extends Payload>[] payload() default {};
-	}
-
-
 	public static class AnythingValidator implements ConstraintValidator<AnythingValid, Object> {
 
 		private static final String ID = "id";
@@ -522,8 +518,7 @@ public class SpringValidatorAdapterTests {
 								.addPropertyNode(field.getName())
 								.addConstraintViolation();
 					}
-				}
-				catch (IllegalAccessException ex) {
+				} catch (IllegalAccessException ex) {
 					throw new IllegalStateException(ex);
 				}
 			});

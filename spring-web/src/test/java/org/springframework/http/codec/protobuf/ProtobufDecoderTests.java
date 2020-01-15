@@ -16,15 +16,8 @@
 
 package org.springframework.http.codec.protobuf;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 import com.google.protobuf.Message;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.AbstractDecoderTestCase;
 import org.springframework.core.codec.DecodingException;
@@ -34,11 +27,18 @@ import org.springframework.http.MediaType;
 import org.springframework.protobuf.Msg;
 import org.springframework.protobuf.SecondMsg;
 import org.springframework.util.MimeType;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static java.util.Collections.*;
-import static org.junit.Assert.*;
-import static org.springframework.core.ResolvableType.*;
-import static org.springframework.core.io.buffer.DataBufferUtils.*;
+import java.io.IOException;
+import java.util.Arrays;
+
+import static java.util.Collections.emptyMap;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.core.ResolvableType.forClass;
+import static org.springframework.core.io.buffer.DataBufferUtils.release;
 
 /**
  * Unit tests for {@link ProtobufDecoder}.
@@ -114,8 +114,7 @@ public class ProtobufDecoderTests extends AbstractDecoderTestCase<ProtobufDecode
 					try {
 						msg.writeDelimitedTo(buffer.asOutputStream());
 						return Mono.just(buffer);
-					}
-					catch (IOException e) {
+					} catch (IOException e) {
 						release(buffer);
 						return Mono.error(e);
 					}
@@ -137,8 +136,7 @@ public class ProtobufDecoderTests extends AbstractDecoderTestCase<ProtobufDecode
 					try {
 						msg.writeDelimitedTo(buffer.asOutputStream());
 						return Mono.just(buffer);
-					}
-					catch (IOException e) {
+					} catch (IOException e) {
 						release(buffer);
 						return Mono.error(e);
 					}
@@ -175,8 +173,7 @@ public class ProtobufDecoderTests extends AbstractDecoderTestCase<ProtobufDecode
 					try {
 						msg.writeDelimitedTo(buffer.asOutputStream());
 						return Mono.just(buffer);
-					}
-					catch (IOException e) {
+					} catch (IOException e) {
 						release(buffer);
 						return Mono.error(e);
 					}

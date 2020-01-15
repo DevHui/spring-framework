@@ -17,8 +17,6 @@
 package org.springframework.web.reactive.function.server.support;
 
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,8 +31,9 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.*;
 

@@ -16,11 +16,11 @@
 
 package org.springframework.web.reactive.config;
 
+import org.springframework.lang.Nullable;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Predicate;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Assist with configuring {@code HandlerMapping}'s with path matching options.
@@ -69,7 +69,8 @@ public class PathMatchConfigurer {
 	 * {@code Predicate}. The prefix for the first matching predicate is used.
 	 * <p>Consider using {@link org.springframework.web.method.HandlerTypePredicate
 	 * HandlerTypePredicate} to group controllers.
-	 * @param prefix the path prefix to apply
+	 *
+	 * @param prefix    the path prefix to apply
 	 * @param predicate a predicate for matching controller types
 	 * @since 5.1
 	 */

@@ -16,17 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.lang.Nullable;
@@ -47,6 +36,16 @@ import org.springframework.web.servlet.mvc.condition.CompositeRequestCondition;
 import org.springframework.web.servlet.mvc.condition.RequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
+
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Creates {@link RequestMappingInfo} instances from type and method-level
@@ -110,12 +109,22 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	}
 
 	/**
+	 * The configured path prefixes as a read-only, possibly empty map.
+	 *
+	 * @since 5.1
+	 */
+	public Map<String, Predicate<Class<?>>> getPathPrefixes() {
+		return this.pathPrefixes;
+	}
+
+	/**
 	 * Configure path prefixes to apply to controller methods.
 	 * <p>Prefixes are used to enrich the mappings of every {@code @RequestMapping}
 	 * method whose controller type is matched by the corresponding
 	 * {@code Predicate}. The prefix for the first matching predicate is used.
 	 * <p>Consider using {@link org.springframework.web.method.HandlerTypePredicate
 	 * HandlerTypePredicate} to group controllers.
+	 *
 	 * @param prefixes a map with path prefixes as key
 	 * @since 5.1
 	 */
@@ -124,11 +133,10 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	}
 
 	/**
-	 * The configured path prefixes as a read-only, possibly empty map.
-	 * @since 5.1
+	 * Return the configured {@link ContentNegotiationManager}.
 	 */
-	public Map<String, Predicate<Class<?>>> getPathPrefixes() {
-		return this.pathPrefixes;
+	public ContentNegotiationManager getContentNegotiationManager() {
+		return this.contentNegotiationManager;
 	}
 
 	/**
@@ -138,13 +146,6 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	public void setContentNegotiationManager(ContentNegotiationManager contentNegotiationManager) {
 		Assert.notNull(contentNegotiationManager, "ContentNegotiationManager must not be null");
 		this.contentNegotiationManager = contentNegotiationManager;
-	}
-
-	/**
-	 * Return the configured {@link ContentNegotiationManager}.
-	 */
-	public ContentNegotiationManager getContentNegotiationManager() {
-		return this.contentNegotiationManager;
 	}
 
 	@Override
@@ -210,6 +211,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	/**
 	 * Uses method and type-level @{@link RequestMapping} annotations to create
 	 * the RequestMappingInfo.
+	 *
 	 * @return the created RequestMappingInfo, or {@code null} if the method
 	 * does not have a {@code @RequestMapping} annotation.
 	 * @see #getCustomMethodCondition(Method)
@@ -250,6 +252,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * Delegates to {@link #createRequestMappingInfo(RequestMapping, RequestCondition)},
 	 * supplying the appropriate custom {@link RequestCondition} depending on whether
 	 * the supplied {@code annotatedElement} is a class or method.
+	 *
 	 * @see #getCustomTypeCondition(Class)
 	 * @see #getCustomMethodCondition(Method)
 	 */
@@ -269,6 +272,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * <p>Consider extending {@link AbstractRequestCondition} for custom
 	 * condition types and using {@link CompositeRequestCondition} to provide
 	 * multiple custom conditions.
+	 *
 	 * @param handlerType the handler type for which to create the condition
 	 * @return the condition, or {@code null}
 	 */
@@ -285,6 +289,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * <p>Consider extending {@link AbstractRequestCondition} for custom
 	 * condition types and using {@link CompositeRequestCondition} to provide
 	 * multiple custom conditions.
+	 *
 	 * @param method the handler method for which to create the condition
 	 * @return the condition, or {@code null}
 	 */
@@ -318,13 +323,13 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 
 	/**
 	 * Resolve placeholder values in the given array of patterns.
+	 *
 	 * @return a new array with updated patterns
 	 */
 	protected String[] resolveEmbeddedValuesInPatterns(String[] patterns) {
 		if (this.embeddedValueResolver == null) {
 			return patterns;
-		}
-		else {
+		} else {
 			String[] resolvedPatterns = new String[patterns.length];
 			for (int i = 0; i < patterns.length; i++) {
 				resolvedPatterns[i] = this.embeddedValueResolver.resolveStringValue(patterns[i]);
@@ -388,11 +393,9 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 		String allowCredentials = resolveCorsAnnotationValue(annotation.allowCredentials());
 		if ("true".equalsIgnoreCase(allowCredentials)) {
 			config.setAllowCredentials(true);
-		}
-		else if ("false".equalsIgnoreCase(allowCredentials)) {
+		} else if ("false".equalsIgnoreCase(allowCredentials)) {
 			config.setAllowCredentials(false);
-		}
-		else if (!allowCredentials.isEmpty()) {
+		} else if (!allowCredentials.isEmpty()) {
 			throw new IllegalStateException("@CrossOrigin's allowCredentials value must be \"true\", \"false\", " +
 					"or an empty string (\"\"): current value is [" + allowCredentials + "]");
 		}
@@ -406,8 +409,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 		if (this.embeddedValueResolver != null) {
 			String resolved = this.embeddedValueResolver.resolveStringValue(value);
 			return (resolved != null ? resolved : "");
-		}
-		else {
+		} else {
 			return value;
 		}
 	}

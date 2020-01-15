@@ -16,6 +16,12 @@
 
 package org.springframework.http.server.reactive;
 
+import io.undertow.util.HeaderMap;
+import io.undertow.util.HeaderValues;
+import io.undertow.util.HttpString;
+import org.springframework.lang.Nullable;
+import org.springframework.util.MultiValueMap;
+
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
@@ -24,13 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import io.undertow.util.HeaderMap;
-import io.undertow.util.HeaderValues;
-import io.undertow.util.HttpString;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.MultiValueMap;
 
 /**
  * {@code MultiValueMap} implementation for wrapping Undertow HTTP headers.

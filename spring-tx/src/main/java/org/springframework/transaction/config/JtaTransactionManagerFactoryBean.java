@@ -28,9 +28,9 @@ import org.springframework.util.ClassUtils;
  * {@link org.springframework.transaction.jta.JtaTransactionManager} subclass.
  *
  * @author Juergen Hoeller
- * @since 4.1.1
  * @see org.springframework.transaction.jta.WebLogicJtaTransactionManager
  * @see org.springframework.transaction.jta.WebSphereUowTransactionManager
+ * @since 4.1.1
  */
 public class JtaTransactionManagerFactoryBean implements FactoryBean<JtaTransactionManager> {
 
@@ -66,12 +66,20 @@ public class JtaTransactionManagerFactoryBean implements FactoryBean<JtaTransact
 			Class<? extends JtaTransactionManager> clazz = (Class<? extends JtaTransactionManager>)
 					ClassUtils.forName(className, JtaTransactionManagerFactoryBean.class.getClassLoader());
 			this.transactionManager = BeanUtils.instantiateClass(clazz);
-		}
-		catch (ClassNotFoundException ex) {
+		} catch (ClassNotFoundException ex) {
 			throw new IllegalStateException("Failed to load JtaTransactionManager class: " + className, ex);
 		}
 	}
 
+	static String resolveJtaTransactionManagerClassName() {
+		if (weblogicPresent) {
+			return WEBLOGIC_JTA_TRANSACTION_MANAGER_CLASS_NAME;
+		} else if (webspherePresent) {
+			return WEBSPHERE_TRANSACTION_MANAGER_CLASS_NAME;
+		} else {
+			return JTA_TRANSACTION_MANAGER_CLASS_NAME;
+		}
+	}
 
 	@Override
 	@Nullable
@@ -87,19 +95,6 @@ public class JtaTransactionManagerFactoryBean implements FactoryBean<JtaTransact
 	@Override
 	public boolean isSingleton() {
 		return true;
-	}
-
-
-	static String resolveJtaTransactionManagerClassName() {
-		if (weblogicPresent) {
-			return WEBLOGIC_JTA_TRANSACTION_MANAGER_CLASS_NAME;
-		}
-		else if (webspherePresent) {
-			return WEBSPHERE_TRANSACTION_MANAGER_CLASS_NAME;
-		}
-		else {
-			return JTA_TRANSACTION_MANAGER_CLASS_NAME;
-		}
 	}
 
 }

@@ -16,17 +16,10 @@
 
 package org.springframework.web.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
@@ -37,8 +30,18 @@ import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * Test fixture for {@link HttpMessageConverter}.
@@ -48,13 +51,10 @@ import static org.mockito.BDDMockito.*;
  */
 public class HttpMessageConverterExtractorTests {
 
-	private HttpMessageConverterExtractor<?> extractor;
-
-	private final ClientHttpResponse response = mock(ClientHttpResponse.class);
-
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
-
+	private final ClientHttpResponse response = mock(ClientHttpResponse.class);
+	private HttpMessageConverterExtractor<?> extractor;
 
 	@Test
 	public void noContent() throws IOException {
@@ -171,7 +171,8 @@ public class HttpMessageConverterExtractorTests {
 		MediaType contentType = MediaType.TEXT_PLAIN;
 		responseHeaders.setContentType(contentType);
 		String expected = "Foo";
-		ParameterizedTypeReference<List<String>> reference = new ParameterizedTypeReference<List<String>>() {};
+		ParameterizedTypeReference<List<String>> reference = new ParameterizedTypeReference<List<String>>() {
+		};
 		Type type = reference.getType();
 		extractor = new HttpMessageConverterExtractor<List<String>>(type, createConverterList(converter));
 		given(response.getRawStatusCode()).willReturn(HttpStatus.OK.value());

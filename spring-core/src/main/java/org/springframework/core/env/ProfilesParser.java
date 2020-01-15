@@ -16,15 +16,15 @@
 
 package org.springframework.core.env;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.function.Predicate;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Internal parser used by {@link Profiles#of}.
@@ -56,6 +56,7 @@ final class ProfilesParser {
 	private static Profiles parseTokens(String expression, StringTokenizer tokens) {
 		return parseTokens(expression, tokens, Context.NONE);
 	}
+
 	private static Profiles parseTokens(String expression, StringTokenizer tokens, Context context) {
 		List<Profiles> elements = new ArrayList<>();
 		Operator operator = null;

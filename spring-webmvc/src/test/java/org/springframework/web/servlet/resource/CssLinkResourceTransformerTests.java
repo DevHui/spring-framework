@@ -16,22 +16,22 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.resource.EncodedResourceResolver.EncodedResource;
 
-import static org.junit.Assert.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  * Unit tests for {@link CssLinkResourceTransformer}.
@@ -155,8 +155,8 @@ public class CssLinkResourceTransformerTests {
 		Resource css = getResource("empty_url_function.css");
 		String expected =
 				".fooStyle {\n" +
-				"\tbackground: transparent url() no-repeat left top;\n" +
-				"}";
+						"\tbackground: transparent url() no-repeat left top;\n" +
+						"}";
 
 		TransformedResource actual = (TransformedResource) this.transformerChain.transform(this.request, css);
 		String result = new String(actual.getByteArray(), StandardCharsets.UTF_8);

@@ -16,17 +16,19 @@
 
 package org.springframework.context.index;
 
-import java.io.IOException;
-import java.util.Set;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.core.io.ClassPathResource;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.util.Set;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link CandidateComponentsIndexLoader}.

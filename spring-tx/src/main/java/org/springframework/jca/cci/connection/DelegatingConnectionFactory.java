@@ -16,6 +16,10 @@
 
 package org.springframework.jca.cci.connection;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.resource.ResourceException;
@@ -24,10 +28,6 @@ import javax.resource.cci.ConnectionFactory;
 import javax.resource.cci.ConnectionSpec;
 import javax.resource.cci.RecordFactory;
 import javax.resource.cci.ResourceAdapterMetaData;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * CCI {@link ConnectionFactory} implementation that delegates all calls
@@ -38,22 +38,14 @@ import org.springframework.util.Assert;
  * delegate to the target {@link ConnectionFactory}.
  *
  * @author Juergen Hoeller
- * @since 1.2
  * @see #getConnection
+ * @since 1.2
  */
 @SuppressWarnings("serial")
 public class DelegatingConnectionFactory implements ConnectionFactory, InitializingBean {
 
 	@Nullable
 	private ConnectionFactory targetConnectionFactory;
-
-
-	/**
-	 * Set the target ConnectionFactory that this ConnectionFactory should delegate to.
-	 */
-	public void setTargetConnectionFactory(@Nullable ConnectionFactory targetConnectionFactory) {
-		this.targetConnectionFactory = targetConnectionFactory;
-	}
 
 	/**
 	 * Return the target ConnectionFactory that this ConnectionFactory should delegate to.
@@ -64,7 +56,15 @@ public class DelegatingConnectionFactory implements ConnectionFactory, Initializ
 	}
 
 	/**
+	 * Set the target ConnectionFactory that this ConnectionFactory should delegate to.
+	 */
+	public void setTargetConnectionFactory(@Nullable ConnectionFactory targetConnectionFactory) {
+		this.targetConnectionFactory = targetConnectionFactory;
+	}
+
+	/**
 	 * Obtain the target {@code ConnectionFactory} for actual use (never {@code null}).
+	 *
 	 * @since 5.0
 	 */
 	protected ConnectionFactory obtainTargetConnectionFactory() {

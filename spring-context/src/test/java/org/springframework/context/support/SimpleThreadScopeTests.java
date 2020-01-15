@@ -16,15 +16,16 @@
 
 package org.springframework.context.support;
 
-import java.util.concurrent.TimeUnit;
-
 import org.awaitility.Awaitility;
 import org.junit.Test;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 
 /**
  * @author Arjen Poutsma
@@ -57,9 +58,9 @@ public class SimpleThreadScopeTests {
 		thread2.start();
 		// Assert
 		Awaitility.await()
-					.atMost(500, TimeUnit.MILLISECONDS)
-					.pollInterval(10, TimeUnit.MILLISECONDS)
-					.until(() -> (beans[0] != null) && (beans[1] != null));
+				.atMost(500, TimeUnit.MILLISECONDS)
+				.pollInterval(10, TimeUnit.MILLISECONDS)
+				.until(() -> (beans[0] != null) && (beans[1] != null));
 		assertNotSame(beans[0], beans[1]);
 	}
 

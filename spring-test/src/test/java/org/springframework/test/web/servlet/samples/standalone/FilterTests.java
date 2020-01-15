@@ -16,9 +16,20 @@
 
 package org.springframework.test.web.servlet.samples.standalone;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.util.concurrent.CompletableFuture;
+import org.junit.Test;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.test.web.Person;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.filter.ShallowEtagHeaderFilter;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncListener;
@@ -33,22 +44,9 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.validation.Valid;
-
-import org.junit.Test;
-
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.test.web.Person;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.filter.ShallowEtagHeaderFilter;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.concurrent.CompletableFuture;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -64,6 +62,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 /**
  * Tests with {@link Filter}'s.
+ *
  * @author Rob Winch
  */
 public class FilterTests {
@@ -71,8 +70,8 @@ public class FilterTests {
 	@Test
 	public void whenFiltersCompleteMvcProcessesRequest() throws Exception {
 		standaloneSetup(new PersonController())
-			.addFilters(new ContinueFilter()).build()
-			.perform(post("/persons").param("name", "Andy"))
+				.addFilters(new ContinueFilter()).build()
+				.perform(post("/persons").param("name", "Andy"))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/person/1"))
 				.andExpect(model().size(1))
@@ -84,32 +83,32 @@ public class FilterTests {
 	@Test
 	public void filtersProcessRequest() throws Exception {
 		standaloneSetup(new PersonController())
-			.addFilters(new ContinueFilter(), new RedirectFilter()).build()
-			.perform(post("/persons").param("name", "Andy"))
+				.addFilters(new ContinueFilter(), new RedirectFilter()).build()
+				.perform(post("/persons").param("name", "Andy"))
 				.andExpect(redirectedUrl("/login"));
 	}
 
 	@Test
 	public void filterMappedBySuffix() throws Exception {
 		standaloneSetup(new PersonController())
-			.addFilter(new RedirectFilter(), "*.html").build()
-			.perform(post("/persons.html").param("name", "Andy"))
+				.addFilter(new RedirectFilter(), "*.html").build()
+				.perform(post("/persons.html").param("name", "Andy"))
 				.andExpect(redirectedUrl("/login"));
 	}
 
 	@Test
 	public void filterWithExactMapping() throws Exception {
 		standaloneSetup(new PersonController())
-			.addFilter(new RedirectFilter(), "/p", "/persons").build()
-			.perform(post("/persons").param("name", "Andy"))
+				.addFilter(new RedirectFilter(), "/p", "/persons").build()
+				.perform(post("/persons").param("name", "Andy"))
 				.andExpect(redirectedUrl("/login"));
 	}
 
 	@Test
 	public void filterSkipped() throws Exception {
 		standaloneSetup(new PersonController())
-			.addFilter(new RedirectFilter(), "/p", "/person").build()
-			.perform(post("/persons").param("name", "Andy"))
+				.addFilter(new RedirectFilter(), "/p", "/person").build()
+				.perform(post("/persons").param("name", "Andy"))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/person/1"))
 				.andExpect(model().size(1))
@@ -121,8 +120,8 @@ public class FilterTests {
 	@Test
 	public void filterWrapsRequestResponse() throws Exception {
 		standaloneSetup(new PersonController())
-			.addFilters(new WrappingRequestResponseFilter()).build()
-			.perform(post("/user"))
+				.addFilters(new WrappingRequestResponseFilter()).build()
+				.perform(post("/user"))
 				.andExpect(model().attribute("principal", WrappingRequestResponseFilter.PRINCIPAL_NAME));
 	}
 
@@ -148,7 +147,7 @@ public class FilterTests {
 	@Controller
 	private static class PersonController {
 
-		@PostMapping(path="/persons")
+		@PostMapping(path = "/persons")
 		public String save(@Valid Person person, Errors errors, RedirectAttributes redirectAttrs) {
 			if (errors.hasErrors()) {
 				return "person/add";
@@ -175,16 +174,6 @@ public class FilterTests {
 		}
 	}
 
-	private class ContinueFilter extends OncePerRequestFilter {
-
-		@Override
-		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
-			filterChain.doFilter(request, response);
-		}
-	}
-
 	private static class WrappingRequestResponseFilter extends OncePerRequestFilter {
 
 		public static final String PRINCIPAL_NAME = "WrapRequestResponseFilterPrincipal";
@@ -192,7 +181,7 @@ public class FilterTests {
 
 		@Override
 		protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-				FilterChain filterChain) throws ServletException, IOException {
+										FilterChain filterChain) throws ServletException, IOException {
 
 			filterChain.doFilter(new HttpServletRequestWrapper(request) {
 
@@ -212,17 +201,6 @@ public class FilterTests {
 			}, new HttpServletResponseWrapper(response));
 		}
 	}
-
-	private class RedirectFilter extends OncePerRequestFilter {
-
-		@Override
-		protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-				FilterChain filterChain) throws ServletException, IOException {
-
-			response.sendRedirect("/login");
-		}
-	}
-
 
 	private static class AsyncContextWrapper implements AsyncContext {
 
@@ -288,13 +266,33 @@ public class FilterTests {
 		}
 
 		@Override
-		public void setTimeout(long timeout) {
-			this.delegate.setTimeout(timeout);
+		public long getTimeout() {
+			return this.delegate.getTimeout();
 		}
 
 		@Override
-		public long getTimeout() {
-			return this.delegate.getTimeout();
+		public void setTimeout(long timeout) {
+			this.delegate.setTimeout(timeout);
+		}
+	}
+
+	private class ContinueFilter extends OncePerRequestFilter {
+
+		@Override
+		protected void doFilterInternal(HttpServletRequest request,
+										HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+			filterChain.doFilter(request, response);
+		}
+	}
+
+	private class RedirectFilter extends OncePerRequestFilter {
+
+		@Override
+		protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+										FilterChain filterChain) throws ServletException, IOException {
+
+			response.sendRedirect("/login");
 		}
 	}
 }

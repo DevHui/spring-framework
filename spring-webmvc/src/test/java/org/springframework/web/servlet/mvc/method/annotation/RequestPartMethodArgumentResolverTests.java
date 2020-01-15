@@ -16,20 +16,8 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import javax.servlet.http.Part;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.SynthesizingMethodParameter;
@@ -56,8 +44,27 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.servlet.http.Part;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.isA;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.reset;
 
 /**
  * Test fixture with {@link RequestPartMethodArgumentResolver} and mock {@link HttpMessageConverter}.
@@ -275,8 +282,7 @@ public class RequestPartMethodArgumentResolverTests {
 		try {
 			testResolveArgument(new SimpleBean(null), paramValidRequestPart);
 			fail("Expected exception");
-		}
-		catch (MethodArgumentNotValidException ex) {
+		} catch (MethodArgumentNotValidException ex) {
 			assertEquals("requestPart", ex.getBindingResult().getObjectName());
 			assertEquals(1, ex.getBindingResult().getErrorCount());
 			assertNotNull(ex.getBindingResult().getFieldError("name"));
@@ -293,8 +299,7 @@ public class RequestPartMethodArgumentResolverTests {
 		try {
 			testResolveArgument(null, paramValidRequestPart);
 			fail("Expected exception");
-		}
-		catch (MissingServletRequestPartException ex) {
+		} catch (MissingServletRequestPartException ex) {
 			assertEquals("requestPart", ex.getRequestPartName());
 		}
 	}
@@ -540,6 +545,26 @@ public class RequestPartMethodArgumentResolverTests {
 		assertFalse("The requestHandled flag shouldn't change", mavContainer.isRequestHandled());
 	}
 
+	@SuppressWarnings("unused")
+	public void handle(
+			@RequestPart SimpleBean requestPart,
+			@RequestPart(value = "requestPart", required = false) SimpleBean namedRequestPart,
+			@Valid @RequestPart("requestPart") SimpleBean validRequestPart,
+			@RequestPart("requestPart") MultipartFile multipartFile,
+			@RequestPart("requestPart") List<MultipartFile> multipartFileList,
+			@RequestPart("requestPart") MultipartFile[] multipartFileArray,
+			int i,
+			MultipartFile multipartFileNotAnnot,
+			Part part,
+			@RequestPart("requestPart") List<Part> partList,
+			@RequestPart("requestPart") Part[] partArray,
+			@RequestParam MultipartFile requestParamAnnot,
+			Optional<MultipartFile> optionalMultipartFile,
+			@RequestPart("requestPart") Optional<List<MultipartFile>> optionalMultipartFileList,
+			Optional<Part> optionalPart,
+			@RequestPart("requestPart") Optional<List<Part>> optionalPartList,
+			@RequestPart("requestPart") Optional<SimpleBean> optionalRequestPart) {
+	}
 
 	private static class SimpleBean {
 
@@ -556,12 +581,11 @@ public class RequestPartMethodArgumentResolverTests {
 		}
 	}
 
-
 	private final class ValidatingBinderFactory implements WebDataBinderFactory {
 
 		@Override
 		public WebDataBinder createBinder(NativeWebRequest webRequest, @Nullable Object target,
-				String objectName) throws Exception {
+										  String objectName) throws Exception {
 
 			LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
 			validator.afterPropertiesSet();
@@ -569,28 +593,6 @@ public class RequestPartMethodArgumentResolverTests {
 			dataBinder.setValidator(validator);
 			return dataBinder;
 		}
-	}
-
-
-	@SuppressWarnings("unused")
-	public void handle(
-			@RequestPart SimpleBean requestPart,
-			@RequestPart(value="requestPart", required=false) SimpleBean namedRequestPart,
-			@Valid @RequestPart("requestPart") SimpleBean validRequestPart,
-			@RequestPart("requestPart") MultipartFile multipartFile,
-			@RequestPart("requestPart") List<MultipartFile> multipartFileList,
-			@RequestPart("requestPart") MultipartFile[] multipartFileArray,
-			int i,
-			MultipartFile multipartFileNotAnnot,
-			Part part,
-			@RequestPart("requestPart") List<Part> partList,
-			@RequestPart("requestPart") Part[] partArray,
-			@RequestParam MultipartFile requestParamAnnot,
-			Optional<MultipartFile> optionalMultipartFile,
-			@RequestPart("requestPart") Optional<List<MultipartFile>> optionalMultipartFileList,
-			Optional<Part> optionalPart,
-			@RequestPart("requestPart") Optional<List<Part>> optionalPartList,
-			@RequestPart("requestPart") Optional<SimpleBean> optionalRequestPart) {
 	}
 
 }

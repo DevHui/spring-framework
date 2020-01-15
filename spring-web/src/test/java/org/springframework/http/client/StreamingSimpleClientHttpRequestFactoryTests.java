@@ -16,19 +16,16 @@
 
 package org.springframework.http.client;
 
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.Collections;
-import java.util.Random;
-
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
-import static org.junit.Assert.*;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.Collections;
+import java.util.Random;
 
 /**
  * @author Arjen Poutsma
@@ -60,8 +57,7 @@ public class StreamingSimpleClientHttpRequestFactoryTests extends AbstractHttpRe
 			assertEquals("Invalid response status", HttpStatus.OK, response.getStatusCode());
 			HttpHeaders responseHeaders = response.getHeaders();
 			assertEquals("Custom header invalid", headerValue, responseHeaders.getFirst(headerName));
-		}
-		finally {
+		} finally {
 			if (response != null) {
 				response.close();
 			}
@@ -87,8 +83,7 @@ public class StreamingSimpleClientHttpRequestFactoryTests extends AbstractHttpRe
 			}
 			response = request.execute();
 			assertEquals("Invalid response status", HttpStatus.OK, response.getStatusCode());
-		}
-		finally {
+		} finally {
 			if (response != null) {
 				response.close();
 			}

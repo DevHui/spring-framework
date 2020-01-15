@@ -16,15 +16,15 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.net.URI;
-import java.util.UUID;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.IdGenerator;
 import org.springframework.util.JdkIdGenerator;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.sockjs.transport.TransportType;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.util.UUID;
 
 /**
  * Container for the base URL of a SockJS endpoint with additional helper methods
@@ -103,8 +103,7 @@ public class SockJsUrlInfo {
 			if (!scheme.startsWith("ws")) {
 				scheme = ("https".equals(scheme) ? "wss" : "ws");
 			}
-		}
-		else {
+		} else {
 			if (!scheme.startsWith("http")) {
 				scheme = ("wss".equals(scheme) ? "https" : "http");
 			}

@@ -16,13 +16,13 @@
 
 package org.springframework.messaging.simp;
 
+import org.junit.Test;
+
 import java.security.Principal;
 import java.util.Collections;
 import java.util.function.Consumer;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 /**

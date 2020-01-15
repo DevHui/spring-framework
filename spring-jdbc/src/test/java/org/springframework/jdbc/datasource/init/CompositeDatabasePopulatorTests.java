@@ -16,14 +16,16 @@
 
 package org.springframework.jdbc.datasource.init;
 
+import org.junit.Test;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Test;
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link CompositeDatabasePopulator}.
@@ -46,7 +48,7 @@ public class CompositeDatabasePopulatorTests {
 		CompositeDatabasePopulator populator = new CompositeDatabasePopulator();
 		populator.addPopulators(mockedDatabasePopulator1, mockedDatabasePopulator2);
 		populator.populate(mockedConnection);
-		verify(mockedDatabasePopulator1,times(1)).populate(mockedConnection);
+		verify(mockedDatabasePopulator1, times(1)).populate(mockedConnection);
 		verify(mockedDatabasePopulator2, times(1)).populate(mockedConnection);
 	}
 

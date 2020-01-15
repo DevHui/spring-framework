@@ -16,6 +16,10 @@
 
 package org.springframework.format.datetime.standard;
 
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterRegistry;
+import org.springframework.format.datetime.DateFormatterRegistrar;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,10 +28,6 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.ConverterRegistry;
-import org.springframework.format.datetime.DateFormatterRegistrar;
 
 /**
  * Installs lower-level type converters required to integrate
@@ -49,6 +49,7 @@ final class DateTimeConverters {
 
 	/**
 	 * Install the converters into the converter registry.
+	 *
 	 * @param registry the converter registry
 	 */
 	public static void registerConverters(ConverterRegistry registry) {
@@ -79,8 +80,7 @@ final class DateTimeConverters {
 	private static ZonedDateTime calendarToZonedDateTime(Calendar source) {
 		if (source instanceof GregorianCalendar) {
 			return ((GregorianCalendar) source).toZonedDateTime();
-		}
-		else {
+		} else {
 			return ZonedDateTime.ofInstant(Instant.ofEpochMilli(source.getTimeInMillis()),
 					source.getTimeZone().toZoneId());
 		}

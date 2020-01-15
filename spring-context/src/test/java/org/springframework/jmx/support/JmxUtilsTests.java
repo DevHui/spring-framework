@@ -16,7 +16,12 @@
 
 package org.springframework.jmx.support;
 
-import java.beans.PropertyDescriptor;
+import org.junit.Test;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.jmx.IJmxTestBean;
+import org.springframework.jmx.JmxTestBean;
+import org.springframework.jmx.export.TestDynamicMBean;
+import org.springframework.util.ObjectUtils;
 
 import javax.management.DynamicMBean;
 import javax.management.MBeanServer;
@@ -25,16 +30,11 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import javax.management.StandardMBean;
+import java.beans.PropertyDescriptor;
 
-import org.junit.Test;
-
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.jmx.IJmxTestBean;
-import org.springframework.jmx.JmxTestBean;
-import org.springframework.jmx.export.TestDynamicMBean;
-import org.springframework.util.ObjectUtils;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rob Harrop
@@ -119,8 +119,7 @@ public class JmxUtilsTests {
 		MBeanServer server = null;
 		try {
 			server = JmxUtils.locateMBeanServer();
-		}
-		finally {
+		} finally {
 			if (server != null) {
 				MBeanServerFactory.releaseMBeanServer(server);
 			}
@@ -140,6 +139,33 @@ public class JmxUtilsTests {
 	}
 
 
+	public interface FooMBean {
+
+		String getName();
+	}
+
+
+	public interface FooMXBean {
+
+		String getName();
+	}
+
+
+	private interface JmxInterfaceMBean {
+	}
+
+
+	private interface JmxInterface extends JmxInterfaceMBean {
+	}
+
+
+	private interface SpecializedJmxInterface extends JmxInterface {
+	}
+
+
+	private interface JmxClassMBean {
+	}
+
 	public static class AttributeTestBean {
 
 		private String name;
@@ -152,7 +178,6 @@ public class JmxUtilsTests {
 			this.name = name;
 		}
 	}
-
 
 	public static class StandardMBeanImpl extends StandardMBean implements IJmxTestBean {
 
@@ -180,25 +205,18 @@ public class JmxUtilsTests {
 		}
 
 		@Override
-		public void setName(String name) {
+		public String getName() {
+			return null;
 		}
 
 		@Override
-		public String getName() {
-			return null;
+		public void setName(String name) {
 		}
 
 		@Override
 		public void dontExposeMe() {
 		}
 	}
-
-
-	public interface FooMBean {
-
-		String getName();
-	}
-
 
 	public static class Foo implements FooMBean {
 
@@ -208,13 +226,6 @@ public class JmxUtilsTests {
 		}
 	}
 
-
-	public interface FooMXBean {
-
-		String getName();
-	}
-
-
 	public static class FooX implements FooMXBean {
 
 		@Override
@@ -223,30 +234,11 @@ public class JmxUtilsTests {
 		}
 	}
 
-
 	public static class Bar extends Foo {
 	}
 
-
 	public static class Abc extends Bar {
 	}
-
-
-	private interface JmxInterfaceMBean {
-	}
-
-
-	private interface JmxInterface extends JmxInterfaceMBean {
-	}
-
-
-	private interface SpecializedJmxInterface extends JmxInterface {
-	}
-
-
-	private interface JmxClassMBean {
-	}
-
 
 	private static class JmxClass implements JmxClassMBean {
 	}

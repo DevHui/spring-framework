@@ -16,15 +16,7 @@
 
 package org.springframework.test.web.reactive.server;
 
-import java.net.URI;
-import java.time.Duration;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
-import reactor.core.publisher.MonoProcessor;
-
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,13 +24,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.http.client.reactive.MockClientHttpRequest;
 import org.springframework.mock.http.client.reactive.MockClientHttpResponse;
+import reactor.core.publisher.MonoProcessor;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.net.URI;
+import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link HeaderAssertions}.
+ *
  * @author Rossen Stoyanchev
  * @author Sam Brannen
  */
@@ -56,24 +58,21 @@ public class HeaderAssertionTests {
 		try {
 			assertions.valueEquals("what?!", "bar");
 			fail("Missing header expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// expected
 		}
 
 		try {
 			assertions.valueEquals("foo", "what?!");
 			fail("Wrong value expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// expected
 		}
 
 		try {
 			assertions.valueEquals("foo", "bar", "what?!");
 			fail("Wrong # of values expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// expected
 		}
 	}
@@ -91,16 +90,14 @@ public class HeaderAssertionTests {
 		try {
 			assertions.valueEquals("foo", "bar", "what?!");
 			fail("Wrong value expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// expected
 		}
 
 		try {
 			assertions.valueEquals("foo", "bar");
 			fail("Too few values expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// expected
 		}
 
@@ -118,8 +115,7 @@ public class HeaderAssertionTests {
 		try {
 			assertions.valueMatches("Content-Type", ".*ISO-8859-1.*");
 			fail("Wrong pattern expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			Throwable cause = error.getCause();
 			assertNotNull(cause);
 			assertEquals("Response header 'Content-Type'=[application/json;charset=UTF-8] " +
@@ -148,8 +144,7 @@ public class HeaderAssertionTests {
 		try {
 			assertions.exists("Framework");
 			fail("Header should not exist");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			Throwable cause = error.getCause();
 			assertNotNull(cause);
 			assertEquals("Response header 'Framework' does not exist", cause.getMessage());
@@ -168,8 +163,7 @@ public class HeaderAssertionTests {
 		try {
 			assertions.doesNotExist("Content-Type");
 			fail("Existing header expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			Throwable cause = error.getCause();
 			assertNotNull(cause);
 			assertEquals("Response header 'Content-Type' exists with " +
@@ -189,8 +183,7 @@ public class HeaderAssertionTests {
 		try {
 			assertions.contentTypeCompatibleWith(MediaType.TEXT_XML);
 			fail("MediaTypes not compatible expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			Throwable cause = error.getCause();
 			assertNotNull(cause);
 			assertEquals("Response header 'Content-Type'=[application/xml] " +
@@ -212,8 +205,7 @@ public class HeaderAssertionTests {
 		try {
 			assertions.cacheControl(CacheControl.noStore());
 			fail("Wrong value expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// Expected
 		}
 	}
@@ -228,8 +220,7 @@ public class HeaderAssertionTests {
 		try {
 			assertions.expires(expires.toInstant().toEpochMilli() + 1);
 			fail("Wrong value expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// Expected
 		}
 	}
@@ -244,8 +235,7 @@ public class HeaderAssertionTests {
 		try {
 			assertions.lastModified(lastModified.toInstant().toEpochMilli() + 1);
 			fail("Wrong value expected");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			// Expected
 		}
 	}

@@ -16,11 +16,7 @@
 
 package org.springframework.messaging.simp.user;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
-
 import org.springframework.context.SmartLifecycle;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
@@ -37,6 +33,9 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderInitializer;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * {@code MessageHandler} with support for "user" destinations.
@@ -60,28 +59,25 @@ public class UserDestinationMessageHandler implements MessageHandler, SmartLifec
 	private final UserDestinationResolver destinationResolver;
 
 	private final MessageSendingOperations<String> messagingTemplate;
-
+	private final Object lifecycleMonitor = new Object();
 	@Nullable
 	private BroadcastHandler broadcastHandler;
-
 	@Nullable
 	private MessageHeaderInitializer headerInitializer;
-
 	private volatile boolean running = false;
-
-	private final Object lifecycleMonitor = new Object();
 
 
 	/**
 	 * Create an instance with the given client and broker channels subscribing
 	 * to handle messages from each and then sending any resolved messages to the
 	 * broker channel.
+	 *
 	 * @param clientInboundChannel messages received from clients.
-	 * @param brokerChannel messages sent to the broker.
-	 * @param resolver the resolver for "user" destinations.
+	 * @param brokerChannel        messages sent to the broker.
+	 * @param resolver             the resolver for "user" destinations.
 	 */
 	public UserDestinationMessageHandler(SubscribableChannel clientInboundChannel,
-			SubscribableChannel brokerChannel, UserDestinationResolver resolver) {
+										 SubscribableChannel brokerChannel, UserDestinationResolver resolver) {
 
 		Assert.notNull(clientInboundChannel, "'clientInChannel' must not be null");
 		Assert.notNull(brokerChannel, "'brokerChannel' must not be null");
@@ -102,23 +98,24 @@ public class UserDestinationMessageHandler implements MessageHandler, SmartLifec
 	}
 
 	/**
-	 * Set a destination to broadcast messages to that remain unresolved because
-	 * the user is not connected. In a multi-application server scenario this
-	 * gives other application servers a chance to try.
-	 * <p>By default this is not set.
-	 * @param destination the target destination.
-	 */
-	public void setBroadcastDestination(@Nullable String destination) {
-		this.broadcastHandler = (StringUtils.hasText(destination) ?
-				new BroadcastHandler(this.messagingTemplate, destination) : null);
-	}
-
-	/**
 	 * Return the configured destination for unresolved messages.
 	 */
 	@Nullable
 	public String getBroadcastDestination() {
 		return (this.broadcastHandler != null ? this.broadcastHandler.getBroadcastDestination() : null);
+	}
+
+	/**
+	 * Set a destination to broadcast messages to that remain unresolved because
+	 * the user is not connected. In a multi-application server scenario this
+	 * gives other application servers a chance to try.
+	 * <p>By default this is not set.
+	 *
+	 * @param destination the target destination.
+	 */
+	public void setBroadcastDestination(@Nullable String destination) {
+		this.broadcastHandler = (StringUtils.hasText(destination) ?
+				new BroadcastHandler(this.messagingTemplate, destination) : null);
 	}
 
 	/**
@@ -130,15 +127,6 @@ public class UserDestinationMessageHandler implements MessageHandler, SmartLifec
 	}
 
 	/**
-	 * Configure a custom {@link MessageHeaderInitializer} to initialize the
-	 * headers of resolved target messages.
-	 * <p>By default this is not set.
-	 */
-	public void setHeaderInitializer(@Nullable MessageHeaderInitializer headerInitializer) {
-		this.headerInitializer = headerInitializer;
-	}
-
-	/**
 	 * Return the configured header initializer.
 	 */
 	@Nullable
@@ -146,6 +134,14 @@ public class UserDestinationMessageHandler implements MessageHandler, SmartLifec
 		return this.headerInitializer;
 	}
 
+	/**
+	 * Configure a custom {@link MessageHeaderInitializer} to initialize the
+	 * headers of resolved target messages.
+	 * <p>By default this is not set.
+	 */
+	public void setHeaderInitializer(@Nullable MessageHeaderInitializer headerInitializer) {
+		this.headerInitializer = headerInitializer;
+	}
 
 	@Override
 	public final void start() {

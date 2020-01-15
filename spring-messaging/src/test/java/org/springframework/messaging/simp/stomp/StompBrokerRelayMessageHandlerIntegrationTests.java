@@ -16,15 +16,6 @@
 
 package org.springframework.messaging.simp.stomp;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.activemq.broker.BrokerService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +24,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.Message;
@@ -49,7 +39,18 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.SocketUtils;
 
-import static org.junit.Assert.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for {@link StompBrokerRelayMessageHandler} running against ActiveMQ.
@@ -58,11 +59,9 @@ import static org.junit.Assert.*;
  */
 public class StompBrokerRelayMessageHandlerIntegrationTests {
 
+	private static final Log logger = LogFactory.getLog(StompBrokerRelayMessageHandlerIntegrationTests.class);
 	@Rule
 	public final TestName testName = new TestName();
-
-	private static final Log logger = LogFactory.getLog(StompBrokerRelayMessageHandlerIntegrationTests.class);
-
 	private StompBrokerRelayMessageHandler relay;
 
 	private BrokerService activeMQBroker;
@@ -118,8 +117,7 @@ public class StompBrokerRelayMessageHandlerIntegrationTests {
 		try {
 			logger.debug("STOMP broker relay stats: " + this.relay.getStatsInfo());
 			this.relay.stop();
-		}
-		finally {
+		} finally {
 			stopActiveMqBrokerAndAwait();
 		}
 	}
@@ -240,6 +238,11 @@ public class StompBrokerRelayMessageHandlerIntegrationTests {
 	}
 
 
+	private interface MessageMatcher {
+
+		boolean match(Message<?> message);
+	}
+
 	private static class TestEventPublisher implements ApplicationEventPublisher {
 
 		private final BlockingQueue<BrokerAvailabilityEvent> eventQueue = new LinkedBlockingQueue<>();
@@ -263,7 +266,6 @@ public class StompBrokerRelayMessageHandlerIntegrationTests {
 			assertEquals(isBrokerAvailable, event.isBrokerAvailable());
 		}
 	}
-
 
 	private static class TestMessageHandler implements MessageHandler {
 
@@ -299,7 +301,6 @@ public class StompBrokerRelayMessageHandlerIntegrationTests {
 		}
 	}
 
-
 	/**
 	 * Holds a message as well as expected and actual messages matched against expectations.
 	 */
@@ -318,7 +319,7 @@ public class StompBrokerRelayMessageHandlerIntegrationTests {
 		}
 
 		public boolean matchMessage(Message<?> message) {
-			for (int i = 0 ; i < this.expected.length; i++) {
+			for (int i = 0; i < this.expected.length; i++) {
 				if (this.expected[i].match(message)) {
 					this.actual[i] = message;
 					return true;
@@ -334,7 +335,6 @@ public class StompBrokerRelayMessageHandlerIntegrationTests {
 					"Actually received:\n" + Arrays.toString(this.actual) + "\n";
 		}
 	}
-
 
 	private static class MessageExchangeBuilder {
 
@@ -377,7 +377,7 @@ public class StompBrokerRelayMessageHandlerIntegrationTests {
 		}
 
 		public static MessageExchangeBuilder subscribeWithReceipt(String sessionId, String subscriptionId,
-				String destination, String receiptId) {
+																  String destination, String receiptId) {
 
 			StompHeaderAccessor headers = StompHeaderAccessor.create(StompCommand.SUBSCRIBE);
 			headers.setSessionId(sessionId);
@@ -434,13 +434,6 @@ public class StompBrokerRelayMessageHandlerIntegrationTests {
 		}
 	}
 
-
-	private interface MessageMatcher {
-
-		boolean match(Message<?> message);
-	}
-
-
 	private static class StompFrameMessageMatcher implements MessageMatcher {
 
 		private final StompCommand command;
@@ -467,7 +460,7 @@ public class StompBrokerRelayMessageHandlerIntegrationTests {
 
 		@Override
 		public String toString() {
-			return "command=" + this.command  + ", session=\"" + this.sessionId + "\"";
+			return "command=" + this.command + ", session=\"" + this.sessionId + "\"";
 		}
 	}
 
@@ -517,8 +510,7 @@ public class StompBrokerRelayMessageHandlerIntegrationTests {
 			}
 			if (payload instanceof byte[] && this.payload instanceof byte[]) {
 				return Arrays.equals((byte[]) payload, (byte[]) this.payload);
-			}
-			else {
+			} else {
 				return this.payload.equals(payload);
 			}
 		}

@@ -77,12 +77,6 @@ public enum TypeCode {
 		this.type = type;
 	}
 
-
-	public Class<?> getType() {
-		return this.type;
-	}
-
-
 	public static TypeCode forName(String name) {
 		TypeCode[] tcs = values();
 		for (int i = 1; i < tcs.length; i++) {
@@ -101,6 +95,10 @@ public enum TypeCode {
 			}
 		}
 		return OBJECT;
+	}
+
+	public Class<?> getType() {
+		return this.type;
 	}
 
 }

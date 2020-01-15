@@ -16,14 +16,18 @@
 
 package org.springframework.util.concurrent;
 
+import org.junit.Test;
+
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * @author Arjen Poutsma
@@ -43,6 +47,7 @@ public class ListenableFutureTaskTests {
 			public void onSuccess(String result) {
 				assertEquals(s, result);
 			}
+
 			@Override
 			public void onFailure(Throwable ex) {
 				fail(ex.getMessage());
@@ -68,6 +73,7 @@ public class ListenableFutureTaskTests {
 			public void onSuccess(String result) {
 				fail("onSuccess not expected");
 			}
+
 			@Override
 			public void onFailure(Throwable ex) {
 				assertEquals(s, ex.getMessage());
@@ -78,15 +84,13 @@ public class ListenableFutureTaskTests {
 		try {
 			task.get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			assertSame(s, ex.getCause().getMessage());
 		}
 		try {
 			task.completable().get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			assertSame(s, ex.getCause().getMessage());
 		}
 	}
@@ -128,15 +132,13 @@ public class ListenableFutureTaskTests {
 		try {
 			task.get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex2) {
+		} catch (ExecutionException ex2) {
 			assertSame(s, ex2.getCause().getMessage());
 		}
 		try {
 			task.completable().get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex2) {
+		} catch (ExecutionException ex2) {
 			assertSame(s, ex2.getCause().getMessage());
 		}
 	}

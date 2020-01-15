@@ -16,22 +16,9 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
 import io.reactivex.Maybe;
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-import rx.Observable;
-import rx.RxReactiveStreams;
-import rx.Single;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.codec.StringDecoder;
@@ -44,6 +31,18 @@ import org.springframework.web.method.ResolvableMethod;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebInputException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+import rx.Observable;
+import rx.RxReactiveStreams;
+import rx.Single;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -273,6 +272,7 @@ public class RequestBodyArgumentResolverTests {
 			@RequestBody(required = false) io.reactivex.Observable<String> rxjava2ObsNotRequired,
 			@RequestBody(required = false) CompletableFuture<String> futureNotRequired,
 			@RequestBody(required = false) Map<?, ?> mapNotRequired,
-			String notAnnotated) {}
+			String notAnnotated) {
+	}
 
 }

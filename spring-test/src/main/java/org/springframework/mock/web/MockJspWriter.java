@@ -16,14 +16,13 @@
 
 package org.springframework.mock.web;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
+import org.springframework.lang.Nullable;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspWriter;
-
-import org.springframework.lang.Nullable;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 
 /**
  * Mock implementation of the {@link javax.servlet.jsp.JspWriter} class.
@@ -43,6 +42,7 @@ public class MockJspWriter extends JspWriter {
 	/**
 	 * Create a MockJspWriter for the given response,
 	 * using the response's default Writer.
+	 *
 	 * @param response the servlet response to wrap
 	 */
 	public MockJspWriter(HttpServletResponse response) {
@@ -51,6 +51,7 @@ public class MockJspWriter extends JspWriter {
 
 	/**
 	 * Create a MockJspWriter for the given plain Writer.
+	 *
 	 * @param targetWriter the target Writer to wrap
 	 */
 	public MockJspWriter(Writer targetWriter) {
@@ -59,7 +60,8 @@ public class MockJspWriter extends JspWriter {
 
 	/**
 	 * Create a MockJspWriter for the given response.
-	 * @param response the servlet response to wrap
+	 *
+	 * @param response     the servlet response to wrap
 	 * @param targetWriter the target Writer to wrap
 	 */
 	public MockJspWriter(@Nullable HttpServletResponse response, @Nullable Writer targetWriter) {
@@ -67,8 +69,7 @@ public class MockJspWriter extends JspWriter {
 		this.response = (response != null ? response : new MockHttpServletResponse());
 		if (targetWriter instanceof PrintWriter) {
 			this.targetWriter = (PrintWriter) targetWriter;
-		}
-		else if (targetWriter != null) {
+		} else if (targetWriter != null) {
 			this.targetWriter = new PrintWriter(targetWriter);
 		}
 	}

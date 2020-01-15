@@ -16,17 +16,10 @@
 
 package org.springframework.test.context.transaction.programmatic;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -48,8 +41,16 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.*;
-import static org.springframework.test.transaction.TransactionTestUtils.*;
+import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.springframework.test.transaction.TransactionTestUtils.assertInTransaction;
 
 /**
  * JUnit-based integration tests that verify support for programmatic transaction
@@ -63,16 +64,13 @@ import static org.springframework.test.transaction.TransactionTestUtils.*;
 @Transactional
 public class ProgrammaticTxMgmtTests {
 
-	private String sqlScriptEncoding;
-
+	@Rule
+	public TestName testName = new TestName();
 	protected JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	protected ApplicationContext applicationContext;
-
-	@Rule
-	public TestName testName = new TestName();
-
+	private String sqlScriptEncoding;
 
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
@@ -296,9 +294,9 @@ public class ProgrammaticTxMgmtTests {
 		@Bean
 		public DataSource dataSource() {
 			return new EmbeddedDatabaseBuilder()//
-			.generateUniqueName(true)//
-			.addScript("classpath:/org/springframework/test/context/jdbc/schema.sql") //
-			.build();
+					.generateUniqueName(true)//
+					.addScript("classpath:/org/springframework/test/context/jdbc/schema.sql") //
+					.build();
 		}
 	}
 

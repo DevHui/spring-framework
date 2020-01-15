@@ -16,18 +16,20 @@
 
 package org.springframework.core.env;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.springframework.util.StringUtils;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import org.springframework.util.StringUtils;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link Profiles}.
@@ -41,6 +43,10 @@ public class ProfilesTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	private static Predicate<String> activeProfiles(String... profiles) {
+		return new MockActiveProfiles(profiles);
+	}
 
 	@Test
 	public void ofWhenNullThrowsException() {
@@ -124,7 +130,7 @@ public class ProfilesTests {
 		assertFalse(profiles.matches(activeProfiles("spring")));
 		assertTrue(profiles.matches(activeProfiles("framework")));
 	}
-	
+
 	@Test
 	public void ofSingleInvertedExpression() {
 		Profiles profiles = Profiles.of("(!spring)");
@@ -300,14 +306,9 @@ public class ProfilesTests {
 		try {
 			supplier.get();
 			fail("Not malformed");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			assertTrue(ex.getMessage().contains("Malformed"));
 		}
-	}
-	
-	private static Predicate<String> activeProfiles(String... profiles) {
-		return new MockActiveProfiles(profiles);
 	}
 
 	private static class MockActiveProfiles implements Predicate<String> {

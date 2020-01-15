@@ -15,10 +15,6 @@
  */
 package org.springframework.web.reactive.function.client;
 
-import java.time.Duration;
-import java.util.Map;
-import java.util.function.Function;
-
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelOption;
 import okhttp3.mockwebserver.MockResponse;
@@ -26,9 +22,6 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.buffer.AbstractDataBufferAllocatingTestCase;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
@@ -37,8 +30,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.web.reactive.function.UnsupportedMediaTypeException;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import java.time.Duration;
+import java.util.Map;
+import java.util.function.Function;
+
+import static org.junit.Assert.assertSame;
 
 /**
  * WebClient integration tests focusing on data buffer management.
@@ -76,8 +75,7 @@ public class WebClientDataBufferAllocatingTests extends AbstractDataBufferAlloca
 			ByteBufAllocator allocator = ((NettyDataBufferFactory) bufferFactory).getByteBufAllocator();
 			return new ReactorClientHttpConnector(this.factory, httpClient ->
 					httpClient.tcpConfiguration(tcpClient -> tcpClient.option(ChannelOption.ALLOCATOR, allocator)));
-		}
-		else {
+		} else {
 			return new ReactorClientHttpConnector();
 		}
 	}
@@ -87,7 +85,6 @@ public class WebClientDataBufferAllocatingTests extends AbstractDataBufferAlloca
 		waitForDataBufferRelease(Duration.ofSeconds(2));
 		this.factory.destroy();
 	}
-
 
 
 	@Test
@@ -117,7 +114,8 @@ public class WebClientDataBufferAllocatingTests extends AbstractDataBufferAlloca
 		Mono<Map<String, String>> mono = this.webClient.get()
 				.uri("/sample").accept(MediaType.APPLICATION_JSON)
 				.retrieve()
-				.bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {});
+				.bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {
+				});
 
 		StepVerifier.create(mono).expectError(UnsupportedMediaTypeException.class).verify(Duration.ofSeconds(3));
 		assertEquals(1, this.server.getRequestCount());
@@ -157,7 +155,7 @@ public class WebClientDataBufferAllocatingTests extends AbstractDataBufferAlloca
 
 
 	private void testOnStatus(Throwable expected,
-			Function<ClientResponse, Mono<? extends Throwable>> exceptionFunction) {
+							  Function<ClientResponse, Mono<? extends Throwable>> exceptionFunction) {
 
 		HttpStatus errorStatus = HttpStatus.BAD_GATEWAY;
 

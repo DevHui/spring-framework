@@ -16,18 +16,11 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.io.File;
-import java.time.Duration;
-
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.MonoProcessor;
-import reactor.test.StepVerifier;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,27 +42,32 @@ import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.MonoProcessor;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-import static org.springframework.http.MediaType.*;
+import java.io.File;
+import java.time.Duration;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assume.assumeTrue;
+import static org.springframework.http.MediaType.TEXT_EVENT_STREAM;
 
 /**
  * @author Sebastien Deleuze
  */
 public class SseIntegrationTests extends AbstractHttpHandlerIntegrationTests {
 
-	private AnnotationConfigApplicationContext wac;
-
-	private WebClient webClient;
-
 	@Parameterized.Parameter(1)
 	public ClientHttpConnector connector;
+	private AnnotationConfigApplicationContext wac;
+	private WebClient webClient;
 
 	@Parameterized.Parameters(name = "server [{0}] webClient [{1}]")
 	public static Object[][] arguments() {
 		File base = new File(System.getProperty("java.io.tmpdir"));
-		return new Object[][] {
+		return new Object[][]{
 				{new JettyHttpServer(), new ReactorClientHttpConnector()},
 				{new JettyHttpServer(), new JettyClientHttpConnector()},
 				{new ReactorHttpServer(), new ReactorClientHttpConnector()},
@@ -141,7 +139,8 @@ public class SseIntegrationTests extends AbstractHttpHandlerIntegrationTests {
 				.uri("/event")
 				.accept(TEXT_EVENT_STREAM)
 				.retrieve()
-				.bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<Person>>() {});
+				.bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<Person>>() {
+				});
 
 		verifyPersonEvents(result);
 	}
@@ -152,21 +151,22 @@ public class SseIntegrationTests extends AbstractHttpHandlerIntegrationTests {
 				.uri("/event")
 				.accept(TEXT_EVENT_STREAM)
 				.retrieve()
-				.bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<Person>>() {});
+				.bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<Person>>() {
+				});
 
 		verifyPersonEvents(result);
 	}
 
 	private void verifyPersonEvents(Flux<ServerSentEvent<Person>> result) {
 		StepVerifier.create(result)
-				.consumeNextWith( event -> {
+				.consumeNextWith(event -> {
 					assertEquals("0", event.id());
 					assertEquals(new Person("foo 0"), event.data());
 					assertEquals("bar 0", event.comment());
 					assertNull(event.event());
 					assertNull(event.retry());
 				})
-				.consumeNextWith( event -> {
+				.consumeNextWith(event -> {
 					assertEquals("1", event.id());
 					assertEquals(new Person("foo 1"), event.data());
 					assertEquals("bar 1", event.comment());

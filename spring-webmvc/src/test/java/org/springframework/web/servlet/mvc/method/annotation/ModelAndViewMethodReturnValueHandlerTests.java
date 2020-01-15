@@ -16,11 +16,8 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.reflect.Method;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.ui.ModelMap;
@@ -30,7 +27,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 import org.springframework.web.servlet.view.RedirectView;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test fixture with {@link ModelAndViewMethodReturnValueHandler}.
@@ -90,7 +93,7 @@ public class ModelAndViewMethodReturnValueHandlerTests {
 
 	@Test
 	public void handleRedirectAttributesWithViewReference() throws Exception {
-		RedirectAttributesModelMap redirectAttributes  = new RedirectAttributesModelMap();
+		RedirectAttributesModelMap redirectAttributes = new RedirectAttributesModelMap();
 		mavContainer.setRedirectModel(redirectAttributes);
 
 		ModelAndView mav = new ModelAndView(new RedirectView(), "attrName", "attrValue");
@@ -104,7 +107,7 @@ public class ModelAndViewMethodReturnValueHandlerTests {
 
 	@Test
 	public void handleRedirectAttributesWithViewName() throws Exception {
-		RedirectAttributesModelMap redirectAttributes  = new RedirectAttributesModelMap();
+		RedirectAttributesModelMap redirectAttributes = new RedirectAttributesModelMap();
 		mavContainer.setRedirectModel(redirectAttributes);
 
 		ModelAndView mav = new ModelAndView("redirect:viewName", "attrName", "attrValue");
@@ -118,7 +121,7 @@ public class ModelAndViewMethodReturnValueHandlerTests {
 
 	@Test
 	public void handleRedirectAttributesWithCustomPrefix() throws Exception {
-		RedirectAttributesModelMap redirectAttributes  = new RedirectAttributesModelMap();
+		RedirectAttributesModelMap redirectAttributes = new RedirectAttributesModelMap();
 		mavContainer.setRedirectModel(redirectAttributes);
 
 		ModelAndView mav = new ModelAndView("myRedirect:viewName", "attrName", "attrValue");
@@ -133,7 +136,7 @@ public class ModelAndViewMethodReturnValueHandlerTests {
 
 	@Test
 	public void handleRedirectAttributesWithoutRedirect() throws Exception {
-		RedirectAttributesModelMap redirectAttributes  = new RedirectAttributesModelMap();
+		RedirectAttributesModelMap redirectAttributes = new RedirectAttributesModelMap();
 		mavContainer.setRedirectModel(redirectAttributes);
 
 		ModelAndView mav = new ModelAndView();

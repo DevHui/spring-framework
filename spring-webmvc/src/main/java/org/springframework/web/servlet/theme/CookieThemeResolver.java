@@ -16,16 +16,16 @@
 
 package org.springframework.web.servlet.theme;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.util.CookieGenerator;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * {@link ThemeResolver} implementation that uses a cookie sent back to the user
@@ -37,8 +37,8 @@ import org.springframework.web.util.WebUtils;
  *
  * @author Jean-Pierre Pawlak
  * @author Juergen Hoeller
- * @since 17.06.2003
  * @see #setThemeName
+ * @since 17.06.2003
  */
 public class CookieThemeResolver extends CookieGenerator implements ThemeResolver {
 
@@ -52,6 +52,7 @@ public class CookieThemeResolver extends CookieGenerator implements ThemeResolve
 	 * for overriding a cookie value if the theme has been changed in the
 	 * course of the current request! Use RequestContext.getTheme() to
 	 * retrieve the current theme in controllers or views.
+	 *
 	 * @see org.springframework.web.servlet.support.RequestContext#getTheme
 	 */
 	public static final String THEME_REQUEST_ATTRIBUTE_NAME = CookieThemeResolver.class.getName() + ".THEME";
@@ -69,14 +70,6 @@ public class CookieThemeResolver extends CookieGenerator implements ThemeResolve
 		setCookieName(DEFAULT_COOKIE_NAME);
 	}
 
-
-	/**
-	 * Set the name of the default theme.
-	 */
-	public void setDefaultThemeName(String defaultThemeName) {
-		this.defaultThemeName = defaultThemeName;
-	}
-
 	/**
 	 * Return the name of the default theme.
 	 */
@@ -84,6 +77,12 @@ public class CookieThemeResolver extends CookieGenerator implements ThemeResolve
 		return this.defaultThemeName;
 	}
 
+	/**
+	 * Set the name of the default theme.
+	 */
+	public void setDefaultThemeName(String defaultThemeName) {
+		this.defaultThemeName = defaultThemeName;
+	}
 
 	@Override
 	public String resolveThemeName(HttpServletRequest request) {
@@ -123,8 +122,7 @@ public class CookieThemeResolver extends CookieGenerator implements ThemeResolve
 			// Set request attribute and add cookie.
 			request.setAttribute(THEME_REQUEST_ATTRIBUTE_NAME, themeName);
 			addCookie(response, themeName);
-		}
-		else {
+		} else {
 			// Set request attribute to fallback theme and remove cookie.
 			request.setAttribute(THEME_REQUEST_ATTRIBUTE_NAME, getDefaultThemeName());
 			removeCookie(response);

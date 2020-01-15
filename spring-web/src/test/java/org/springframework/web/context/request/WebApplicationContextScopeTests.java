@@ -16,10 +16,7 @@
 
 package org.springframework.web.context.request;
 
-import javax.servlet.ServletContextEvent;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockServletContext;
@@ -28,7 +25,11 @@ import org.springframework.web.context.ContextCleanupListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
-import static org.junit.Assert.*;
+import javax.servlet.ServletContextEvent;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Juergen Hoeller
@@ -62,8 +63,7 @@ public class WebApplicationContextScopeTests {
 			assertSame(bean, ac.getBean(NAME));
 			requestAttributes.requestCompleted();
 			assertTrue(bean.wasDestroyed());
-		}
-		finally {
+		} finally {
 			RequestContextHolder.setRequestAttributes(null);
 		}
 	}
@@ -81,8 +81,7 @@ public class WebApplicationContextScopeTests {
 			assertSame(bean, ac.getBean(NAME));
 			request.getSession().invalidate();
 			assertTrue(bean.wasDestroyed());
-		}
-		finally {
+		} finally {
 			RequestContextHolder.setRequestAttributes(null);
 		}
 	}

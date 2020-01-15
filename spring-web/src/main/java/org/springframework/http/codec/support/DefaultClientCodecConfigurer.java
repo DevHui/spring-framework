@@ -16,11 +16,11 @@
 
 package org.springframework.http.codec.support;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.http.codec.ClientCodecConfigurer;
 import org.springframework.http.codec.HttpMessageWriter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Default implementation of {@link ClientCodecConfigurer}.

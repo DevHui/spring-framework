@@ -16,17 +16,9 @@
 
 package org.springframework.context.annotation.configuration;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.scope.ScopedObject;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -40,7 +32,18 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests that scopes are properly supported by using a custom Scope implementations
@@ -51,10 +54,8 @@ import static org.junit.Assert.*;
  */
 public class ScopingTests {
 
-	public static String flag = "1";
-
 	private static final String SCOPE = "my scope";
-
+	public static String flag = "1";
 	private CustomScope customScope;
 
 	private GenericApplicationContext ctx;
@@ -222,6 +223,20 @@ public class ScopingTests {
 	}
 
 
+	@Target({ElementType.METHOD})
+	@Retention(RetentionPolicy.RUNTIME)
+	@Scope(SCOPE)
+	@interface MyScope {
+	}
+
+
+	@Target({ElementType.METHOD})
+	@Retention(RetentionPolicy.RUNTIME)
+	@Bean
+	@Scope(value = SCOPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	@interface MyProxiedScope {
+	}
+
 	static class Foo {
 
 		public Foo() {
@@ -230,7 +245,6 @@ public class ScopingTests {
 		public void doSomething() {
 		}
 	}
-
 
 	static class Bar {
 
@@ -245,16 +259,15 @@ public class ScopingTests {
 		}
 	}
 
-
 	@Configuration
 	public static class InvalidProxyOnPredefinedScopesConfiguration {
 
-		@Bean @Scope(proxyMode=ScopedProxyMode.INTERFACES)
+		@Bean
+		@Scope(proxyMode = ScopedProxyMode.INTERFACES)
 		public Object invalidProxyOnPredefinedScopes() {
 			return new Object();
 		}
 	}
-
 
 	@Configuration
 	public static class ScopedConfigurationClass {
@@ -305,24 +318,9 @@ public class ScopingTests {
 		}
 	}
 
-
-	@Target({ElementType.METHOD})
-	@Retention(RetentionPolicy.RUNTIME)
-	@Scope(SCOPE)
-	@interface MyScope {
-	}
-
-
-	@Target({ElementType.METHOD})
-	@Retention(RetentionPolicy.RUNTIME)
-	@Bean
-	@Scope(value=SCOPE, proxyMode=ScopedProxyMode.TARGET_CLASS)
-	@interface MyProxiedScope {
-	}
-
-
 	/**
 	 * Simple scope implementation which creates object based on a flag.
+	 *
 	 * @author Costin Leau
 	 * @author Chris Beams
 	 */

@@ -16,15 +16,7 @@
 
 package org.springframework.expression.spel;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.AccessException;
 import org.springframework.expression.BeanResolver;
@@ -39,7 +31,18 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.testresources.PlaceOfBirth;
 
-import static org.junit.Assert.*;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests invocation of methods.
@@ -123,8 +126,7 @@ public class MethodInvocationTests extends AbstractExpressionTests {
 		try {
 			o = expr.getValue(eContext);
 			fail();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			if (ex instanceof SpelEvaluationException) {
 				fail("Should not be a SpelEvaluationException: " + ex);
 			}
@@ -137,8 +139,7 @@ public class MethodInvocationTests extends AbstractExpressionTests {
 		try {
 			o = expr.getValue(eContext);
 			fail();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			// 4 means it will throw a checked exception - this will be wrapped
 			if (!(ex instanceof ExpressionInvocationTargetException)) {
 				fail("Should have been wrapped: " + ex);
@@ -167,8 +168,7 @@ public class MethodInvocationTests extends AbstractExpressionTests {
 		try {
 			expr.getValue(context);
 			fail();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			if (ex instanceof SpelEvaluationException) {
 				fail("Should not be a SpelEvaluationException: " + ex);
 			}
@@ -191,8 +191,7 @@ public class MethodInvocationTests extends AbstractExpressionTests {
 		try {
 			expr.getValue(context);
 			fail();
-		}
-		catch (ExpressionInvocationTargetException ex) {
+		} catch (ExpressionInvocationTargetException ex) {
 			Throwable cause = ex.getCause();
 			assertEquals("org.springframework.expression.spel.testresources.Inventor$TestException",
 					cause.getClass().getName());
@@ -205,7 +204,7 @@ public class MethodInvocationTests extends AbstractExpressionTests {
 		StandardEvaluationContext context = new StandardEvaluationContext();
 		context.setRootObject(new TestObject());
 		LocalFilter filter = new LocalFilter();
-		context.registerMethodFilter(TestObject.class,filter);
+		context.registerMethodFilter(TestObject.class, filter);
 
 		// Filter will be called but not do anything, so first doit() will be invoked
 		SpelExpression expr = (SpelExpression) parser.parseExpression("doit(1)");
@@ -231,7 +230,7 @@ public class MethodInvocationTests extends AbstractExpressionTests {
 
 		// check de-registration works
 		filter.filterCalled = false;
-		context.registerMethodFilter(TestObject.class,null);//clear filter
+		context.registerMethodFilter(TestObject.class, null);//clear filter
 		context.setRootObject(new TestObject());
 		expr = (SpelExpression) parser.parseExpression("doit(1)");
 		result = expr.getValue(context, String.class);
@@ -287,7 +286,7 @@ public class MethodInvocationTests extends AbstractExpressionTests {
 
 	@Test
 	public void testInvocationOnNullContextObject() {
-		evaluateAndCheckError("null.toString()",SpelMessage.METHOD_CALL_ON_NULL_OBJECT_NOT_ALLOWED);
+		evaluateAndCheckError("null.toString()", SpelMessage.METHOD_CALL_ON_NULL_OBJECT_NOT_ALLOWED);
 	}
 
 	@Test
@@ -317,6 +316,10 @@ public class MethodInvocationTests extends AbstractExpressionTests {
 	}
 
 
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface Anno {
+	}
+
 	// Simple filter
 	static class LocalFilter implements MethodFilter {
 
@@ -342,23 +345,33 @@ public class MethodInvocationTests extends AbstractExpressionTests {
 		public List<Method> filter(List<Method> methods) {
 			filterCalled = true;
 			List<Method> forRemoval = new ArrayList<>();
-			for (Method method: methods) {
+			for (Method method : methods) {
 				if (removeIfNotAnnotated && !isAnnotated(method)) {
 					forRemoval.add(method);
 				}
 			}
-			for (Method method: forRemoval) {
+			for (Method method : forRemoval) {
 				methods.remove(method);
 			}
 			return methods;
 		}
 	}
 
+	static class DummyMethodResolver implements MethodResolver {
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface Anno {
+		@Override
+		public MethodExecutor resolve(EvaluationContext context, Object targetObject, String name,
+									  List<TypeDescriptor> argumentTypes) throws AccessException {
+			throw new UnsupportedOperationException();
+		}
 	}
 
+	public static class BytesService {
+
+		public byte[] handleBytes(byte[] bytes) {
+			return bytes;
+		}
+	}
 
 	class TestObject {
 
@@ -368,25 +381,7 @@ public class MethodInvocationTests extends AbstractExpressionTests {
 
 		@Anno
 		public String doit(double d) {
-			return "double "+d;
-		}
-	}
-
-
-	static class DummyMethodResolver implements MethodResolver {
-
-		@Override
-		public MethodExecutor resolve(EvaluationContext context, Object targetObject, String name,
-				List<TypeDescriptor> argumentTypes) throws AccessException {
-			throw new UnsupportedOperationException();
-		}
-	}
-
-
-	public static class BytesService {
-
-		public byte[] handleBytes(byte[] bytes) {
-			return bytes;
+			return "double " + d;
 		}
 	}
 

@@ -15,11 +15,8 @@
  */
 package org.springframework.web.reactive.handler;
 
-import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
@@ -27,6 +24,8 @@ import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -51,7 +50,8 @@ public class CorsUrlHandlerMappingTests {
 
 	@Before
 	public void setup() {
-		this.handlerMapping = new AbstractUrlHandlerMapping() {};
+		this.handlerMapping = new AbstractUrlHandlerMapping() {
+		};
 		this.handlerMapping.registerHandler("/welcome.html", this.welcomeController);
 		this.handlerMapping.registerHandler("/cors.html", this.corsController);
 	}

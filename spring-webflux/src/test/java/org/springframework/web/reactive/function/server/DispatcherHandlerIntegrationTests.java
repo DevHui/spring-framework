@@ -16,13 +16,7 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,8 +35,15 @@ import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.util.pattern.PathPattern;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.web.reactive.function.BodyInserters.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.*;
 
@@ -83,7 +84,8 @@ public class DispatcherHandlerIntegrationTests extends AbstractHttpHandlerIntegr
 
 	@Test
 	public void flux() {
-		ParameterizedTypeReference<List<Person>> reference = new ParameterizedTypeReference<List<Person>>() {};
+		ParameterizedTypeReference<List<Person>> reference = new ParameterizedTypeReference<List<Person>>() {
+		};
 		ResponseEntity<List<Person>> result =
 				this.restTemplate
 						.exchange("http://localhost:" + this.port + "/flux", HttpMethod.GET, null, reference);

@@ -16,12 +16,9 @@
 
 package org.springframework.web.method.annotation;
 
-import java.lang.reflect.Method;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -31,7 +28,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test fixture with {@link ExpressionValueMethodArgumentResolver}.
@@ -98,7 +99,7 @@ public class ExpressionValueMethodArgumentResolverTests {
 	}
 
 	public void params(@Value("#{systemProperties.systemProperty}") int param1,
-			@Value("#{request.contextPath}") String param2, String notSupported) {
+					   @Value("#{request.contextPath}") String param2, String notSupported) {
 	}
 
 }

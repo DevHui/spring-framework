@@ -16,19 +16,11 @@
 
 package org.springframework.web.reactive.resource;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -39,8 +31,16 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.util.pattern.PathPattern;
 
-import static org.junit.Assert.*;
-import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.*;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.get;
 
 /**
  * Unit tests for {@link ResourceUrlProvider}.
@@ -62,6 +62,9 @@ public class ResourceUrlProviderTests {
 
 	private final MockServerWebExchange exchange = MockServerWebExchange.from(get("/"));
 
+	private static PathPatternMatcher pattern(String pattern) {
+		return new PathPatternMatcher(pattern);
+	}
 
 	@Before
 	public void setup() throws Exception {
@@ -72,7 +75,6 @@ public class ResourceUrlProviderTests {
 		this.handlerMap.put("/resources/**", this.handler);
 		this.urlProvider.registerHandlers(this.handlerMap);
 	}
-
 
 	@Test
 	public void getStaticResourceUrl() {
@@ -141,7 +143,6 @@ public class ResourceUrlProviderTests {
 				Matchers.hasKey(pattern("/resources/**")));
 	}
 
-
 	@Configuration
 	@SuppressWarnings({"unused", "WeakerAccess"})
 	static class HandlerMappingConfiguration {
@@ -160,10 +161,6 @@ public class ResourceUrlProviderTests {
 		public ResourceUrlProvider resourceUrlProvider() {
 			return new ResourceUrlProvider();
 		}
-	}
-
-	private static PathPatternMatcher pattern(String pattern) {
-		return new PathPatternMatcher(pattern);
 	}
 
 	private static class PathPatternMatcher extends BaseMatcher<PathPattern> {

@@ -16,19 +16,18 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.apache.commons.logging.Log;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-import reactor.core.publisher.Operators;
-
 import org.springframework.core.log.LogDelegateFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Operators;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Abstract base class for {@code Publisher} implementations that bridge between
@@ -39,41 +38,34 @@ import org.springframework.util.Assert;
  * WebSocket messages with standard Java WebSocket (JSR-356), Jetty, and
  * Undertow.
  *
+ * @param <T> the type of element signaled
  * @author Arjen Poutsma
  * @author Violeta Georgieva
  * @author Rossen Stoyanchev
  * @since 5.0
- * @param <T> the type of element signaled
  */
 public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 
+	@SuppressWarnings("rawtypes")
+	private static final AtomicLongFieldUpdater<AbstractListenerReadPublisher> DEMAND_FIELD_UPDATER =
+			AtomicLongFieldUpdater.newUpdater(AbstractListenerReadPublisher.class, "demand");
 	/**
 	 * Special logger for debugging Reactive Streams signals.
+	 *
 	 * @see LogDelegateFactory#getHiddenLog(Class)
 	 * @see AbstractListenerWriteProcessor#rsWriteLogger
 	 * @see AbstractListenerWriteFlushProcessor#rsWriteFlushLogger
 	 * @see WriteResultPublisher#rsWriteResultLogger
 	 */
 	protected static Log rsReadLogger = LogDelegateFactory.getHiddenLog(AbstractListenerReadPublisher.class);
-
-
 	private final AtomicReference<State> state = new AtomicReference<>(State.UNSUBSCRIBED);
-
+	private final String logPrefix;
 	private volatile long demand;
-
-	@SuppressWarnings("rawtypes")
-	private static final AtomicLongFieldUpdater<AbstractListenerReadPublisher> DEMAND_FIELD_UPDATER =
-			AtomicLongFieldUpdater.newUpdater(AbstractListenerReadPublisher.class, "demand");
-
 	@Nullable
 	private volatile Subscriber<? super T> subscriber;
-
 	private volatile boolean completionBeforeDemand;
-
 	@Nullable
 	private volatile Throwable errorBeforeDemand;
-
-	private final String logPrefix;
 
 
 	public AbstractListenerReadPublisher() {
@@ -82,6 +74,7 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 
 	/**
 	 * Create an instance with the given log prefix.
+	 *
 	 * @since 5.1
 	 */
 	public AbstractListenerReadPublisher(String logPrefix) {
@@ -91,6 +84,7 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 
 	/**
 	 * Return the configured log message prefix.
+	 *
 	 * @since 5.1
 	 */
 	public String getLogPrefix() {
@@ -148,6 +142,7 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 
 	/**
 	 * Read once from the input, if possible.
+	 *
 	 * @return the item that was read; or {@code null}
 	 */
 	@Nullable
@@ -159,6 +154,7 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 	 * {@link #checkOnDataAvailable()} so it can be used to safely suspend
 	 * reading, if the underlying API supports it, i.e. without competing with
 	 * an implicit call to resume via {@code checkOnDataAvailable()}.
+	 *
 	 * @since 5.0.2
 	 */
 	protected abstract void readingPaused();
@@ -167,6 +163,7 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 	 * Invoked after an I/O read error from the underlying server or after a
 	 * cancellation signal from the downstream consumer to allow sub-classes
 	 * to discard any current cached data they might have.
+	 *
 	 * @since 5.0.11
 	 */
 	protected abstract void discardData();
@@ -177,6 +174,7 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 	/**
 	 * Read and publish data one at a time until there is no more data, no more
 	 * demand, or perhaps we completed in the mean time.
+	 *
 	 * @return {@code true} if there is more demand; {@code false} if there is
 	 * no more demand or we have completed.
 	 */
@@ -194,8 +192,7 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 					rsReadLogger.trace(getLogPrefix() + "Publishing data read");
 				}
 				subscriber.onNext(data);
-			}
-			else {
+			} else {
 				if (rsReadLogger.isTraceEnabled()) {
 					rsReadLogger.trace(getLogPrefix() + "No more data to read");
 				}
@@ -247,30 +244,6 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 
 
 	/**
-	 * Subscription that delegates signals to State.
-	 */
-	private final class ReadSubscription implements Subscription {
-
-
-		@Override
-		public final void request(long n) {
-			if (rsReadLogger.isTraceEnabled()) {
-				rsReadLogger.trace(getLogPrefix() + n + " requested");
-			}
-			state.get().request(AbstractListenerReadPublisher.this, n);
-		}
-
-		@Override
-		public final void cancel() {
-			if (rsReadLogger.isTraceEnabled()) {
-				rsReadLogger.trace(getLogPrefix() + "Cancellation");
-			}
-			state.get().cancel(AbstractListenerReadPublisher.this);
-		}
-	}
-
-
-	/**
 	 * Represents a state for the {@link Publisher} to be in.
 	 * <p><pre>
 	 *        UNSUBSCRIBED
@@ -301,8 +274,7 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 					subscriber.onSubscribe(subscription);
 					publisher.changeState(SUBSCRIBING, NO_DEMAND);
 					publisher.handleCompletionOrErrorBeforeDemand();
-				}
-				else {
+				} else {
 					throw new IllegalStateException("Failed to transition to SUBSCRIBING, " +
 							"subscriber: " + subscriber);
 				}
@@ -374,8 +346,7 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 						boolean demandAvailable = publisher.readAndPublish();
 						if (demandAvailable) {
 							publisher.changeToDemandState(READING);
-						}
-						else {
+						} else {
 							publisher.readingPaused();
 							if (publisher.changeState(READING, NO_DEMAND)) {
 								// Demand may have arrived since readAndPublish returned
@@ -385,8 +356,7 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 								}
 							}
 						}
-					}
-					catch (IOException ex) {
+					} catch (IOException ex) {
 						publisher.onError(ex);
 					}
 				}
@@ -410,14 +380,17 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 			<T> void request(AbstractListenerReadPublisher<T> publisher, long n) {
 				// ignore
 			}
+
 			@Override
 			<T> void cancel(AbstractListenerReadPublisher<T> publisher) {
 				// ignore
 			}
+
 			@Override
 			<T> void onAllDataRead(AbstractListenerReadPublisher<T> publisher) {
 				// ignore
 			}
+
 			@Override
 			<T> void onError(AbstractListenerReadPublisher<T> publisher, Throwable t) {
 				// ignore
@@ -435,8 +408,7 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 		<T> void cancel(AbstractListenerReadPublisher<T> publisher) {
 			if (publisher.changeState(this, COMPLETED)) {
 				publisher.discardData();
-			}
-			else {
+			} else {
 				publisher.state.get().cancel(publisher);
 			}
 		}
@@ -451,8 +423,7 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 				if (s != null) {
 					s.onComplete();
 				}
-			}
-			else {
+			} else {
 				publisher.state.get().onAllDataRead(publisher);
 			}
 		}
@@ -464,10 +435,32 @@ public abstract class AbstractListenerReadPublisher<T> implements Publisher<T> {
 				if (s != null) {
 					s.onError(t);
 				}
-			}
-			else {
+			} else {
 				publisher.state.get().onError(publisher, t);
 			}
+		}
+	}
+
+	/**
+	 * Subscription that delegates signals to State.
+	 */
+	private final class ReadSubscription implements Subscription {
+
+
+		@Override
+		public final void request(long n) {
+			if (rsReadLogger.isTraceEnabled()) {
+				rsReadLogger.trace(getLogPrefix() + n + " requested");
+			}
+			state.get().request(AbstractListenerReadPublisher.this, n);
+		}
+
+		@Override
+		public final void cancel() {
+			if (rsReadLogger.isTraceEnabled()) {
+				rsReadLogger.trace(getLogPrefix() + "Cancellation");
+			}
+			state.get().cancel(AbstractListenerReadPublisher.this);
 		}
 	}
 

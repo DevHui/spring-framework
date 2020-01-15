@@ -16,8 +16,6 @@
 
 package org.springframework.messaging.support;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,16 +24,27 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.MessageHandler;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.never;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.verifyNoMoreInteractions;
+import static org.mockito.BDDMockito.verifyZeroInteractions;
+import static org.mockito.BDDMockito.willThrow;
 
 /**
  * Unit tests for {@link ExecutorSubscribableChannel}.
@@ -44,18 +53,13 @@ import static org.mockito.BDDMockito.*;
  */
 public class ExecutorSubscribableChannelTests {
 
+	private final Object payload = new Object();
+	private final Message<Object> message = MessageBuilder.withPayload(this.payload).build();
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-
 	private ExecutorSubscribableChannel channel = new ExecutorSubscribableChannel();
-
 	@Mock
 	private MessageHandler handler;
-
-	private final Object payload = new Object();
-
-	private final Message<Object> message = MessageBuilder.withPayload(this.payload).build();
-
 	@Captor
 	private ArgumentCaptor<Runnable> runnableCaptor;
 
@@ -101,7 +105,7 @@ public class ExecutorSubscribableChannelTests {
 	}
 
 	@Test
-	public void subscribeTwice()  {
+	public void subscribeTwice() {
 		assertThat(this.channel.subscribe(this.handler), equalTo(true));
 		assertThat(this.channel.subscribe(this.handler), equalTo(false));
 		this.channel.send(this.message);
@@ -109,7 +113,7 @@ public class ExecutorSubscribableChannelTests {
 	}
 
 	@Test
-	public void unsubscribeTwice()  {
+	public void unsubscribeTwice() {
 		this.channel.subscribe(this.handler);
 		assertThat(this.channel.unsubscribe(this.handler), equalTo(true));
 		assertThat(this.channel.unsubscribe(this.handler), equalTo(false));
@@ -118,7 +122,7 @@ public class ExecutorSubscribableChannelTests {
 	}
 
 	@Test
-	public void failurePropagates()  {
+	public void failurePropagates() {
 		RuntimeException ex = new RuntimeException();
 		willThrow(ex).given(this.handler).handleMessage(this.message);
 		MessageHandler secondHandler = mock(MessageHandler.class);
@@ -126,15 +130,14 @@ public class ExecutorSubscribableChannelTests {
 		this.channel.subscribe(secondHandler);
 		try {
 			this.channel.send(message);
-		}
-		catch (MessageDeliveryException actualException) {
+		} catch (MessageDeliveryException actualException) {
 			assertThat(actualException.getCause(), equalTo(ex));
 		}
 		verifyZeroInteractions(secondHandler);
 	}
 
 	@Test
-	public void concurrentModification()  {
+	public void concurrentModification() {
 		this.channel.subscribe(message1 -> channel.unsubscribe(handler));
 		this.channel.subscribe(this.handler);
 		this.channel.send(this.message);
@@ -177,8 +180,7 @@ public class ExecutorSubscribableChannelTests {
 		this.channel.subscribe(this.handler);
 		try {
 			this.channel.send(this.message);
-		}
-		catch (MessageDeliveryException actual) {
+		} catch (MessageDeliveryException actual) {
 			assertSame(expected, actual.getCause());
 		}
 		verify(this.handler).handleMessage(this.message);

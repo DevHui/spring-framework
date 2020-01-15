@@ -15,19 +15,20 @@
  */
 package org.springframework.http.server.reactive;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-
 import org.springframework.core.io.buffer.DataBuffer;
 
-import static junit.framework.TestCase.*;
-import static org.mockito.Mockito.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertSame;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link AbstractListenerWriteProcessor}.
@@ -115,14 +116,9 @@ public class ListenerWriteProcessorTests {
 			return this.discardedBuffers;
 		}
 
-		public void setWritePossible(boolean writePossible) {
-			this.writePossible = writePossible;
-		}
-
 		public void setFailOnWrite(boolean failOnWrite) {
 			this.failOnWrite = failOnWrite;
 		}
-
 
 		@Override
 		protected boolean isDataEmpty(DataBuffer dataBuffer) {
@@ -132,6 +128,10 @@ public class ListenerWriteProcessorTests {
 		@Override
 		protected boolean isWritePossible() {
 			return this.writePossible;
+		}
+
+		public void setWritePossible(boolean writePossible) {
+			this.writePossible = writePossible;
 		}
 
 		@Override

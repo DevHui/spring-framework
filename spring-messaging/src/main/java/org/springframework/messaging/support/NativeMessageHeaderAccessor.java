@@ -16,11 +16,6 @@
 
 package org.springframework.messaging.support;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.util.Assert;
@@ -28,6 +23,11 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An extension of {@link MessageHeaderAccessor} that also stores and provides read/write
@@ -64,6 +64,7 @@ public class NativeMessageHeaderAccessor extends MessageHeaderAccessor {
 
 	/**
 	 * A protected constructor to create new headers.
+	 *
 	 * @param nativeHeaders native headers to create the message with (may be {@code null})
 	 */
 	protected NativeMessageHeaderAccessor(@Nullable Map<String, List<String>> nativeHeaders) {
@@ -86,6 +87,19 @@ public class NativeMessageHeaderAccessor extends MessageHeaderAccessor {
 				setHeader(NATIVE_HEADERS, new LinkedMultiValueMap<>(map));
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nullable
+	public static String getFirstNativeHeader(String headerName, Map<String, Object> headers) {
+		Map<String, List<String>> map = (Map<String, List<String>>) headers.get(NATIVE_HEADERS);
+		if (map != null) {
+			List<String> values = map.get(headerName);
+			if (values != null) {
+				return values.get(0);
+			}
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -207,19 +221,6 @@ public class NativeMessageHeaderAccessor extends MessageHeaderAccessor {
 			return null;
 		}
 		return nativeHeaders.remove(name);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public static String getFirstNativeHeader(String headerName, Map<String, Object> headers) {
-		Map<String, List<String>> map = (Map<String, List<String>>) headers.get(NATIVE_HEADERS);
-		if (map != null) {
-			List<String> values = map.get(headerName);
-			if (values != null) {
-				return values.get(0);
-			}
-		}
-		return null;
 	}
 
 }

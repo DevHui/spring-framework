@@ -16,19 +16,6 @@
 
 package org.springframework.web.reactive.function.server.support;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.security.Principal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalLong;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
@@ -46,6 +33,18 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
 import org.springframework.web.util.UriBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.security.Principal;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalLong;
 
 /**
  * Implementation of the {@link ServerRequest} interface that can be subclassed
@@ -63,6 +62,7 @@ public class ServerRequestWrapper implements ServerRequest {
 
 	/**
 	 * Create a new {@code ServerRequestWrapper} that wraps the given request.
+	 *
 	 * @param delegate the request to wrap
 	 */
 	public ServerRequestWrapper(ServerRequest delegate) {
@@ -225,6 +225,7 @@ public class ServerRequestWrapper implements ServerRequest {
 
 		/**
 		 * Create a new {@code HeadersWrapper} that wraps the given request.
+		 *
 		 * @param headers the headers to wrap
 		 */
 		public HeadersWrapper(Headers headers) {

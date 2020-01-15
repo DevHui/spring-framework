@@ -56,6 +56,13 @@ import org.springframework.core.codec.Encoder;
 public interface ClientCodecConfigurer extends CodecConfigurer {
 
 	/**
+	 * Static factory method for a {@code ClientCodecConfigurer}.
+	 */
+	static ClientCodecConfigurer create() {
+		return CodecConfigurerFactory.create(ClientCodecConfigurer.class);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 * <p>On the client side, built-in default also include customizations related
 	 * to multipart readers and writers, as well as the decoder for SSE.
@@ -68,14 +75,6 @@ public interface ClientCodecConfigurer extends CodecConfigurer {
 	 */
 	@Override
 	ClientCodecConfigurer clone();
-
-
-	/**
-	 * Static factory method for a {@code ClientCodecConfigurer}.
-	 */
-	static ClientCodecConfigurer create() {
-		return CodecConfigurerFactory.create(ClientCodecConfigurer.class);
-	}
 
 
 	/**
@@ -97,6 +96,7 @@ public interface ClientCodecConfigurer extends CodecConfigurer {
 		 * if you want to further customize the SSE decoder.
 		 * <p>Note that {@link #maxInMemorySize(int)}, if configured, will be
 		 * applied to the given decoder.
+		 *
 		 * @param decoder the decoder to use
 		 */
 		void serverSentEventDecoder(Decoder<?> decoder);
@@ -111,6 +111,7 @@ public interface ClientCodecConfigurer extends CodecConfigurer {
 		/**
 		 * Add a Part {@code Encoder}, internally wrapped with
 		 * {@link EncoderHttpMessageWriter}.
+		 *
 		 * @param encoder the encoder to add
 		 */
 		MultipartCodecs encoder(Encoder<?> encoder);
@@ -119,6 +120,7 @@ public interface ClientCodecConfigurer extends CodecConfigurer {
 		 * Add a Part {@link HttpMessageWriter}. For writers of type
 		 * {@link EncoderHttpMessageWriter} consider using the shortcut
 		 * {@link #encoder(Encoder)} instead.
+		 *
 		 * @param writer the writer to add
 		 */
 		MultipartCodecs writer(HttpMessageWriter<?> writer);

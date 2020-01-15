@@ -16,6 +16,19 @@
 
 package org.springframework.web.reactive.resource;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.cache.Cache;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
+import org.springframework.mock.web.test.server.MockServerWebExchange;
+import org.springframework.util.FileCopyUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,21 +41,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import org.springframework.cache.Cache;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
-import org.springframework.mock.web.test.server.MockServerWebExchange;
-import org.springframework.util.FileCopyUtils;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link EncodedResourceResolver}.

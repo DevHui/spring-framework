@@ -16,15 +16,6 @@
 
 package org.springframework.web.socket;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.servlet.api.DeploymentInfo;
@@ -34,11 +25,18 @@ import io.undertow.servlet.api.InstanceFactory;
 import io.undertow.servlet.api.InstanceHandle;
 import io.undertow.servlet.api.ServletInfo;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.xnio.OptionMap;
 import org.xnio.Xnio;
 
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.DispatcherServlet;
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.net.InetSocketAddress;
 
 import static io.undertow.servlet.Servlets.defaultContainer;
 import static io.undertow.servlet.Servlets.deployment;
@@ -72,9 +70,8 @@ public class UndertowTestServer implements WebSocketTestServer {
 		WebSocketDeploymentInfo info = new WebSocketDeploymentInfo();
 		try {
 			info.setWorker(Xnio.getInstance().createWorker(OptionMap.EMPTY));
-			info.setBuffers(new org.xnio.ByteBufferSlicePool(1024,1024));
-		}
-		catch (IOException ex) {
+			info.setBuffers(new org.xnio.ByteBufferSlicePool(1024, 1024));
+		} catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
 
@@ -100,8 +97,7 @@ public class UndertowTestServer implements WebSocketTestServer {
 			this.manager.deploy();
 			HttpHandler httpHandler = this.manager.start();
 			this.server = Undertow.builder().addHttpListener(0, "localhost").setHandler(httpHandler).build();
-		}
-		catch (ServletException ex) {
+		} catch (ServletException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -150,6 +146,7 @@ public class UndertowTestServer implements WebSocketTestServer {
 				public Servlet getInstance() {
 					return new DispatcherServlet(wac);
 				}
+
 				@Override
 				public void release() {
 				}
@@ -173,8 +170,10 @@ public class UndertowTestServer implements WebSocketTestServer {
 				public Filter getInstance() {
 					return filter;
 				}
+
 				@Override
-				public void release() {}
+				public void release() {
+				}
 			};
 		}
 	}

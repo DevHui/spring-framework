@@ -16,18 +16,20 @@
 
 package org.springframework.beans.factory.support;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.util.Arrays;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for SPR-8954, in which a custom {@link InstantiationAwareBeanPostProcessor}
@@ -95,6 +97,12 @@ public class Spr8954Tests {
 	}
 
 
+	interface AnInterface {
+	}
+
+	interface PredictedType {
+	}
+
 	static class FooFactoryBean implements FactoryBean<Foo>, AnInterface {
 
 		@Override
@@ -113,13 +121,7 @@ public class Spr8954Tests {
 		}
 	}
 
-	interface AnInterface {
-	}
-
 	static class Foo {
-	}
-
-	interface PredictedType {
 	}
 
 	static class PredictedTypeImpl implements PredictedType {

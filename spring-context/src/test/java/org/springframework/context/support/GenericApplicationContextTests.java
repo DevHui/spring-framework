@@ -17,14 +17,19 @@
 package org.springframework.context.support;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.ObjectUtils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Juergen Hoeller
@@ -45,8 +50,7 @@ public class GenericApplicationContextTests {
 		try {
 			assertSame(ac.getBean("testBean"), ac.getBean(Object.class));
 			fail("Should have thrown NoUniqueBeanDefinitionException");
-		}
-		catch (NoUniqueBeanDefinitionException ex) {
+		} catch (NoUniqueBeanDefinitionException ex) {
 			// expected
 		}
 	}
@@ -91,8 +95,7 @@ public class GenericApplicationContextTests {
 		try {
 			assertSame(ac.getBean("testBean"), ac.getBean(String.class));
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 
@@ -100,8 +103,7 @@ public class GenericApplicationContextTests {
 			assertSame(ac.getAutowireCapableBeanFactory().getBean("testBean"),
 					ac.getAutowireCapableBeanFactory().getBean(String.class));
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 	}
@@ -146,9 +148,9 @@ public class GenericApplicationContextTests {
 		assertSame(context.getBean(BeanC.class), context.getBean(BeanA.class).c);
 		assertSame(context, context.getBean(BeanB.class).applicationContext);
 
-		assertArrayEquals(new String[] {BeanA.class.getName()},
+		assertArrayEquals(new String[]{BeanA.class.getName()},
 				context.getDefaultListableBeanFactory().getDependentBeans(BeanB.class.getName()));
-		assertArrayEquals(new String[] {BeanA.class.getName()},
+		assertArrayEquals(new String[]{BeanA.class.getName()},
 				context.getDefaultListableBeanFactory().getDependentBeans(BeanC.class.getName()));
 	}
 
@@ -227,7 +229,7 @@ public class GenericApplicationContextTests {
 		}
 	}
 
-	static class BeanB implements ApplicationContextAware  {
+	static class BeanB implements ApplicationContextAware {
 
 		ApplicationContext applicationContext;
 
@@ -240,6 +242,7 @@ public class GenericApplicationContextTests {
 		}
 	}
 
-	static class BeanC {}
+	static class BeanC {
+	}
 
 }

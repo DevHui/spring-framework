@@ -16,15 +16,7 @@
 
 package org.springframework.web.method.annotation;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.servlet.http.Part;
-
 import org.junit.Test;
-
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -48,9 +40,22 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
-import static org.springframework.web.method.MvcAnnotationPredicates.*;
+import javax.servlet.http.Part;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.springframework.web.method.MvcAnnotationPredicates.requestParam;
+import static org.springframework.web.method.MvcAnnotationPredicates.requestPart;
 
 /**
  * Test fixture with {@link RequestParamMethodArgumentResolver}.
@@ -153,7 +158,7 @@ public class RequestParamMethodArgumentResolverTests {
 
 	@Test
 	public void resolveStringArray() throws Exception {
-		String[] expected = new String[] {"foo", "bar"};
+		String[] expected = new String[]{"foo", "bar"};
 		request.addParameter("name", expected);
 
 		MethodParameter param = this.testMethod.annotPresent(RequestParam.class).arg(String[].class);
@@ -487,7 +492,7 @@ public class RequestParamMethodArgumentResolverTests {
 		request.addParameter("name", "123", "456");
 		result = resolver.resolveArgument(param, null, webRequest, binderFactory);
 		assertEquals(Optional.class, result.getClass());
-		assertArrayEquals(new Integer[] {123, 456}, (Integer[]) ((Optional) result).get());
+		assertArrayEquals(new Integer[]{123, 456}, (Integer[]) ((Optional) result).get());
 	}
 
 	@Test

@@ -16,19 +16,8 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalLong;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -45,6 +34,16 @@ import org.springframework.http.codec.DecoderHttpMessageReader;
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalLong;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;

@@ -16,11 +16,6 @@
 
 package org.springframework.web.reactive.socket.server.upgrade;
 
-import java.util.function.Supplier;
-
-import reactor.core.publisher.Mono;
-import reactor.netty.http.server.HttpServerResponse;
-
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.server.reactive.AbstractServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -32,6 +27,10 @@ import org.springframework.web.reactive.socket.adapter.NettyWebSocketSessionSupp
 import org.springframework.web.reactive.socket.adapter.ReactorNettyWebSocketSession;
 import org.springframework.web.reactive.socket.server.RequestUpgradeStrategy;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+import reactor.netty.http.server.HttpServerResponse;
+
+import java.util.function.Supplier;
 
 /**
  * A {@link RequestUpgradeStrategy} for use with Reactor Netty.
@@ -43,6 +42,25 @@ public class ReactorNettyRequestUpgradeStrategy implements RequestUpgradeStrateg
 
 	private int maxFramePayloadLength = NettyWebSocketSessionSupport.DEFAULT_FRAME_MAX_SIZE;
 
+	private static HttpServerResponse getNativeResponse(ServerHttpResponse response) {
+		if (response instanceof AbstractServerHttpResponse) {
+			return ((AbstractServerHttpResponse) response).getNativeResponse();
+		} else if (response instanceof ServerHttpResponseDecorator) {
+			return getNativeResponse(((ServerHttpResponseDecorator) response).getDelegate());
+		} else {
+			throw new IllegalArgumentException(
+					"Couldn't find native response in " + response.getClass().getName());
+		}
+	}
+
+	/**
+	 * Return the configured max length for frames.
+	 *
+	 * @since 5.1
+	 */
+	public int getMaxFramePayloadLength() {
+		return this.maxFramePayloadLength;
+	}
 
 	/**
 	 * Configure the maximum allowable frame payload length. Setting this value
@@ -52,6 +70,7 @@ public class ReactorNettyRequestUpgradeStrategy implements RequestUpgradeStrateg
 	 * {@link io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory
 	 * WebSocketServerHandshakerFactory} in Netty.
 	 * <p>By default set to 65536 (64K).
+	 *
 	 * @param maxFramePayloadLength the max length for frames.
 	 * @since 5.1
 	 */
@@ -59,18 +78,9 @@ public class ReactorNettyRequestUpgradeStrategy implements RequestUpgradeStrateg
 		this.maxFramePayloadLength = maxFramePayloadLength;
 	}
 
-	/**
-	 * Return the configured max length for frames.
-	 * @since 5.1
-	 */
-	public int getMaxFramePayloadLength() {
-		return this.maxFramePayloadLength;
-	}
-
-
 	@Override
 	public Mono<Void> upgrade(ServerWebExchange exchange, WebSocketHandler handler,
-			@Nullable String subProtocol, Supplier<HandshakeInfo> handshakeInfoFactory) {
+							  @Nullable String subProtocol, Supplier<HandshakeInfo> handshakeInfoFactory) {
 
 		ServerHttpResponse response = exchange.getResponse();
 		HttpServerResponse reactorResponse = getNativeResponse(response);
@@ -84,19 +94,6 @@ public class ReactorNettyRequestUpgradeStrategy implements RequestUpgradeStrateg
 									in, out, handshakeInfo, bufferFactory, this.maxFramePayloadLength);
 					return handler.handle(session);
 				});
-	}
-
-	private static HttpServerResponse getNativeResponse(ServerHttpResponse response) {
-		if (response instanceof AbstractServerHttpResponse) {
-			return ((AbstractServerHttpResponse) response).getNativeResponse();
-		}
-		else if (response instanceof ServerHttpResponseDecorator) {
-			return getNativeResponse(((ServerHttpResponseDecorator) response).getDelegate());
-		}
-		else {
-			throw new IllegalArgumentException(
-					"Couldn't find native response in " + response.getClass().getName());
-		}
 	}
 
 }

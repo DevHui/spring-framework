@@ -16,21 +16,23 @@
 
 package org.springframework.core.codec;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StreamUtils;
+import reactor.core.publisher.Flux;
 
-import static org.junit.Assert.*;
-import static org.springframework.core.ResolvableType.*;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.springframework.core.ResolvableType.forClass;
 
 /**
  * @author Arjen Poutsma
@@ -67,8 +69,7 @@ public class ResourceDecoderTests extends AbstractDecoderTestCase<ResourceDecode
 					try {
 						byte[] bytes = StreamUtils.copyToByteArray(resource.getInputStream());
 						assertEquals("foobar", new String(bytes));
-					}
-					catch (IOException e) {
+					} catch (IOException e) {
 						fail(e.getMessage());
 					}
 				})
@@ -87,8 +88,7 @@ public class ResourceDecoderTests extends AbstractDecoderTestCase<ResourceDecode
 					try {
 						byte[] bytes = StreamUtils.copyToByteArray(resource.getInputStream());
 						assertEquals("foobar", new String(bytes));
-					}
-					catch (IOException e) {
+					} catch (IOException e) {
 						fail(e.getMessage());
 					}
 				})

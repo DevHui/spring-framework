@@ -16,17 +16,17 @@
 
 package org.springframework.core.codec;
 
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.util.MimeTypeUtils;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sebastien Deleuze

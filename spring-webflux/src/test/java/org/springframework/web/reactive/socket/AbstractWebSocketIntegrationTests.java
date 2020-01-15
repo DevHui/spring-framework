@@ -16,13 +16,6 @@
 
 package org.springframework.web.reactive.socket;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.apache.tomcat.websocket.server.WsContextListener;
 import org.junit.After;
 import org.junit.Before;
@@ -30,11 +23,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-import org.xnio.OptionMap;
-import org.xnio.Xnio;
-import reactor.core.publisher.Flux;
-import reactor.util.function.Tuple3;
-
 import org.springframework.context.Lifecycle;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -60,6 +48,17 @@ import org.springframework.web.reactive.socket.server.upgrade.ReactorNettyReques
 import org.springframework.web.reactive.socket.server.upgrade.TomcatRequestUpgradeStrategy;
 import org.springframework.web.reactive.socket.server.upgrade.UndertowRequestUpgradeStrategy;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
+import org.xnio.OptionMap;
+import org.xnio.Xnio;
+import reactor.core.publisher.Flux;
+import reactor.util.function.Tuple3;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Base class for WebSocket integration tests. Sub-classes must implement
@@ -73,24 +72,18 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 public abstract class AbstractWebSocketIntegrationTests {
 
 	private static final File TMP_DIR = new File(System.getProperty("java.io.tmpdir"));
-
-
-	protected int port;
-
 	@Parameter(0)
 	public WebSocketClient client;
-
 	@Parameter(1)
 	public HttpServer server;
-
 	@Parameter(2)
 	public Class<?> serverConfigClass;
-
+	protected int port;
 
 	@Parameters(name = "client[{0}] - server [{1}]")
 	public static Object[][] arguments() throws IOException {
 
-		WebSocketClient[] clients = new WebSocketClient[] {
+		WebSocketClient[] clients = new WebSocketClient[]{
 				new TomcatWebSocketClient(),
 				new JettyWebSocketClient(),
 				new ReactorNettyWebSocketClient(),

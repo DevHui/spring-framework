@@ -16,9 +16,12 @@
 
 package org.springframework.messaging.simp.user;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.converter.MessageConverter;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,13 +29,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import org.springframework.messaging.Message;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.converter.MessageConverter;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link MultiServerUserRegistry}.

@@ -17,11 +17,14 @@
 package org.springframework.cache.concurrent;
 
 import org.junit.Test;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Juergen Hoeller
@@ -120,7 +123,7 @@ public class ConcurrentMapCacheManagerTests {
 		assertFalse(cm.isStoreByValue());
 		Cache cache1 = cm.getCache("c1");
 		assertTrue(cache1 instanceof ConcurrentMapCache);
-		assertFalse(((ConcurrentMapCache)cache1).isStoreByValue());
+		assertFalse(((ConcurrentMapCache) cache1).isStoreByValue());
 		cache1.put("key", "value");
 
 		cm.setStoreByValue(true);

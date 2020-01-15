@@ -16,26 +16,10 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -59,10 +43,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.config.EnableWebFlux;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import rx.Completable;
+import rx.Observable;
+import rx.Single;
 
-import static java.util.Arrays.*;
-import static org.junit.Assert.*;
-import static org.springframework.http.MediaType.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.http.MediaType.APPLICATION_XML;
 
 /**
  * {@code @RequestMapping} integration tests focusing on serialization and
@@ -74,7 +74,8 @@ import static org.springframework.http.MediaType.*;
 public class RequestMappingMessageConversionIntegrationTests extends AbstractRequestMappingIntegrationTests {
 
 	private static final ParameterizedTypeReference<List<Person>> PERSON_LIST =
-			new ParameterizedTypeReference<List<Person>>() {};
+			new ParameterizedTypeReference<List<Person>>() {
+			};
 
 	private static final MediaType JSON = MediaType.APPLICATION_JSON;
 

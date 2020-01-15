@@ -16,14 +16,7 @@
 
 package org.springframework.http.client.reactive;
 
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import io.netty.buffer.ByteBufAllocator;
-import reactor.core.publisher.Flux;
-import reactor.netty.NettyInbound;
-import reactor.netty.http.client.HttpClientResponse;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.HttpHeaders;
@@ -32,13 +25,19 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Flux;
+import reactor.netty.NettyInbound;
+import reactor.netty.http.client.HttpClientResponse;
+
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * {@link ClientHttpResponse} implementation for the Reactor-Netty HTTP client.
  *
  * @author Brian Clozel
- * @since 5.0
  * @see reactor.netty.http.client.HttpClient
+ * @since 5.0
  */
 class ReactorClientHttpResponse implements ClientHttpResponse {
 
@@ -67,11 +66,11 @@ class ReactorClientHttpResponse implements ClientHttpResponse {
 					}
 				})
 				.doOnCancel(() ->
-					// https://github.com/reactor/reactor-netty/issues/503
-					// FluxReceive rejects multiple subscribers, but not after a cancel().
-					// Subsequent subscribers after cancel() will not be rejected, but will hang instead.
-					// So we need to intercept and reject them in that case.
-					this.rejectSubscribers.set(true))
+						// https://github.com/reactor/reactor-netty/issues/503
+						// FluxReceive rejects multiple subscribers, but not after a cancel().
+						// Subsequent subscribers after cancel() will not be rejected, but will hang instead.
+						// So we need to intercept and reject them in that case.
+						this.rejectSubscribers.set(true))
 				.map(byteBuf -> {
 					byteBuf.retain();
 					return this.bufferFactory.wrap(byteBuf);
@@ -100,13 +99,13 @@ class ReactorClientHttpResponse implements ClientHttpResponse {
 		MultiValueMap<String, ResponseCookie> result = new LinkedMultiValueMap<>();
 		this.response.cookies().values().stream().flatMap(Collection::stream)
 				.forEach(cookie ->
-					result.add(cookie.name(), ResponseCookie.from(cookie.name(), cookie.value())
-							.domain(cookie.domain())
-							.path(cookie.path())
-							.maxAge(cookie.maxAge())
-							.secure(cookie.isSecure())
-							.httpOnly(cookie.isHttpOnly())
-							.build()));
+						result.add(cookie.name(), ResponseCookie.from(cookie.name(), cookie.value())
+								.domain(cookie.domain())
+								.path(cookie.path())
+								.maxAge(cookie.maxAge())
+								.secure(cookie.isSecure())
+								.httpOnly(cookie.isHttpOnly())
+								.build()));
 		return CollectionUtils.unmodifiableMultiValueMap(result);
 	}
 

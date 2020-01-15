@@ -50,22 +50,21 @@ public class LifecycleBean implements BeanNameAware, BeanFactoryAware, Initializ
 
 	protected boolean destroyed;
 
+	public boolean isInitMethodDeclared() {
+		return initMethodDeclared;
+	}
 
 	public void setInitMethodDeclared(boolean initMethodDeclared) {
 		this.initMethodDeclared = initMethodDeclared;
 	}
 
-	public boolean isInitMethodDeclared() {
-		return initMethodDeclared;
+	public String getBeanName() {
+		return beanName;
 	}
 
 	@Override
 	public void setBeanName(String name) {
 		this.beanName = name;
-	}
-
-	public String getBeanName() {
-		return beanName;
 	}
 
 	@Override

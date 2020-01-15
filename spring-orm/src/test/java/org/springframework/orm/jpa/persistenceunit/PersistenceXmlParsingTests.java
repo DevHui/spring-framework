@@ -16,18 +16,8 @@
 
 package org.springframework.orm.jpa.persistenceunit;
 
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.persistence.spi.PersistenceUnitTransactionType;
-import javax.sql.DataSource;
-
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -37,7 +27,21 @@ import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.jdbc.datasource.lookup.MapDataSourceLookup;
 import org.springframework.tests.mock.jndi.SimpleNamingContextBuilder;
 
-import static org.junit.Assert.*;
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.spi.PersistenceUnitTransactionType;
+import javax.sql.DataSource;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Unit and integration tests for the JPA XML resource parsing support.
@@ -262,8 +266,7 @@ public class PersistenceXmlParsingTests {
 		try {
 			reader.readPersistenceUnitInfos(resource);
 			fail("expected invalid document exception");
-		}
-		catch (RuntimeException expected) {
+		} catch (RuntimeException expected) {
 		}
 	}
 
@@ -276,8 +279,7 @@ public class PersistenceXmlParsingTests {
 		try {
 			reader.readPersistenceUnitInfos(resource);
 			fail("expected invalid document exception");
-		}
-		catch (RuntimeException expected) {
+		} catch (RuntimeException expected) {
 		}
 	}
 

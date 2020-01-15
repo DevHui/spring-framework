@@ -16,17 +16,8 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
@@ -53,6 +44,14 @@ import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Reads a given fully-populated set of ConfigurationClass instances, registering bean
  * definitions with the given {@link BeanDefinitionRegistry} based on its contents.
@@ -65,8 +64,8 @@ import org.springframework.util.StringUtils;
  * @author Juergen Hoeller
  * @author Phillip Webb
  * @author Sam Brannen
- * @since 3.0
  * @see ConfigurationClassParser
+ * @since 3.0
  */
 class ConfigurationClassBeanDefinitionReader {
 
@@ -94,8 +93,8 @@ class ConfigurationClassBeanDefinitionReader {
 	 * that will be used to populate the given {@link BeanDefinitionRegistry}.
 	 */
 	ConfigurationClassBeanDefinitionReader(BeanDefinitionRegistry registry, SourceExtractor sourceExtractor,
-			ResourceLoader resourceLoader, Environment environment, BeanNameGenerator importBeanNameGenerator,
-			ImportRegistry importRegistry) {
+										   ResourceLoader resourceLoader, Environment environment, BeanNameGenerator importBeanNameGenerator,
+										   ImportRegistry importRegistry) {
 
 		this.registry = registry;
 		this.sourceExtractor = sourceExtractor;
@@ -216,8 +215,7 @@ class ConfigurationClassBeanDefinitionReader {
 			// static @Bean method
 			beanDef.setBeanClassName(configClass.getMetadata().getClassName());
 			beanDef.setFactoryMethodName(methodName);
-		}
-		else {
+		} else {
 			// instance @Bean method
 			beanDef.setFactoryBeanName(configClass.getBeanName());
 			beanDef.setUniqueFactoryMethodName(methodName);
@@ -311,7 +309,7 @@ class ConfigurationClassBeanDefinitionReader {
 		}
 		if (logger.isDebugEnabled()) {
 			logger.debug(String.format("Skipping bean definition for %s: a definition for bean '%s' " +
-					"already exists. This top-level bean definition is considered as an override.",
+							"already exists. This top-level bean definition is considered as an override.",
 					beanMethod, beanName));
 		}
 		return true;
@@ -328,8 +326,7 @@ class ConfigurationClassBeanDefinitionReader {
 				if (StringUtils.endsWithIgnoreCase(resource, ".groovy")) {
 					// When clearly asking for Groovy, that's what they'll get...
 					readerClass = GroovyBeanDefinitionReader.class;
-				}
-				else {
+				} else {
 					// Primarily ".xml" files but for any other extension as well
 					readerClass = XmlBeanDefinitionReader.class;
 				}
@@ -347,8 +344,7 @@ class ConfigurationClassBeanDefinitionReader {
 						abdr.setEnvironment(this.environment);
 					}
 					readerInstanceCache.put(readerClass, reader);
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					throw new IllegalStateException(
 							"Could not instantiate BeanDefinitionReader class [" + readerClass.getName() + "]");
 				}

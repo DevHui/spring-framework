@@ -16,12 +16,9 @@
 
 package org.springframework.test.context.support;
 
-import java.util.Map;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.AnnotationConfigurationException;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -32,10 +29,15 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.env.MockPropertySource;
 import org.springframework.test.context.TestPropertySource;
 
-import static org.hamcrest.CoreMatchers.*;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.context.support.TestPropertySourceUtils.*;
 
 /**
@@ -48,14 +50,27 @@ public class TestPropertySourceUtilsTests {
 
 	private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-	private static final String[] KEY_VALUE_PAIR = new String[] {"key = value"};
+	private static final String[] KEY_VALUE_PAIR = new String[]{"key = value"};
 
-	private static final String[] FOO_LOCATIONS = new String[] {"classpath:/foo.properties"};
+	private static final String[] FOO_LOCATIONS = new String[]{"classpath:/foo.properties"};
 
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
+	private static void assertMergedTestPropertySources(Class<?> testClass, String[] expectedLocations,
+														String[] expectedProperties) {
+
+		MergedTestPropertySources mergedPropertySources = buildMergedTestPropertySources(testClass);
+		assertNotNull(mergedPropertySources);
+		assertArrayEquals(expectedLocations, mergedPropertySources.getLocations());
+		assertArrayEquals(expectedProperties, mergedPropertySources.getProperties());
+	}
+
+	@SafeVarargs
+	private static <T> T[] asArray(T... arr) {
+		return arr;
+	}
 
 	@Test
 	public void emptyAnnotation() {
@@ -121,7 +136,6 @@ public class TestPropertySourceUtilsTests {
 		assertMergedTestPropertySources(OverriddenLocationsAndPropertiesPropertySources.class,
 				asArray("classpath:/baz.properties"), KEY_VALUE_PAIR);
 	}
-
 
 	@Test
 	public void addPropertiesFilesToEnvironmentWithNullContext() {
@@ -230,23 +244,6 @@ public class TestPropertySourceUtilsTests {
 		convertInlinedPropertiesToMap((String[]) null);
 	}
 
-
-	private static void assertMergedTestPropertySources(Class<?> testClass, String[] expectedLocations,
-			String[] expectedProperties) {
-
-		MergedTestPropertySources mergedPropertySources = buildMergedTestPropertySources(testClass);
-		assertNotNull(mergedPropertySources);
-		assertArrayEquals(expectedLocations, mergedPropertySources.getLocations());
-		assertArrayEquals(expectedProperties, mergedPropertySources.getProperties());
-	}
-
-
-	@SafeVarargs
-	private static <T> T[] asArray(T... arr) {
-		return arr;
-	}
-
-
 	@TestPropertySource
 	static class EmptyPropertySources {
 	}
@@ -263,14 +260,14 @@ public class TestPropertySourceUtilsTests {
 	static class ValuePropertySources {
 	}
 
-	@TestPropertySource(locations = { "/foo1.xml", "/foo2.xml" }, properties = { "k1a=v1a", "k1b: v1b" })
+	@TestPropertySource(locations = {"/foo1.xml", "/foo2.xml"}, properties = {"k1a=v1a", "k1b: v1b"})
 	static class LocationsAndPropertiesPropertySources {
 	}
 
 	static class InheritedPropertySources extends LocationsAndPropertiesPropertySources {
 	}
 
-	@TestPropertySource(locations = { "/bar1.xml", "/bar2.xml" }, properties = { "k2a v2a", "k2b: v2b" })
+	@TestPropertySource(locations = {"/bar1.xml", "/bar2.xml"}, properties = {"k2a v2a", "k2b: v2b"})
 	static class ExtendedPropertySources extends LocationsAndPropertiesPropertySources {
 	}
 

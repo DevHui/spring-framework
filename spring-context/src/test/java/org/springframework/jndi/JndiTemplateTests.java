@@ -16,13 +16,16 @@
 
 package org.springframework.jndi;
 
+import org.junit.Test;
+
 import javax.naming.Context;
 import javax.naming.NameNotFoundException;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Rod Johnson
@@ -68,8 +71,7 @@ public class JndiTemplateTests {
 		try {
 			jt.lookup(name);
 			fail("Should have thrown NamingException");
-		}
-		catch (NameNotFoundException ex) {
+		} catch (NameNotFoundException ex) {
 			// Ok
 		}
 		verify(context).close();
@@ -91,8 +93,7 @@ public class JndiTemplateTests {
 		try {
 			jt.lookup(name);
 			fail("Should have thrown NamingException");
-		}
-		catch (NameNotFoundException ex) {
+		} catch (NameNotFoundException ex) {
 			// Ok
 		}
 		verify(context).close();
@@ -115,8 +116,7 @@ public class JndiTemplateTests {
 		try {
 			jt.lookup(name, String.class);
 			fail("Should have thrown TypeMismatchNamingException");
-		}
-		catch (TypeMismatchNamingException ex) {
+		} catch (TypeMismatchNamingException ex) {
 			// Ok
 		}
 		verify(context).close();

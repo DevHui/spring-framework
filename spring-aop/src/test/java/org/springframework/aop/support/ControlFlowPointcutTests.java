@@ -17,14 +17,14 @@
 package org.springframework.aop.support;
 
 import org.junit.Test;
-
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.tests.aop.interceptor.NopInterceptor;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @author Rod Johnson
@@ -103,18 +103,20 @@ public class ControlFlowPointcutTests {
 	@Test
 	public void testToString() {
 		assertEquals(ControlFlowPointcut.class.getName() + ": class = " + One.class.getName() + "; methodName = null",
-			new ControlFlowPointcut(One.class).toString());
+				new ControlFlowPointcut(One.class).toString());
 		assertEquals(ControlFlowPointcut.class.getName() + ": class = " + One.class.getName() + "; methodName = getAge",
-			new ControlFlowPointcut(One.class, "getAge").toString());
+				new ControlFlowPointcut(One.class, "getAge").toString());
 	}
 
 	public class One {
 		int getAge(ITestBean proxied) {
 			return proxied.getAge();
 		}
+
 		int nomatch(ITestBean proxied) {
 			return proxied.getAge();
 		}
+
 		void set(ITestBean proxied) {
 			proxied.setAge(5);
 		}

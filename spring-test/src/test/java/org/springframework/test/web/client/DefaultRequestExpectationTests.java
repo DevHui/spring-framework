@@ -16,24 +16,26 @@
 
 package org.springframework.test.web.client;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
-import static org.junit.Assert.*;
-import static org.springframework.http.HttpMethod.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.test.web.client.ExpectedCount.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
 /**
  * Unit tests for {@link DefaultRequestExpectation}.
+ *
  * @author Rossen Stoyanchev
  */
 public class DefaultRequestExpectationTests {
@@ -85,9 +87,8 @@ public class DefaultRequestExpectationTests {
 	@SuppressWarnings("deprecation")
 	private ClientHttpRequest createRequest(HttpMethod method, String url) {
 		try {
-			return new org.springframework.mock.http.client.MockAsyncClientHttpRequest(method,  new URI(url));
-		}
-		catch (URISyntaxException ex) {
+			return new org.springframework.mock.http.client.MockAsyncClientHttpRequest(method, new URI(url));
+		} catch (URISyntaxException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}

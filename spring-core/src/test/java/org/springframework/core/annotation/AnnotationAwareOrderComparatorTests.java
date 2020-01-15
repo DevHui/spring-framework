@@ -16,15 +16,18 @@
 
 package org.springframework.core.annotation;
 
+import org.junit.Test;
+
+import javax.annotation.Priority;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Priority;
-
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Juergen Hoeller

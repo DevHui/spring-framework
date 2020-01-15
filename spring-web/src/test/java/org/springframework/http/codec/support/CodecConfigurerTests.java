@@ -16,15 +16,8 @@
 
 package org.springframework.http.codec.support;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
 import com.google.protobuf.ExtensionRegistry;
 import org.junit.Test;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.ByteArrayDecoder;
 import org.springframework.core.codec.ByteArrayEncoder;
@@ -58,8 +51,18 @@ import org.springframework.http.codec.xml.Jaxb2XmlDecoder;
 import org.springframework.http.codec.xml.Jaxb2XmlEncoder;
 import org.springframework.util.MimeTypeUtils;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link BaseDefaultCodecs}.

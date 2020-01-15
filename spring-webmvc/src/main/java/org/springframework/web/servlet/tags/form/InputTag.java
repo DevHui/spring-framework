@@ -16,11 +16,10 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.util.Map;
+import org.springframework.lang.Nullable;
 
 import javax.servlet.jsp.JspException;
-
-import org.springframework.lang.Nullable;
+import java.util.Map;
 
 /**
  * The {@code <input>} tag renders an HTML 'input' tag with type 'text' using
@@ -263,15 +262,6 @@ public class InputTag extends AbstractHtmlInputElementTag {
 	@Nullable
 	private String autocomplete;
 
-
-	/**
-	 * Set the value of the '{@code size}' attribute.
-	 * May be a runtime expression.
-	 */
-	public void setSize(String size) {
-		this.size = size;
-	}
-
 	/**
 	 * Get the value of the '{@code size}' attribute.
 	 */
@@ -281,11 +271,11 @@ public class InputTag extends AbstractHtmlInputElementTag {
 	}
 
 	/**
-	 * Set the value of the '{@code maxlength}' attribute.
+	 * Set the value of the '{@code size}' attribute.
 	 * May be a runtime expression.
 	 */
-	public void setMaxlength(String maxlength) {
-		this.maxlength = maxlength;
+	public void setSize(String size) {
+		this.size = size;
 	}
 
 	/**
@@ -297,11 +287,11 @@ public class InputTag extends AbstractHtmlInputElementTag {
 	}
 
 	/**
-	 * Set the value of the '{@code alt}' attribute.
+	 * Set the value of the '{@code maxlength}' attribute.
 	 * May be a runtime expression.
 	 */
-	public void setAlt(String alt) {
-		this.alt = alt;
+	public void setMaxlength(String maxlength) {
+		this.maxlength = maxlength;
 	}
 
 	/**
@@ -313,11 +303,11 @@ public class InputTag extends AbstractHtmlInputElementTag {
 	}
 
 	/**
-	 * Set the value of the '{@code onselect}' attribute.
+	 * Set the value of the '{@code alt}' attribute.
 	 * May be a runtime expression.
 	 */
-	public void setOnselect(String onselect) {
-		this.onselect = onselect;
+	public void setAlt(String alt) {
+		this.alt = alt;
 	}
 
 	/**
@@ -329,11 +319,11 @@ public class InputTag extends AbstractHtmlInputElementTag {
 	}
 
 	/**
-	 * Set the value of the '{@code autocomplete}' attribute.
+	 * Set the value of the '{@code onselect}' attribute.
 	 * May be a runtime expression.
 	 */
-	public void setAutocomplete(String autocomplete) {
-		this.autocomplete = autocomplete;
+	public void setOnselect(String onselect) {
+		this.onselect = onselect;
 	}
 
 	/**
@@ -344,6 +334,13 @@ public class InputTag extends AbstractHtmlInputElementTag {
 		return this.autocomplete;
 	}
 
+	/**
+	 * Set the value of the '{@code autocomplete}' attribute.
+	 * May be a runtime expression.
+	 */
+	public void setAutocomplete(String autocomplete) {
+		this.autocomplete = autocomplete;
+	}
 
 	/**
 	 * Writes the '{@code input}' tag to the supplied {@link TagWriter}.

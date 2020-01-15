@@ -16,18 +16,19 @@
 
 package org.springframework.core.codec;
 
+import org.junit.Test;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.util.MimeTypeUtils;
+import reactor.core.publisher.Flux;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
-import org.junit.Test;
-import reactor.core.publisher.Flux;
-
-import org.springframework.core.ResolvableType;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.util.MimeTypeUtils;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sebastien Deleuze

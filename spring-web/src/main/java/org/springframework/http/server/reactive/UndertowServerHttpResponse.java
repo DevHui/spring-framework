@@ -16,21 +16,11 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
 import io.undertow.server.handlers.CookieImpl;
 import org.reactivestreams.Processor;
 import org.reactivestreams.Publisher;
-import org.xnio.channels.StreamSinkChannel;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoSink;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -40,6 +30,15 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ZeroCopyHttpOutputMessage;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.xnio.channels.StreamSinkChannel;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoSink;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 /**
  * Adapt {@link ServerHttpResponse} to the Undertow {@link HttpServerExchange}.
@@ -136,8 +135,7 @@ class UndertowServerHttpResponse extends AbstractListenerServerHttpResponse impl
 						destination.getWriteSetter().set(listener::transfer);
 
 						listener.transfer(destination);
-					}
-					catch (IOException ex) {
+					} catch (IOException ex) {
 						sink.error(ex);
 					}
 				}));
@@ -155,6 +153,52 @@ class UndertowServerHttpResponse extends AbstractListenerServerHttpResponse impl
 		return new ResponseBodyProcessor(this.responseChannel);
 	}
 
+	private static class TransferBodyListener {
+
+		private final FileChannel source;
+
+		private final MonoSink<Void> sink;
+
+		private long position;
+
+		private long count;
+
+
+		public TransferBodyListener(FileChannel source, long position, long count, MonoSink<Void> sink) {
+			this.source = source;
+			this.sink = sink;
+			this.position = position;
+			this.count = count;
+		}
+
+		public void transfer(StreamSinkChannel destination) {
+			try {
+				while (this.count > 0) {
+					long len = destination.transferFrom(this.source, this.position, this.count);
+					if (len != 0) {
+						this.position += len;
+						this.count -= len;
+					} else {
+						destination.resumeWrites();
+						return;
+					}
+				}
+				this.sink.success();
+			} catch (IOException ex) {
+				this.sink.error(ex);
+			}
+
+		}
+
+		public void closeSource() {
+			try {
+				this.source.close();
+			} catch (IOException ignore) {
+			}
+		}
+
+
+	}
 
 	private class ResponseBodyProcessor extends AbstractListenerWriteProcessor<DataBuffer> {
 
@@ -163,7 +207,9 @@ class UndertowServerHttpResponse extends AbstractListenerServerHttpResponse impl
 		@Nullable
 		private volatile ByteBuffer byteBuffer;
 
-		/** Keep track of write listener calls, for {@link #writePossible}. */
+		/**
+		 * Keep track of write listener calls, for {@link #writePossible}.
+		 */
 		private volatile boolean writePossible;
 
 
@@ -200,8 +246,7 @@ class UndertowServerHttpResponse extends AbstractListenerServerHttpResponse impl
 
 			if (logger.isTraceEnabled()) {
 				logger.trace(getLogPrefix() + "Wrote " + written + " of " + total + " bytes");
-			}
-			else if (rsWriteLogger.isTraceEnabled()) {
+			} else if (rsWriteLogger.isTraceEnabled()) {
 				rsWriteLogger.trace(getLogPrefix() + "Wrote " + written + " of " + total + " bytes");
 			}
 			if (written != total) {
@@ -256,7 +301,6 @@ class UndertowServerHttpResponse extends AbstractListenerServerHttpResponse impl
 		}
 	}
 
-
 	private class ResponseBodyFlushProcessor extends AbstractListenerWriteFlushProcessor<DataBuffer> {
 
 		public ResponseBodyFlushProcessor() {
@@ -300,57 +344,6 @@ class UndertowServerHttpResponse extends AbstractListenerServerHttpResponse impl
 		protected boolean isFlushPending() {
 			return false;
 		}
-	}
-
-
-	private static class TransferBodyListener {
-
-		private final FileChannel source;
-
-		private final MonoSink<Void> sink;
-
-		private long position;
-
-		private long count;
-
-
-		public TransferBodyListener(FileChannel source, long position, long count, MonoSink<Void> sink) {
-			this.source = source;
-			this.sink = sink;
-			this.position = position;
-			this.count = count;
-		}
-
-		public void transfer(StreamSinkChannel destination) {
-			try {
-				while (this.count > 0) {
-					long len = destination.transferFrom(this.source, this.position, this.count);
-					if (len != 0) {
-						this.position += len;
-						this.count -= len;
-					}
-					else {
-						destination.resumeWrites();
-						return;
-					}
-				}
-				this.sink.success();
-			}
-			catch (IOException ex) {
-				this.sink.error(ex);
-			}
-
-		}
-
-		public void closeSource() {
-			try {
-				this.source.close();
-			}
-			catch (IOException ignore) {
-			}
-		}
-
-
 	}
 
 }

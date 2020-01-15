@@ -16,16 +16,16 @@
 
 package org.springframework.scheduling.config;
 
-import java.util.function.Supplier;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.junit.Assert.*;
+import java.util.function.Supplier;
+
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Mark Fisher

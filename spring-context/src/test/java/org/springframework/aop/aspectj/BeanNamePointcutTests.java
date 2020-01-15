@@ -16,12 +16,8 @@
 
 package org.springframework.aop.aspectj;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.FactoryBean;
@@ -29,7 +25,12 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.tests.sample.beans.ITestBean;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test for correct application of the bean() PCD for XML-based AspectJ aspects.

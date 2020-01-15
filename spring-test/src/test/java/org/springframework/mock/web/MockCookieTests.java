@@ -16,14 +16,16 @@
 
 package org.springframework.mock.web;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.*;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link MockCookie}.

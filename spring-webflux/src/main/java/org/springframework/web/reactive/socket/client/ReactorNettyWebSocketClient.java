@@ -16,14 +16,8 @@
 
 package org.springframework.web.reactive.socket.client;
 
-import java.net.URI;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.http.websocket.WebsocketInbound;
-
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.Assert;
@@ -32,6 +26,11 @@ import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import org.springframework.web.reactive.socket.adapter.ReactorNettyWebSocketSession;
+import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.http.websocket.WebsocketInbound;
+
+import java.net.URI;
 
 /**
  * {@link WebSocketClient} implementation for use with Reactor Netty.
@@ -56,6 +55,7 @@ public class ReactorNettyWebSocketClient implements WebSocketClient {
 
 	/**
 	 * Constructor that accepts an existing {@link HttpClient} builder.
+	 *
 	 * @since 5.1
 	 */
 	public ReactorNettyWebSocketClient(HttpClient httpClient) {

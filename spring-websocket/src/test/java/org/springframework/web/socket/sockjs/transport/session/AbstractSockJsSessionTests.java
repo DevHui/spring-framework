@@ -17,12 +17,10 @@
 package org.springframework.web.socket.sockjs.transport.session;
 
 import org.junit.Before;
-
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.socket.WebSocketHandler;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Base class for SockJS Session tests classes.

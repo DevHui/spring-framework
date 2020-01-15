@@ -16,11 +16,7 @@
 
 package org.springframework.context.annotation.configuration;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,8 +31,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.tests.sample.beans.NestedTestBean;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests proving that @Qualifier annotations work when used
@@ -130,15 +131,59 @@ public class BeanMethodQualificationTests {
 	}
 
 
+	@Qualifier
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface Boring {
+	}
+
+	@Bean
+	@Lazy
+	@Qualifier("interesting")
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface InterestingBean {
+	}
+
+	@Bean
+	@Lazy
+	@Qualifier("interesting")
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface InterestingBeanWithName {
+
+		String name();
+	}
+
+	@Autowired
+	@Qualifier("interesting")
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface InterestingNeed {
+	}
+
+	@Autowired
+	@Qualifier("interesting")
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface InterestingNeedWithRequiredOverride {
+
+		boolean required();
+	}
+
+	@Component
+	@Lazy
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface InterestingPojo {
+	}
+
 	@Configuration
 	static class StandardConfig {
 
-		@Bean @Qualifier("interesting") @Lazy
+		@Bean
+		@Qualifier("interesting")
+		@Lazy
 		public TestBean testBean1() {
 			return new TestBean("interesting");
 		}
 
-		@Bean @Boring
+		@Bean
+		@Boring
 		public TestBean testBean2(@Lazy TestBean testBean1) {
 			TestBean tb = new TestBean("boring");
 			tb.setSpouse(testBean1);
@@ -149,12 +194,16 @@ public class BeanMethodQualificationTests {
 	@Configuration
 	static class ScopedConfig {
 
-		@Bean @Qualifier("interesting") @Scope("prototype")
+		@Bean
+		@Qualifier("interesting")
+		@Scope("prototype")
 		public TestBean testBean1() {
 			return new TestBean("interesting");
 		}
 
-		@Bean @Boring @Scope("prototype")
+		@Bean
+		@Boring
+		@Scope("prototype")
 		public TestBean testBean2(TestBean testBean1) {
 			TestBean tb = new TestBean("boring");
 			tb.setSpouse(testBean1);
@@ -165,12 +214,16 @@ public class BeanMethodQualificationTests {
 	@Configuration
 	static class ScopedProxyConfig {
 
-		@Bean @Qualifier("interesting") @Scope(value="prototype", proxyMode=ScopedProxyMode.TARGET_CLASS)
+		@Bean
+		@Qualifier("interesting")
+		@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 		public TestBean testBean1() {
 			return new TestBean("interesting");
 		}
 
-		@Bean @Boring @Scope(value="prototype", proxyMode=ScopedProxyMode.TARGET_CLASS)
+		@Bean
+		@Boring
+		@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 		public TestBean testBean2(TestBean testBean1) {
 			TestBean tb = new TestBean("boring");
 			tb.setSpouse(testBean1);
@@ -178,17 +231,17 @@ public class BeanMethodQualificationTests {
 		}
 	}
 
-	@Component @Lazy
+	@Component
+	@Lazy
 	static class StandardPojo {
 
-		@Autowired @Qualifier("interesting") TestBean testBean;
+		@Autowired
+		@Qualifier("interesting")
+		TestBean testBean;
 
-		@Autowired @Boring TestBean testBean2;
-	}
-
-	@Qualifier
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Boring {
+		@Autowired
+		@Boring
+		TestBean testBean2;
 	}
 
 	@Configuration
@@ -199,7 +252,9 @@ public class BeanMethodQualificationTests {
 			return new TestBean("interesting");
 		}
 
-		@Bean @Qualifier("boring") @Lazy
+		@Bean
+		@Qualifier("boring")
+		@Lazy
 		public TestBean testBean2(@Lazy TestBean testBean1) {
 			TestBean tb = new TestBean("boring");
 			tb.setSpouse(testBean1);
@@ -210,12 +265,13 @@ public class BeanMethodQualificationTests {
 	@Configuration
 	static class CustomConfigWithAttributeOverride {
 
-		@InterestingBeanWithName(name="testBeanX")
+		@InterestingBeanWithName(name = "testBeanX")
 		public TestBean testBean1() {
 			return new TestBean("interesting");
 		}
 
-		@Bean @Qualifier("boring")
+		@Bean
+		@Qualifier("boring")
 		public TestBean testBean2(@Lazy TestBean testBean1) {
 			TestBean tb = new TestBean("boring");
 			tb.setSpouse(testBean1);
@@ -226,38 +282,11 @@ public class BeanMethodQualificationTests {
 	@InterestingPojo
 	static class CustomPojo {
 
-		@InterestingNeed TestBean testBean;
+		@InterestingNeed
+		TestBean testBean;
 
-		@InterestingNeedWithRequiredOverride(required=false) NestedTestBean nestedTestBean;
-	}
-
-	@Bean @Lazy @Qualifier("interesting")
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface InterestingBean {
-	}
-
-	@Bean @Lazy @Qualifier("interesting")
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface InterestingBeanWithName {
-
-		String name();
-	}
-
-	@Autowired @Qualifier("interesting")
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface InterestingNeed {
-	}
-
-	@Autowired @Qualifier("interesting")
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface InterestingNeedWithRequiredOverride {
-
-		boolean required();
-	}
-
-	@Component @Lazy
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface InterestingPojo {
+		@InterestingNeedWithRequiredOverride(required = false)
+		NestedTestBean nestedTestBean;
 	}
 
 }

@@ -16,13 +16,13 @@
 
 package org.springframework.web.server;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Exception for errors that fit response status 415 (unsupported media type).
@@ -61,10 +61,11 @@ public class UnsupportedMediaTypeStatusException extends ResponseStatusException
 
 	/**
 	 * Constructor for when trying to encode from or decode to a specific Java type.
+	 *
 	 * @since 5.1
 	 */
 	public UnsupportedMediaTypeStatusException(@Nullable MediaType contentType, List<MediaType> supportedTypes,
-			@Nullable ResolvableType bodyType) {
+											   @Nullable ResolvableType bodyType) {
 
 		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE, initReason(contentType, bodyType));
 		this.contentType = contentType;
@@ -99,6 +100,7 @@ public class UnsupportedMediaTypeStatusException extends ResponseStatusException
 	 * Return the body type in the context of which this exception was generated.
 	 * <p>This is applicable when the exception was raised as a result trying to
 	 * encode from or decode to a specific Java type.
+	 *
 	 * @return the body type, or {@code null} if not available
 	 * @since 5.1
 	 */

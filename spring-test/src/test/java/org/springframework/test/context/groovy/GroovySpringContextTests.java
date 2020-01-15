@@ -16,11 +16,8 @@
 
 package org.springframework.test.context.groovy;
 
-import javax.annotation.Resource;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +27,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.tests.sample.beans.Employee;
 import org.springframework.tests.sample.beans.Pet;
 
-import static org.junit.Assert.*;
+import javax.annotation.Resource;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for loading an {@code ApplicationContext} from a
@@ -43,19 +45,14 @@ import static org.junit.Assert.*;
 @ContextConfiguration("context.groovy")
 public class GroovySpringContextTests implements BeanNameAware, InitializingBean {
 
-	private Employee employee;
-
-	@Autowired
-	private Pet pet;
-
 	@Autowired(required = false)
 	protected Long nonrequiredLong;
-
 	@Resource
 	protected String foo;
-
 	protected String bar;
-
+	private Employee employee;
+	@Autowired
+	private Pet pet;
 	@Autowired
 	private ApplicationContext applicationContext;
 

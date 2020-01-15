@@ -16,14 +16,11 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import javax.servlet.jsp.tagext.Tag;
-
 import org.junit.Test;
-
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.validation.BeanPropertyBindingResult;
 
-import static org.junit.Assert.*;
+import javax.servlet.jsp.tagext.Tag;
 
 /**
  * @author Rob Harrop

@@ -16,19 +16,24 @@
 
 package org.springframework.jndi;
 
-import javax.naming.Context;
-import javax.naming.NamingException;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.tests.mock.jndi.ExpectedLookupTemplate;
 import org.springframework.tests.sample.beans.DerivedTestBean;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.naming.Context;
+import javax.naming.NamingException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Rod Johnson
@@ -43,8 +48,7 @@ public class JndiObjectFactoryBeanTests {
 		try {
 			jof.afterPropertiesSet();
 			fail("Should have thrown IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 		}
 	}
 
@@ -113,8 +117,7 @@ public class JndiObjectFactoryBeanTests {
 		try {
 			jof.afterPropertiesSet();
 			fail("Should have thrown NamingException");
-		}
-		catch (NamingException ex) {
+		} catch (NamingException ex) {
 			// expected
 		}
 	}
@@ -150,8 +153,7 @@ public class JndiObjectFactoryBeanTests {
 		try {
 			jof.afterPropertiesSet();
 			fail("Should have thrown NamingException");
-		}
-		catch (NamingException ex) {
+		} catch (NamingException ex) {
 			assertTrue(ex.getMessage().contains("java.lang.String"));
 		}
 	}
@@ -211,8 +213,7 @@ public class JndiObjectFactoryBeanTests {
 		try {
 			jof.afterPropertiesSet();
 			fail("Should have thrown IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 	}
@@ -243,8 +244,7 @@ public class JndiObjectFactoryBeanTests {
 		try {
 			jof.afterPropertiesSet();
 			fail("Should have thrown IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 	}
@@ -346,8 +346,7 @@ public class JndiObjectFactoryBeanTests {
 		try {
 			jof.afterPropertiesSet();
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 	}
@@ -361,8 +360,7 @@ public class JndiObjectFactoryBeanTests {
 		try {
 			jof.afterPropertiesSet();
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 	}
@@ -394,8 +392,7 @@ public class JndiObjectFactoryBeanTests {
 		try {
 			jof.afterPropertiesSet();
 			fail("Should have thrown NamingException");
-		}
-		catch (NamingException ex) {
+		} catch (NamingException ex) {
 			assertTrue(ex.getMessage().contains("org.springframework.tests.sample.beans.DerivedTestBean"));
 		}
 	}

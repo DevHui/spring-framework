@@ -16,9 +16,6 @@
 
 package org.springframework.web.socket.messaging;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -31,8 +28,18 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 import org.springframework.web.socket.handler.TestWebSocketSession;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.util.Arrays;
+import java.util.Map;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.isA;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Test fixture for {@link SubProtocolWebSocketHandler}.
@@ -42,21 +49,18 @@ import static org.mockito.BDDMockito.*;
  */
 public class SubProtocolWebSocketHandlerTests {
 
-	private SubProtocolWebSocketHandler webSocketHandler;
-
-	private TestWebSocketSession session;
-
-	@Mock SubProtocolHandler stompHandler;
-
-	@Mock SubProtocolHandler mqttHandler;
-
-	@Mock SubProtocolHandler defaultHandler;
-
-	@Mock MessageChannel inClientChannel;
-
+	@Mock
+	SubProtocolHandler stompHandler;
+	@Mock
+	SubProtocolHandler mqttHandler;
+	@Mock
+	SubProtocolHandler defaultHandler;
+	@Mock
+	MessageChannel inClientChannel;
 	@Mock
 	SubscribableChannel outClientChannel;
-
+	private SubProtocolWebSocketHandler webSocketHandler;
+	private TestWebSocketSession session;
 
 	@Before
 	public void setup() {

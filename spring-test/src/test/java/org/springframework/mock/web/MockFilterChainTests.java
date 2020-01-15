@@ -16,7 +16,8 @@
 
 package org.springframework.mock.web;
 
-import java.io.IOException;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -25,13 +26,15 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Test fixture for {@link MockFilterChain}.
@@ -83,8 +86,7 @@ public class MockFilterChainTests {
 		try {
 			chain.doFilter(this.request, this.response);
 			fail("Expected Exception");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertEquals("This FilterChain has already been called!", ex.getMessage());
 		}
 	}
@@ -98,8 +100,7 @@ public class MockFilterChainTests {
 		try {
 			chain.doFilter(this.request, this.response);
 			fail("Expected Exception");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertEquals("This FilterChain has already been called!", ex.getMessage());
 		}
 	}
@@ -122,8 +123,7 @@ public class MockFilterChainTests {
 		try {
 			chain.doFilter(this.request, this.response);
 			fail("Expected Exception");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertEquals("This FilterChain has already been called!", ex.getMessage());
 		}
 	}
@@ -147,8 +147,7 @@ public class MockFilterChainTests {
 
 			if (this.servlet != null) {
 				this.servlet.service(request, response);
-			}
-			else {
+			} else {
 				chain.doFilter(request, response);
 			}
 		}

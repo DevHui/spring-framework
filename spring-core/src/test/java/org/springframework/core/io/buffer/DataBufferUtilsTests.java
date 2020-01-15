@@ -16,6 +16,20 @@
 
 package org.springframework.core.io.buffer;
 
+import io.netty.buffer.ByteBuf;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.stubbing.Answer;
+import org.reactivestreams.Subscription;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.buffer.support.DataBufferTestUtils;
+import reactor.core.publisher.BaseSubscriber;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
@@ -32,21 +46,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
-
-import io.netty.buffer.ByteBuf;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.stubbing.Answer;
-import org.reactivestreams.Subscription;
-import reactor.core.publisher.BaseSubscriber;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.buffer.support.DataBufferTestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -66,6 +65,12 @@ public class DataBufferUtilsTests extends AbstractDataBufferAllocatingTestCase {
 
 	private Path tempFile;
 
+	private static void assertReleased(DataBuffer dataBuffer) {
+		if (dataBuffer instanceof NettyDataBuffer) {
+			ByteBuf byteBuf = ((NettyDataBuffer) dataBuffer).getNativeBuffer();
+			assertEquals(0, byteBuf.refCnt());
+		}
+	}
 
 	@Before
 	public void setUp() throws IOException {
@@ -167,7 +172,7 @@ public class DataBufferUtilsTests extends AbstractDataBufferAllocatingTestCase {
 			completionHandler.failed(new IOException(), dataBuffer);
 			return null;
 		})
-		.when(channel).read(any(), anyLong(), any(), any());
+				.when(channel).read(any(), anyLong(), any(), any());
 
 		Flux<DataBuffer> result =
 				DataBufferUtils.readAsynchronousFileChannel(() -> channel, this.bufferFactory, 3);
@@ -247,7 +252,7 @@ public class DataBufferUtilsTests extends AbstractDataBufferAllocatingTestCase {
 
 	@Test
 	public void readByteArrayResourcePositionAndTakeUntil() throws Exception {
-		Resource resource = new ByteArrayResource("foobarbazqux" .getBytes());
+		Resource resource = new ByteArrayResource("foobarbazqux".getBytes());
 		Flux<DataBuffer> flux = DataBufferUtils.read(resource, 3, this.bufferFactory, 3);
 
 		flux = DataBufferUtils.takeUntilByteCount(flux, 5);
@@ -498,11 +503,9 @@ public class DataBufferUtilsTests extends AbstractDataBufferAllocatingTestCase {
 
 								assertEquals(expected, result);
 
-							}
-							catch (IOException e) {
+							} catch (IOException e) {
 								fail(e.getMessage());
-							}
-							finally {
+							} finally {
 								DataBufferUtils.closeChannel(channel);
 							}
 						});
@@ -533,11 +536,9 @@ public class DataBufferUtilsTests extends AbstractDataBufferAllocatingTestCase {
 								assertEquals(expected, result);
 								latch.countDown();
 
-							}
-							catch (IOException e) {
+							} catch (IOException e) {
 								fail(e.getMessage());
-							}
-							finally {
+							} finally {
 								DataBufferUtils.closeChannel(channel);
 							}
 						});
@@ -672,13 +673,6 @@ public class DataBufferUtilsTests extends AbstractDataBufferAllocatingTestCase {
 		assertReleased(foo);
 		assertReleased(bar);
 		assertReleased(baz);
-	}
-
-	private static void assertReleased(DataBuffer dataBuffer) {
-		if (dataBuffer instanceof NettyDataBuffer) {
-			ByteBuf byteBuf = ((NettyDataBuffer) dataBuffer).getNativeBuffer();
-			assertEquals(0, byteBuf.refCnt());
-		}
 	}
 
 	@Test

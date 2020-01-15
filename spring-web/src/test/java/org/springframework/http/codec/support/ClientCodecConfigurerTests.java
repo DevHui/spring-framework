@@ -16,16 +16,7 @@
 
 package org.springframework.http.codec.support;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.ByteArrayDecoder;
 import org.springframework.core.codec.ByteArrayEncoder;
@@ -59,6 +50,14 @@ import org.springframework.http.codec.protobuf.ProtobufHttpMessageWriter;
 import org.springframework.http.codec.xml.Jaxb2XmlDecoder;
 import org.springframework.http.codec.xml.Jaxb2XmlEncoder;
 import org.springframework.util.MimeTypeUtils;
+import reactor.core.publisher.Flux;
+
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

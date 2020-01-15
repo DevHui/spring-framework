@@ -16,13 +16,8 @@
 
 package org.springframework.web.client;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,18 +25,24 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Arjen Poutsma
  */
 public class ExtractingResponseErrorHandlerTests {
 
-	private ExtractingResponseErrorHandler errorHandler;
-
 	private final ClientHttpResponse response = mock(ClientHttpResponse.class);
-
+	private ExtractingResponseErrorHandler errorHandler;
 
 	@Before
 	public void setup() throws Exception {
@@ -97,8 +98,7 @@ public class ExtractingResponseErrorHandlerTests {
 		try {
 			this.errorHandler.handleError(this.response);
 			fail("MyRestClientException expected");
-		}
-		catch (MyRestClientException ex) {
+		} catch (MyRestClientException ex) {
 			assertEquals("bar", ex.getFoo());
 		}
 	}
@@ -117,8 +117,7 @@ public class ExtractingResponseErrorHandlerTests {
 		try {
 			this.errorHandler.handleError(this.response);
 			fail("MyRestClientException expected");
-		}
-		catch (MyRestClientException ex) {
+		} catch (MyRestClientException ex) {
 			assertEquals("bar", ex.getFoo());
 		}
 	}
@@ -137,8 +136,7 @@ public class ExtractingResponseErrorHandlerTests {
 		try {
 			this.errorHandler.handleError(this.response);
 			fail("HttpClientErrorException expected");
-		}
-		catch (HttpClientErrorException ex) {
+		} catch (HttpClientErrorException ex) {
 			assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
 			assertArrayEquals(body, ex.getResponseBodyAsByteArray());
 		}

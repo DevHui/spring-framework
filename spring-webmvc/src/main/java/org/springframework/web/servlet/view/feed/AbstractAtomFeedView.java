@@ -16,14 +16,13 @@
 
 package org.springframework.web.servlet.view.feed;
 
-import java.util.List;
-import java.util.Map;
+import com.rometools.rome.feed.atom.Entry;
+import com.rometools.rome.feed.atom.Feed;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.rometools.rome.feed.atom.Entry;
-import com.rometools.rome.feed.atom.Feed;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Abstract superclass for Atom Feed views, using the
@@ -40,10 +39,10 @@ import com.rometools.rome.feed.atom.Feed;
  *
  * @author Arjen Poutsma
  * @author Juergen Hoeller
- * @since 3.0
  * @see #buildFeedMetadata
  * @see #buildFeedEntries
  * @see <a href="https://www.atomenabled.org/developers/syndication/">Atom Syndication Format</a>
+ * @since 3.0
  */
 public abstract class AbstractAtomFeedView extends AbstractFeedView<Feed> {
 
@@ -62,6 +61,7 @@ public abstract class AbstractAtomFeedView extends AbstractFeedView<Feed> {
 	/**
 	 * Set the Rome feed type to use.
 	 * <p>Defaults to Atom 1.0.
+	 *
 	 * @see Feed#setFeedType(String)
 	 * @see #DEFAULT_FEED_TYPE
 	 */
@@ -72,6 +72,7 @@ public abstract class AbstractAtomFeedView extends AbstractFeedView<Feed> {
 	/**
 	 * Create a new Feed instance to hold the entries.
 	 * <p>By default returns an Atom 1.0 feed, but the subclass can specify any Feed.
+	 *
 	 * @see #setFeedType(String)
 	 */
 	@Override
@@ -85,7 +86,7 @@ public abstract class AbstractAtomFeedView extends AbstractFeedView<Feed> {
 	 */
 	@Override
 	protected final void buildFeedEntries(Map<String, Object> model, Feed feed,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
+										  HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		List<Entry> entries = buildFeedEntries(model, request, response);
 		feed.setEntries(entries);
@@ -96,8 +97,9 @@ public abstract class AbstractAtomFeedView extends AbstractFeedView<Feed> {
 	 * <p>Note that the passed-in HTTP response is just supposed to be used for
 	 * setting cookies or other HTTP headers. The built feed itself will automatically
 	 * get written to the response after this method returns.
-	 * @param model	the model Map
-	 * @param request in case we need locale etc. Shouldn't look at attributes.
+	 *
+	 * @param model    the model Map
+	 * @param request  in case we need locale etc. Shouldn't look at attributes.
 	 * @param response in case we need to set cookies. Shouldn't write to it.
 	 * @return the feed entries to be added to the feed
 	 * @throws Exception any exception that occurred during document building

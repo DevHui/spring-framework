@@ -16,12 +16,9 @@
 
 package org.springframework.test.context.junit4;
 
-import javax.annotation.Resource;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +30,14 @@ import org.springframework.tests.sample.beans.Pet;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.*;
-import static org.springframework.test.transaction.TransactionTestUtils.*;
+import javax.annotation.Resource;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.test.transaction.TransactionTestUtils.assertInTransaction;
+import static org.springframework.test.transaction.TransactionTestUtils.inTransaction;
 
 /**
  * Combined integration test for {@link AbstractJUnit4SpringContextTests} and

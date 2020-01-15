@@ -16,25 +16,28 @@
 
 package org.springframework.web.reactive.resource;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.*;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.get;
 
 /**
  * Unit tests for {@link AppCacheManifestTransformer}.
+ *
  * @author Rossen Stoyanchev
  * @author Brian Clozel
  */
@@ -42,7 +45,7 @@ public class AppCacheManifestTransformerTests {
 
 	private static final Duration TIMEOUT = Duration.ofSeconds(5);
 
-	
+
 	private AppCacheManifestTransformer transformer;
 
 	private ResourceTransformerChain chain;

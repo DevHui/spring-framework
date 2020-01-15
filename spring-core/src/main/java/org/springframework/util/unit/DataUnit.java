@@ -36,8 +36,8 @@ package org.springframework.util.unit;
  *
  * @author Stephane Nicoll
  * @author Sam Brannen
- * @since 5.1
  * @see DataSize
+ * @since 5.1
  */
 public enum DataUnit {
 
@@ -77,16 +77,13 @@ public enum DataUnit {
 		this.size = size;
 	}
 
-	DataSize size() {
-		return this.size;
-	}
-
 	/**
 	 * Return the {@link DataUnit} matching the specified {@code suffix}.
+	 *
 	 * @param suffix one of the standard suffixes
 	 * @return the {@link DataUnit} matching the specified {@code suffix}
 	 * @throws IllegalArgumentException if the suffix does not match the suffix
-	 * of any of this enum's constants
+	 *                                  of any of this enum's constants
 	 */
 	public static DataUnit fromSuffix(String suffix) {
 		for (DataUnit candidate : values()) {
@@ -95,6 +92,10 @@ public enum DataUnit {
 			}
 		}
 		throw new IllegalArgumentException("Unknown data unit suffix '" + suffix + "'");
+	}
+
+	DataSize size() {
+		return this.size;
 	}
 
 }

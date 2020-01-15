@@ -16,13 +16,20 @@
 
 package org.springframework.util;
 
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Properties;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Rod Johnson
@@ -435,8 +442,8 @@ public class StringUtilsTests {
 
 	@Test
 	public void testConcatenateStringArrays() {
-		String[] input1 = new String[] {"myString2"};
-		String[] input2 = new String[] {"myString1", "myString2"};
+		String[] input1 = new String[]{"myString2"};
+		String[] input2 = new String[]{"myString1", "myString2"};
 		String[] result = StringUtils.concatenateStringArrays(input1, input2);
 		assertEquals(3, result.length);
 		assertEquals("myString2", result[0]);
@@ -451,8 +458,8 @@ public class StringUtilsTests {
 	@Test
 	@Deprecated
 	public void testMergeStringArrays() {
-		String[] input1 = new String[] {"myString2"};
-		String[] input2 = new String[] {"myString1", "myString2"};
+		String[] input1 = new String[]{"myString2"};
+		String[] input2 = new String[]{"myString1", "myString2"};
 		String[] result = StringUtils.mergeStringArrays(input1, input2);
 		assertEquals(2, result.length);
 		assertEquals("myString2", result[0]);
@@ -465,7 +472,7 @@ public class StringUtilsTests {
 
 	@Test
 	public void testSortStringArray() {
-		String[] input = new String[] {"myString2"};
+		String[] input = new String[]{"myString2"};
 		input = StringUtils.addStringToArray(input, "myString1");
 		assertEquals("myString2", input[0]);
 		assertEquals("myString1", input[1]);
@@ -477,7 +484,7 @@ public class StringUtilsTests {
 
 	@Test
 	public void testRemoveDuplicateStrings() {
-		String[] input = new String[] {"myString2", "myString1", "myString2"};
+		String[] input = new String[]{"myString2", "myString1", "myString2"};
 		input = StringUtils.removeDuplicateStrings(input);
 		assertEquals("myString2", input[0]);
 		assertEquals("myString1", input[1]);
@@ -485,7 +492,7 @@ public class StringUtilsTests {
 
 	@Test
 	public void testSplitArrayElementsIntoProperties() {
-		String[] input = new String[] {"key1=value1 ", "key2 =\"value2\""};
+		String[] input = new String[]{"key1=value1 ", "key2 =\"value2\""};
 		Properties result = StringUtils.splitArrayElementsIntoProperties(input, "=");
 		assertEquals("value1", result.getProperty("key1"));
 		assertEquals("\"value2\"", result.getProperty("key2"));
@@ -493,7 +500,7 @@ public class StringUtilsTests {
 
 	@Test
 	public void testSplitArrayElementsIntoPropertiesAndDeletedChars() {
-		String[] input = new String[] {"key1=value1 ", "key2 =\"value2\""};
+		String[] input = new String[]{"key1=value1 ", "key2 =\"value2\""};
 		Properties result = StringUtils.splitArrayElementsIntoProperties(input, "=", "\"");
 		assertEquals("value1", result.getProperty("key1"));
 		assertEquals("value2", result.getProperty("key2"));
@@ -572,16 +579,16 @@ public class StringUtilsTests {
 	@Test
 	public void testCommaDelimitedListToStringArrayMatchWords() {
 		// Could read these from files
-		String[] sa = new String[] {"foo", "bar", "big"};
+		String[] sa = new String[]{"foo", "bar", "big"};
 		doTestCommaDelimitedListToStringArrayLegalMatch(sa);
 		doTestStringArrayReverseTransformationMatches(sa);
 
-		sa = new String[] {"a", "b", "c"};
+		sa = new String[]{"a", "b", "c"};
 		doTestCommaDelimitedListToStringArrayLegalMatch(sa);
 		doTestStringArrayReverseTransformationMatches(sa);
 
 		// Test same words
-		sa = new String[] {"AA", "AA", "AA", "AA", "AA"};
+		sa = new String[]{"AA", "AA", "AA", "AA", "AA"};
 		doTestCommaDelimitedListToStringArrayLegalMatch(sa);
 		doTestStringArrayReverseTransformationMatches(sa);
 	}
@@ -607,7 +614,7 @@ public class StringUtilsTests {
 	@Test
 	public void testCommaDelimitedListToStringArrayWithOtherPunctuation() {
 		// Could read these from files
-		String[] sa = new String[] {"xcvwert4456346&*.", "///", ".!", ".", ";"};
+		String[] sa = new String[]{"xcvwert4456346&*.", "///", ".!", ".", ";"};
 		doTestCommaDelimitedListToStringArrayLegalMatch(sa);
 	}
 
@@ -622,7 +629,7 @@ public class StringUtilsTests {
 		assertTrue("components are correct",
 				sa[0].equals("a") && sa[1].equals("") && sa[2].equals("b"));
 
-		sa = new String[] {"", "", "a", ""};
+		sa = new String[]{"", "", "a", ""};
 		doTestCommaDelimitedListToStringArrayLegalMatch(sa);
 	}
 
@@ -714,8 +721,7 @@ public class StringUtilsTests {
 		try {
 			StringUtils.parseLocaleString("%0D%0AContent-length:30%0D%0A%0D%0A%3Cscript%3Ealert%28123%29%3C/script%3E");
 			fail("Should have thrown IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 	}
@@ -745,8 +751,7 @@ public class StringUtilsTests {
 			Locale parsedLocale = StringUtils.parseLocaleString(locale.toString());
 			if (parsedLocale == null) {
 				assertEquals("", locale.getLanguage());
-			}
-			else {
+			} else {
 				assertEquals(parsedLocale.toString(), locale.toString());
 			}
 		}
@@ -758,8 +763,7 @@ public class StringUtilsTests {
 			Locale parsedLocale = StringUtils.parseLocale(locale.toLanguageTag());
 			if (parsedLocale == null) {
 				assertEquals("", locale.getLanguage());
-			}
-			else {
+			} else {
 				assertEquals(parsedLocale.toLanguageTag(), locale.toLanguageTag());
 			}
 		}

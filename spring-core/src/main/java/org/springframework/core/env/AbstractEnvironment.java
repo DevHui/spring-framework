@@ -16,22 +16,21 @@
 
 package org.springframework.core.env;
 
-import java.security.AccessControlException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.SpringProperties;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import java.security.AccessControlException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Abstract base class for {@link Environment} implementations. Supports the notion of
@@ -48,9 +47,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Chris Beams
  * @author Juergen Hoeller
- * @since 3.1
  * @see ConfigurableEnvironment
  * @see StandardEnvironment
+ * @since 3.1
  */
 public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 
@@ -62,6 +61,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * resolvable otherwise. Consider switching this flag to "true" if you experience
 	 * log warnings from {@code getenv} calls coming from Spring, e.g. on WebSphere
 	 * with strict SecurityManager settings and AccessControlExceptions warnings.
+	 *
 	 * @see #suppressGetenvAccess()
 	 */
 	public static final String IGNORE_GETENV_PROPERTY_NAME = "spring.getenv.ignore";
@@ -73,6 +73,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * character in variable names. Assuming that Spring's {@link SystemEnvironmentPropertySource}
 	 * is in use, this property may be specified as an environment variable as
 	 * {@code SPRING_PROFILES_ACTIVE}.
+	 *
 	 * @see ConfigurableEnvironment#setActiveProfiles
 	 */
 	public static final String ACTIVE_PROFILES_PROPERTY_NAME = "spring.profiles.active";
@@ -84,6 +85,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * character in variable names. Assuming that Spring's {@link SystemEnvironmentPropertySource}
 	 * is in use, this property may be specified as an environment variable as
 	 * {@code SPRING_PROFILES_DEFAULT}.
+	 *
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 */
 	public static final String DEFAULT_PROFILES_PROPERTY_NAME = "spring.profiles.default";
@@ -92,6 +94,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * Name of reserved default profile name: {@value}. If no default profile names are
 	 * explicitly and no active profile names are explicitly set, this profile will
 	 * automatically be activated by default.
+	 *
 	 * @see #getReservedDefaultProfiles
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 * @see ConfigurableEnvironment#setActiveProfiles
@@ -118,6 +121,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * {@link #customizePropertySources(MutablePropertySources)} during construction to
 	 * allow subclasses to contribute or manipulate {@link PropertySource} instances as
 	 * appropriate.
+	 *
 	 * @see #customizePropertySources(MutablePropertySources)
 	 */
 	public AbstractEnvironment() {
@@ -207,6 +211,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * Return the set of reserved default profile names. This implementation returns
 	 * {@value #RESERVED_DEFAULT_PROFILE_NAME}. Subclasses may override in order to
 	 * customize the set of reserved names.
+	 *
 	 * @see #RESERVED_DEFAULT_PROFILE_NAME
 	 * @see #doGetDefaultProfiles()
 	 */
@@ -224,11 +229,27 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 		return StringUtils.toStringArray(doGetActiveProfiles());
 	}
 
+	@Override
+	public void setActiveProfiles(String... profiles) {
+		Assert.notNull(profiles, "Profile array must not be null");
+		if (logger.isDebugEnabled()) {
+			logger.debug("Activating profiles " + Arrays.asList(profiles));
+		}
+		synchronized (this.activeProfiles) {
+			this.activeProfiles.clear();
+			for (String profile : profiles) {
+				validateProfile(profile);
+				this.activeProfiles.add(profile);
+			}
+		}
+	}
+
 	/**
 	 * Return the set of active profiles as explicitly set through
 	 * {@link #setActiveProfiles} or if the current set of active profiles
 	 * is empty, check for the presence of the {@value #ACTIVE_PROFILES_PROPERTY_NAME}
 	 * property and assign its value to the set of active profiles.
+	 *
 	 * @see #getActiveProfiles()
 	 * @see #ACTIVE_PROFILES_PROPERTY_NAME
 	 */
@@ -242,21 +263,6 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 				}
 			}
 			return this.activeProfiles;
-		}
-	}
-
-	@Override
-	public void setActiveProfiles(String... profiles) {
-		Assert.notNull(profiles, "Profile array must not be null");
-		if (logger.isDebugEnabled()) {
-			logger.debug("Activating profiles " + Arrays.asList(profiles));
-		}
-		synchronized (this.activeProfiles) {
-			this.activeProfiles.clear();
-			for (String profile : profiles) {
-				validateProfile(profile);
-				this.activeProfiles.add(profile);
-			}
 		}
 	}
 
@@ -279,12 +285,34 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	}
 
 	/**
+	 * Specify the set of profiles to be made active by default if no other profiles
+	 * are explicitly made active through {@link #setActiveProfiles}.
+	 * <p>Calling this method removes overrides any reserved default profiles
+	 * that may have been added during construction of the environment.
+	 *
+	 * @see #AbstractEnvironment()
+	 * @see #getReservedDefaultProfiles()
+	 */
+	@Override
+	public void setDefaultProfiles(String... profiles) {
+		Assert.notNull(profiles, "Profile array must not be null");
+		synchronized (this.defaultProfiles) {
+			this.defaultProfiles.clear();
+			for (String profile : profiles) {
+				validateProfile(profile);
+				this.defaultProfiles.add(profile);
+			}
+		}
+	}
+
+	/**
 	 * Return the set of default profiles explicitly set via
 	 * {@link #setDefaultProfiles(String...)} or if the current set of default profiles
 	 * consists only of {@linkplain #getReservedDefaultProfiles() reserved default
 	 * profiles}, then check for the presence of the
 	 * {@value #DEFAULT_PROFILES_PROPERTY_NAME} property and assign its value (if any)
 	 * to the set of default profiles.
+	 *
 	 * @see #AbstractEnvironment()
 	 * @see #getDefaultProfiles()
 	 * @see #DEFAULT_PROFILES_PROPERTY_NAME
@@ -303,26 +331,6 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 		}
 	}
 
-	/**
-	 * Specify the set of profiles to be made active by default if no other profiles
-	 * are explicitly made active through {@link #setActiveProfiles}.
-	 * <p>Calling this method removes overrides any reserved default profiles
-	 * that may have been added during construction of the environment.
-	 * @see #AbstractEnvironment()
-	 * @see #getReservedDefaultProfiles()
-	 */
-	@Override
-	public void setDefaultProfiles(String... profiles) {
-		Assert.notNull(profiles, "Profile array must not be null");
-		synchronized (this.defaultProfiles) {
-			this.defaultProfiles.clear();
-			for (String profile : profiles) {
-				validateProfile(profile);
-				this.defaultProfiles.add(profile);
-			}
-		}
-	}
-
 	@Override
 	@Deprecated
 	public boolean acceptsProfiles(String... profiles) {
@@ -332,8 +340,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 				if (!isProfileActive(profile.substring(1))) {
 					return true;
 				}
-			}
-			else if (isProfileActive(profile)) {
+			} else if (isProfileActive(profile)) {
 				return true;
 			}
 		}
@@ -349,6 +356,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	/**
 	 * Return whether the given profile is active, or if active profiles are empty
 	 * whether the profile should be active by default.
+	 *
 	 * @throws IllegalArgumentException per {@link #validateProfile(String)}
 	 */
 	protected boolean isProfileActive(String profile) {
@@ -362,8 +370,9 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * Validate the given profile, called internally prior to adding to the set of
 	 * active or default profiles.
 	 * <p>Subclasses may override to impose further restrictions on profile syntax.
+	 *
 	 * @throws IllegalArgumentException if the profile is null, empty, whitespace-only or
-	 * begins with the profile NOT operator (!).
+	 *                                  begins with the profile NOT operator (!).
 	 * @see #acceptsProfiles
 	 * @see #addActiveProfile
 	 * @see #setDefaultProfiles
@@ -387,16 +396,14 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	public Map<String, Object> getSystemProperties() {
 		try {
 			return (Map) System.getProperties();
-		}
-		catch (AccessControlException ex) {
+		} catch (AccessControlException ex) {
 			return (Map) new ReadOnlySystemAttributesMap() {
 				@Override
 				@Nullable
 				protected String getSystemAttribute(String attributeName) {
 					try {
 						return System.getProperty(attributeName);
-					}
-					catch (AccessControlException ex) {
+					} catch (AccessControlException ex) {
 						if (logger.isInfoEnabled()) {
 							logger.info("Caught AccessControlException when accessing system property '" +
 									attributeName + "'; its value will be returned [null]. Reason: " + ex.getMessage());
@@ -416,16 +423,14 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 		}
 		try {
 			return (Map) System.getenv();
-		}
-		catch (AccessControlException ex) {
+		} catch (AccessControlException ex) {
 			return (Map) new ReadOnlySystemAttributesMap() {
 				@Override
 				@Nullable
 				protected String getSystemAttribute(String attributeName) {
 					try {
 						return System.getenv(attributeName);
-					}
-					catch (AccessControlException ex) {
+					} catch (AccessControlException ex) {
 						if (logger.isInfoEnabled()) {
 							logger.info("Caught AccessControlException when accessing system environment variable '" +
 									attributeName + "'; its value will be returned [null]. Reason: " + ex.getMessage());
@@ -445,6 +450,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * and therefore avoiding security manager warnings (if any).
 	 * <p>The default implementation checks for the "spring.getenv.ignore" system property,
 	 * returning {@code true} if its value equals "true" in any case.
+	 *
 	 * @see #IGNORE_GETENV_PROPERTY_NAME
 	 * @see SpringProperties#getFlag
 	 */

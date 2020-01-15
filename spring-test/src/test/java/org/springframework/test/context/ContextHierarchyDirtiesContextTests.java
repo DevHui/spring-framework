@@ -23,7 +23,6 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -34,8 +33,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.HierarchyMode;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests that verify proper behavior of {@link DirtiesContext @DirtiesContext}
@@ -86,7 +88,7 @@ public class ContextHierarchyDirtiesContextTests {
 	}
 
 	private void runTestAndVerifyHierarchies(Class<? extends FooTestCase> testClass, boolean isFooContextActive,
-			boolean isBarContextActive, boolean isBazContextActive) {
+											 boolean isBarContextActive, boolean isBazContextActive) {
 
 		JUnitCore jUnitCore = new JUnitCore();
 		Result result = jUnitCore.run(testClass);
@@ -116,6 +118,14 @@ public class ContextHierarchyDirtiesContextTests {
 	@ContextHierarchy(@ContextConfiguration(name = "foo"))
 	static abstract class FooTestCase implements ApplicationContextAware {
 
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+			ContextHierarchyDirtiesContextTests.context = applicationContext;
+			ContextHierarchyDirtiesContextTests.baz = applicationContext.getBean("bean", String.class);
+			ContextHierarchyDirtiesContextTests.bar = applicationContext.getParent().getBean("bean", String.class);
+			ContextHierarchyDirtiesContextTests.foo = applicationContext.getParent().getParent().getBean("bean", String.class);
+		}
+
 		@Configuration
 		static class Config {
 
@@ -123,14 +133,6 @@ public class ContextHierarchyDirtiesContextTests {
 			public String bean() {
 				return "foo";
 			}
-		}
-
-		@Override
-		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-			ContextHierarchyDirtiesContextTests.context = applicationContext;
-			ContextHierarchyDirtiesContextTests.baz = applicationContext.getBean("bean", String.class);
-			ContextHierarchyDirtiesContextTests.bar = applicationContext.getParent().getBean("bean", String.class);
-			ContextHierarchyDirtiesContextTests.foo = applicationContext.getParent().getParent().getBean("bean", String.class);
 		}
 	}
 

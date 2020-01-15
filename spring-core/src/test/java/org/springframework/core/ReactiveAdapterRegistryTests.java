@@ -16,11 +16,6 @@
 
 package org.springframework.core;
 
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import org.junit.Test;
@@ -32,10 +27,21 @@ import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
-import static org.junit.Assert.*;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link ReactiveAdapterRegistry}.
+ *
  * @author Rossen Stoyanchev
  */
 @SuppressWarnings("unchecked")

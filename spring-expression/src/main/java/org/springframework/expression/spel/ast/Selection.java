@@ -16,13 +16,6 @@
 
 package org.springframework.expression.spel.ast;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.EvaluationException;
 import org.springframework.expression.TypedValue;
@@ -33,6 +26,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents selection over a map or collection.
@@ -108,13 +108,11 @@ public class Selection extends SpelNodeImpl {
 							result.put(entry.getKey(), entry.getValue());
 							lastKey = entry.getKey();
 						}
-					}
-					else {
+					} else {
 						throw new SpelEvaluationException(selectionCriteria.getStartPosition(),
 								SpelMessage.RESULT_OF_SELECTION_CRITERIA_IS_NOT_BOOLEAN);
 					}
-				}
-				finally {
+				} finally {
 					state.popActiveContextObject();
 					state.exitScope();
 				}
@@ -127,11 +125,11 @@ public class Selection extends SpelNodeImpl {
 			if (this.variant == LAST) {
 				Map<Object, Object> resultMap = new HashMap<>();
 				Object lastValue = result.get(lastKey);
-				resultMap.put(lastKey,lastValue);
-				return new ValueRef.TypedValueHolderValueRef(new TypedValue(resultMap),this);
+				resultMap.put(lastKey, lastValue);
+				return new ValueRef.TypedValueHolderValueRef(new TypedValue(resultMap), this);
 			}
 
-			return new ValueRef.TypedValueHolderValueRef(new TypedValue(result),this);
+			return new ValueRef.TypedValueHolderValueRef(new TypedValue(result), this);
 		}
 
 		if (operand instanceof Iterable || ObjectUtils.isArray(operand)) {
@@ -152,14 +150,12 @@ public class Selection extends SpelNodeImpl {
 							}
 							result.add(element);
 						}
-					}
-					else {
+					} else {
 						throw new SpelEvaluationException(selectionCriteria.getStartPosition(),
 								SpelMessage.RESULT_OF_SELECTION_CRITERIA_IS_NOT_BOOLEAN);
 					}
 					index++;
-				}
-				finally {
+				} finally {
 					state.exitScope();
 					state.popActiveContextObject();
 				}

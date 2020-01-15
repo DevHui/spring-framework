@@ -16,10 +16,7 @@
 
 package org.springframework.web.context.request;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -27,7 +24,12 @@ import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
-import static org.junit.Assert.*;
+import javax.servlet.http.HttpServletRequest;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 /**
  * @author Rod Johnson
@@ -69,8 +71,7 @@ public class RequestAndSessionScopedBeanTests {
 		try {
 			wac.getBean(targetBeanName);
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// expected
 		}
 	}
@@ -97,8 +98,7 @@ public class RequestAndSessionScopedBeanTests {
 		try {
 			wac.getBean(targetBeanName);
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// expected
 		}
 

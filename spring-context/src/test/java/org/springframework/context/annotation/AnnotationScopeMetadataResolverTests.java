@@ -16,12 +16,7 @@
 
 package org.springframework.context.annotation;
 
-import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -29,8 +24,15 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 
-import static org.junit.Assert.*;
-import static org.springframework.context.annotation.ScopedProxyMode.*;
+import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.springframework.context.annotation.ScopedProxyMode.INTERFACES;
+import static org.springframework.context.annotation.ScopedProxyMode.NO;
+import static org.springframework.context.annotation.ScopedProxyMode.TARGET_CLASS;
 
 /**
  * Unit tests for {@link AnnotationScopeMetadataResolver}.
@@ -96,7 +98,7 @@ public class AnnotationScopeMetadataResolverTests {
 	@Test
 	public void customRequestScopeWithAttribute() {
 		AnnotatedBeanDefinition bd = new AnnotatedGenericBeanDefinition(
-			AnnotatedWithCustomRequestScopeWithAttributeOverride.class);
+				AnnotatedWithCustomRequestScopeWithAttributeOverride.class);
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(bd);
 		assertNotNull("resolveScopeMetadata(..) must *never* return null.", scopeMetadata);
 		assertEquals("request", scopeMetadata.getScopeName());

@@ -18,7 +18,6 @@ package org.springframework.test.context.junit4.spr9051;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -27,7 +26,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests that verify proper scoping of beans created in
@@ -40,39 +43,14 @@ import static org.junit.Assert.*;
 @ContextConfiguration(classes = AtBeanLiteModeScopeTests.LiteBeans.class)
 public class AtBeanLiteModeScopeTests {
 
-	/**
-	 * This is intentionally <b>not</b> annotated with {@code @Configuration}.
-	 */
-	static class LiteBeans {
-
-		@Bean
-		public LifecycleBean singleton() {
-			LifecycleBean bean = new LifecycleBean("singleton");
-			assertFalse(bean.isInitialized());
-			return bean;
-		}
-
-		@Bean
-		@Scope("prototype")
-		public LifecycleBean prototype() {
-			LifecycleBean bean = new LifecycleBean("prototype");
-			assertFalse(bean.isInitialized());
-			return bean;
-		}
-	}
-
-
 	@Autowired
 	private ApplicationContext applicationContext;
-
 	@Autowired
 	@Qualifier("singleton")
 	private LifecycleBean injectedSingletonBean;
-
 	@Autowired
 	@Qualifier("prototype")
 	private LifecycleBean injectedPrototypeBean;
-
 
 	@Test
 	public void singletonLiteBean() {
@@ -96,6 +74,27 @@ public class AtBeanLiteModeScopeTests {
 		assertTrue(retrievedPrototypeBean.isInitialized());
 
 		assertNotSame(injectedPrototypeBean, retrievedPrototypeBean);
+	}
+
+	/**
+	 * This is intentionally <b>not</b> annotated with {@code @Configuration}.
+	 */
+	static class LiteBeans {
+
+		@Bean
+		public LifecycleBean singleton() {
+			LifecycleBean bean = new LifecycleBean("singleton");
+			assertFalse(bean.isInitialized());
+			return bean;
+		}
+
+		@Bean
+		@Scope("prototype")
+		public LifecycleBean prototype() {
+			LifecycleBean bean = new LifecycleBean("prototype");
+			assertFalse(bean.isInitialized());
+			return bean;
+		}
 	}
 
 }

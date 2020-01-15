@@ -16,15 +16,14 @@
 
 package org.springframework.http.codec.xml;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import org.springframework.core.codec.CodecException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-
-import org.springframework.core.codec.CodecException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Holder for {@link JAXBContext} instances.
@@ -52,8 +51,7 @@ final class JaxbContextContainer {
 		return this.jaxbContexts.computeIfAbsent(clazz, key -> {
 			try {
 				return JAXBContext.newInstance(clazz);
-			}
-			catch (JAXBException ex) {
+			} catch (JAXBException ex) {
 				throw new CodecException(
 						"Could not create JAXBContext for class [" + clazz + "]: " + ex.getMessage(), ex);
 			}

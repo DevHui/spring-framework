@@ -16,8 +16,10 @@
 
 package org.springframework.util.xml;
 
-import java.io.StringReader;
-import java.io.StringWriter;
+import org.junit.Before;
+import org.junit.Test;
+import org.w3c.dom.Node;
+import org.xmlunit.util.Predicate;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -25,20 +27,16 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stax.StAXSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.StringReader;
+import java.io.StringWriter;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.w3c.dom.Node;
-import org.xmlunit.util.Predicate;
-
-import static org.junit.Assert.*;
-import static org.xmlunit.matchers.CompareMatcher.*;
+import static org.junit.Assert.assertThat;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 public class XMLEventStreamReaderTests {
 
 	private static final String XML =
-			"<?pi content?><root xmlns='namespace'><prefix:child xmlns:prefix='namespace2'>content</prefix:child></root>"
-			;
+			"<?pi content?><root xmlns='namespace'><prefix:child xmlns:prefix='namespace2'>content</prefix:child></root>";
 
 	private XMLEventStreamReader streamReader;
 

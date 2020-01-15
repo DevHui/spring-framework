@@ -16,12 +16,7 @@
 
 package org.springframework.web.reactive.result;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.http.MediaType;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
@@ -30,6 +25,10 @@ import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.accept.FixedContentTypeResolver;
 import org.springframework.web.reactive.accept.HeaderContentTypeResolver;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.http.MediaType.ALL;

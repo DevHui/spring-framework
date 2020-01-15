@@ -15,18 +15,24 @@
  */
 package org.springframework.http.client.reactive;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Test;
 import reactor.netty.http.HttpResources;
 import reactor.netty.resources.ConnectionProvider;
 import reactor.netty.resources.LoopResources;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Unit tests for {@link ReactorResourceFactory}.
+ *
  * @author Rossen Stoyanchev
  */
 public class ReactorResourceFactoryTests {

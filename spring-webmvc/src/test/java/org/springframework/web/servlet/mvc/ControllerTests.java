@@ -16,7 +16,12 @@
 
 package org.springframework.web.servlet.mvc;
 
-import java.util.Properties;
+import org.junit.Test;
+import org.springframework.mock.web.test.MockHttpServletRequest;
+import org.springframework.mock.web.test.MockHttpServletResponse;
+import org.springframework.web.context.support.StaticWebApplicationContext;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.WebUtils;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
@@ -26,17 +31,16 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Properties;
 
-import org.junit.Test;
-
-import org.springframework.mock.web.test.MockHttpServletRequest;
-import org.springframework.mock.web.test.MockHttpServletResponse;
-import org.springframework.web.context.support.StaticWebApplicationContext;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.WebUtils;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Rod Johnson
@@ -89,8 +93,7 @@ public class ControllerTests {
 		given(context.getNamedDispatcher("action")).willReturn(dispatcher);
 		if (include) {
 			given(request.getAttribute(WebUtils.INCLUDE_REQUEST_URI_ATTRIBUTE)).willReturn("somePath");
-		}
-		else {
+		} else {
 			given(request.getAttribute(WebUtils.INCLUDE_REQUEST_URI_ATTRIBUTE)).willReturn(null);
 		}
 
@@ -101,8 +104,7 @@ public class ControllerTests {
 
 		if (include) {
 			verify(dispatcher).include(request, response);
-		}
-		else {
+		} else {
 			verify(dispatcher).forward(request, response);
 		}
 	}

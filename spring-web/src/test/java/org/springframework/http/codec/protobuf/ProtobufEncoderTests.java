@@ -16,15 +16,8 @@
 
 package org.springframework.http.codec.protobuf;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.function.Consumer;
-
 import com.google.protobuf.Message;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.codec.AbstractEncoderTestCase;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -32,8 +25,16 @@ import org.springframework.http.MediaType;
 import org.springframework.protobuf.Msg;
 import org.springframework.protobuf.SecondMsg;
 import org.springframework.util.MimeType;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.function.Consumer;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.core.ResolvableType.forClass;
 
 /**
@@ -76,11 +77,9 @@ public class ProtobufEncoderTests extends AbstractEncoderTestCase<ProtobufEncode
 					try {
 						assertEquals(this.msg1, Msg.parseFrom(dataBuffer.asInputStream()));
 
-					}
-					catch (IOException ex) {
+					} catch (IOException ex) {
 						throw new UncheckedIOException(ex);
-					}
-					finally {
+					} finally {
 						DataBufferUtils.release(dataBuffer);
 					}
 				})
@@ -102,11 +101,9 @@ public class ProtobufEncoderTests extends AbstractEncoderTestCase<ProtobufEncode
 			try {
 				assertEquals(msg, Msg.parseDelimitedFrom(dataBuffer.asInputStream()));
 
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new UncheckedIOException(ex);
-			}
-			finally {
+			} finally {
 				DataBufferUtils.release(dataBuffer);
 			}
 		};

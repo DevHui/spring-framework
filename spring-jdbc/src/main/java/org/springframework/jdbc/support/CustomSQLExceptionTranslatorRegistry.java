@@ -16,13 +16,12 @@
 
 package org.springframework.jdbc.support;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Registry for custom {@link org.springframework.jdbc.support.SQLExceptionTranslator} instances associated with
@@ -30,8 +29,8 @@ import org.springframework.lang.Nullable;
  * named "sql-error-codes.xml".
  *
  * @author Thomas Risberg
- * @since 3.1.1
  * @see SQLErrorCodesFactory
+ * @since 3.1.1
  */
 public final class CustomSQLExceptionTranslatorRegistry {
 
@@ -41,16 +40,6 @@ public final class CustomSQLExceptionTranslatorRegistry {
 	 * Keep track of a single instance so we can return it to classes that request it.
 	 */
 	private static final CustomSQLExceptionTranslatorRegistry instance = new CustomSQLExceptionTranslatorRegistry();
-
-
-	/**
-	 * Return the singleton instance.
-	 */
-	public static CustomSQLExceptionTranslatorRegistry getInstance() {
-		return instance;
-	}
-
-
 	/**
 	 * Map registry to hold custom translators specific databases.
 	 * Key is the database product name as defined in the
@@ -66,10 +55,17 @@ public final class CustomSQLExceptionTranslatorRegistry {
 	private CustomSQLExceptionTranslatorRegistry() {
 	}
 
+	/**
+	 * Return the singleton instance.
+	 */
+	public static CustomSQLExceptionTranslatorRegistry getInstance() {
+		return instance;
+	}
 
 	/**
 	 * Register a new custom translator for the specified database name.
-	 * @param dbName the database name
+	 *
+	 * @param dbName     the database name
 	 * @param translator the custom translator
 	 */
 	public void registerTranslator(String dbName, SQLExceptionTranslator translator) {
@@ -78,8 +74,7 @@ public final class CustomSQLExceptionTranslatorRegistry {
 			if (replaced != null) {
 				logger.debug("Replacing custom translator [" + replaced + "] for database '" + dbName +
 						"' with [" + translator + "]");
-			}
-			else {
+			} else {
 				logger.debug("Adding custom translator of type [" + translator.getClass().getName() +
 						"] for database '" + dbName + "'");
 			}
@@ -88,6 +83,7 @@ public final class CustomSQLExceptionTranslatorRegistry {
 
 	/**
 	 * Find a custom translator for the specified database.
+	 *
 	 * @param dbName the database name
 	 * @return the custom translator, or {@code null} if none found
 	 */

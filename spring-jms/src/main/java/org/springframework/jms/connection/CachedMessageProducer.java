@@ -16,6 +16,8 @@
 
 package org.springframework.jms.connection;
 
+import org.springframework.lang.Nullable;
+
 import javax.jms.CompletionListener;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -25,8 +27,6 @@ import javax.jms.Queue;
 import javax.jms.QueueSender;
 import javax.jms.Topic;
 import javax.jms.TopicPublisher;
-
-import org.springframework.lang.Nullable;
 
 /**
  * JMS MessageProducer decorator that adapts calls to a shared MessageProducer
@@ -62,6 +62,10 @@ class CachedMessageProducer implements MessageProducer, QueueSender, TopicPublis
 		this.timeToLive = target.getTimeToLive();
 	}
 
+	@Override
+	public boolean getDisableMessageID() throws JMSException {
+		return this.target.getDisableMessageID();
+	}
 
 	@Override
 	public void setDisableMessageID(boolean disableMessageID) throws JMSException {
@@ -72,8 +76,8 @@ class CachedMessageProducer implements MessageProducer, QueueSender, TopicPublis
 	}
 
 	@Override
-	public boolean getDisableMessageID() throws JMSException {
-		return this.target.getDisableMessageID();
+	public boolean getDisableMessageTimestamp() throws JMSException {
+		return this.target.getDisableMessageTimestamp();
 	}
 
 	@Override
@@ -85,8 +89,8 @@ class CachedMessageProducer implements MessageProducer, QueueSender, TopicPublis
 	}
 
 	@Override
-	public boolean getDisableMessageTimestamp() throws JMSException {
-		return this.target.getDisableMessageTimestamp();
+	public long getDeliveryDelay() throws JMSException {
+		return this.target.getDeliveryDelay();
 	}
 
 	@Override
@@ -98,8 +102,8 @@ class CachedMessageProducer implements MessageProducer, QueueSender, TopicPublis
 	}
 
 	@Override
-	public long getDeliveryDelay() throws JMSException {
-		return this.target.getDeliveryDelay();
+	public int getDeliveryMode() {
+		return this.deliveryMode;
 	}
 
 	@Override
@@ -108,8 +112,8 @@ class CachedMessageProducer implements MessageProducer, QueueSender, TopicPublis
 	}
 
 	@Override
-	public int getDeliveryMode() {
-		return this.deliveryMode;
+	public int getPriority() {
+		return this.priority;
 	}
 
 	@Override
@@ -118,18 +122,13 @@ class CachedMessageProducer implements MessageProducer, QueueSender, TopicPublis
 	}
 
 	@Override
-	public int getPriority() {
-		return this.priority;
+	public long getTimeToLive() {
+		return this.timeToLive;
 	}
 
 	@Override
 	public void setTimeToLive(long timeToLive) {
 		this.timeToLive = timeToLive;
-	}
-
-	@Override
-	public long getTimeToLive() {
-		return this.timeToLive;
 	}
 
 	@Override
@@ -174,7 +173,7 @@ class CachedMessageProducer implements MessageProducer, QueueSender, TopicPublis
 
 	@Override
 	public void send(Message message, int deliveryMode, int priority, long timeToLive,
-			CompletionListener completionListener) throws JMSException {
+					 CompletionListener completionListener) throws JMSException {
 
 		this.target.send(message, deliveryMode, priority, timeToLive, completionListener);
 	}
@@ -186,7 +185,7 @@ class CachedMessageProducer implements MessageProducer, QueueSender, TopicPublis
 
 	@Override
 	public void send(Destination destination, Message message, int deliveryMode, int priority,
-			long timeToLive, CompletionListener completionListener) throws JMSException {
+					 long timeToLive, CompletionListener completionListener) throws JMSException {
 
 		this.target.send(destination, message, deliveryMode, priority, timeToLive, completionListener);
 

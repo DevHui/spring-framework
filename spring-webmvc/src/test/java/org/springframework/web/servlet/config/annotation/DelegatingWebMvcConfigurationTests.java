@@ -16,17 +16,12 @@
 
 package org.springframework.web.servlet.config.annotation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -44,6 +39,10 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 import org.springframework.web.util.UrlPathHelper;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -128,6 +127,7 @@ public class DelegatingWebMvcConfigurationTests {
 			public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 				converters.add(stringConverter);
 			}
+
 			@Override
 			public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
 				converters.add(0, customConverter);

@@ -16,19 +16,7 @@
 
 package org.springframework.web.servlet.tags;
 
-import java.beans.PropertyEditorSupport;
-import java.io.StringWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Set;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.Tag;
-
 import org.junit.Test;
-
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.tests.sample.beans.IndexedTestBean;
 import org.springframework.tests.sample.beans.NestedTestBean;
@@ -42,7 +30,22 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.FormTag;
 import org.springframework.web.servlet.tags.form.TagWriter;
 
-import static org.junit.Assert.*;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.Tag;
+import java.beans.PropertyEditorSupport;
+import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Juergen Hoeller
@@ -628,8 +631,7 @@ public class BindTagTests extends AbstractTagTests {
 		try {
 			tag.doStartTag();
 			fail("Should have thrown JspException");
-		}
-		catch (JspException ex) {
+		} catch (JspException ex) {
 			// expected
 		}
 	}
@@ -905,8 +907,7 @@ public class BindTagTests extends AbstractTagTests {
 		try {
 			transform.doStartTag();
 			fail("Tag can be executed outside BindTag");
-		}
-		catch (JspException e) {
+		} catch (JspException e) {
 			// this is ok!
 		}
 
@@ -921,8 +922,7 @@ public class BindTagTests extends AbstractTagTests {
 		try {
 			transform.doStartTag();
 			fail("Tag can be executed outside BindTag and inside messagetag");
-		}
-		catch (JspException e) {
+		} catch (JspException e) {
 			// this is ok!
 		}
 	}

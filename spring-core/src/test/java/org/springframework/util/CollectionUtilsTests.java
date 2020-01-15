@@ -16,6 +16,8 @@
 
 package org.springframework.util;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -28,9 +30,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rob Harrop
@@ -57,7 +59,7 @@ public class CollectionUtilsTests {
 
 	@Test
 	public void testMergeArrayIntoCollection() {
-		Object[] arr = new Object[] {"value1", "value2"};
+		Object[] arr = new Object[]{"value1", "value2"};
 		List<Comparable<?>> list = new LinkedList<>();
 		list.add("value3");
 
@@ -69,7 +71,7 @@ public class CollectionUtilsTests {
 
 	@Test
 	public void testMergePrimitiveArrayIntoCollection() {
-		int[] arr = new int[] {1, 2};
+		int[] arr = new int[]{1, 2};
 		List<Comparable<?>> list = new LinkedList<>();
 		list.add(Integer.valueOf(3));
 

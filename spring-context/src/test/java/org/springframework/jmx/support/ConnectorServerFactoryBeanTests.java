@@ -16,8 +16,11 @@
 
 package org.springframework.jmx.support;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
+import org.junit.After;
+import org.junit.Test;
+import org.springframework.jmx.AbstractMBeanServerTests;
+import org.springframework.tests.Assume;
+import org.springframework.tests.TestGroup;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
@@ -27,15 +30,12 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
-import org.junit.After;
-import org.junit.Test;
-
-import org.springframework.jmx.AbstractMBeanServerTests;
-import org.springframework.tests.Assume;
-import org.springframework.tests.TestGroup;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * To run the tests in the class, set the following Java system property:
@@ -69,8 +69,7 @@ public class ConnectorServerFactoryBeanTests extends AbstractMBeanServerTests {
 
 		try {
 			checkServerConnection(getServer());
-		}
-		finally {
+		} finally {
 			bean.destroy();
 		}
 	}
@@ -87,8 +86,7 @@ public class ConnectorServerFactoryBeanTests extends AbstractMBeanServerTests {
 
 		try {
 			checkServerConnection(getServer());
-		}
-		finally {
+		} finally {
 			bean.destroy();
 		}
 	}
@@ -106,8 +104,7 @@ public class ConnectorServerFactoryBeanTests extends AbstractMBeanServerTests {
 			// Try to get the connector bean.
 			ObjectInstance instance = getServer().getObjectInstance(ObjectName.getInstance(OBJECT_NAME));
 			assertNotNull("ObjectInstance should not be null", instance);
-		}
-		finally {
+		} finally {
 			bean.destroy();
 		}
 	}
@@ -121,11 +118,9 @@ public class ConnectorServerFactoryBeanTests extends AbstractMBeanServerTests {
 			// Try to get the connector bean.
 			getServer().getObjectInstance(ObjectName.getInstance(OBJECT_NAME));
 			fail("Instance should not be found");
-		}
-		catch (InstanceNotFoundException ex) {
+		} catch (InstanceNotFoundException ex) {
 			// expected
-		}
-		finally {
+		} finally {
 			bean.destroy();
 		}
 	}

@@ -16,15 +16,6 @@
 
 package org.springframework.test.web.servlet.result;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
@@ -42,6 +33,14 @@ import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.RequestContextUtils;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Result handler that prints {@link MvcResult} details to a given output
@@ -65,6 +64,7 @@ public class PrintingResultHandler implements ResultHandler {
 
 	/**
 	 * Protected constructor.
+	 *
 	 * @param printer a {@link ResultValuePrinter} to do the actual writing
 	 */
 	protected PrintingResultHandler(ResultValuePrinter printer) {
@@ -73,6 +73,7 @@ public class PrintingResultHandler implements ResultHandler {
 
 	/**
 	 * Return the result value printer.
+	 *
 	 * @return the printer
 	 */
 	protected ResultValuePrinter getPrinter() {
@@ -165,8 +166,7 @@ public class PrintingResultHandler implements ResultHandler {
 		Object asyncResult = null;
 		try {
 			asyncResult = result.getAsyncResult(0);
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// Not set
 		}
 		this.printer.printValue("Async result", asyncResult);
@@ -180,14 +180,12 @@ public class PrintingResultHandler implements ResultHandler {
 
 		if (handler == null) {
 			this.printer.printValue("Type", null);
-		}
-		else {
+		} else {
 			if (handler instanceof HandlerMethod) {
 				HandlerMethod handlerMethod = (HandlerMethod) handler;
 				this.printer.printValue("Type", handlerMethod.getBeanType().getName());
 				this.printer.printValue("Method", handlerMethod);
-			}
-			else {
+			} else {
 				this.printer.printValue("Type", handler.getClass().getName());
 			}
 		}
@@ -199,8 +197,7 @@ public class PrintingResultHandler implements ResultHandler {
 	protected void printResolvedException(@Nullable Exception resolvedException) throws Exception {
 		if (resolvedException == null) {
 			this.printer.printValue("Type", null);
-		}
-		else {
+		} else {
 			this.printer.printValue("Type", resolvedException.getClass().getName());
 		}
 	}
@@ -213,8 +210,7 @@ public class PrintingResultHandler implements ResultHandler {
 		this.printer.printValue("View", (mav != null) ? mav.getView() : null);
 		if (mav == null || mav.getModel().size() == 0) {
 			this.printer.printValue("Model", null);
-		}
-		else {
+		} else {
 			for (String name : mav.getModel().keySet()) {
 				if (!name.startsWith(BindingResult.MODEL_KEY_PREFIX)) {
 					Object value = mav.getModel().get(name);
@@ -235,8 +231,7 @@ public class PrintingResultHandler implements ResultHandler {
 	protected void printFlashMap(FlashMap flashMap) throws Exception {
 		if (ObjectUtils.isEmpty(flashMap)) {
 			this.printer.printValue("Attributes", null);
-		}
-		else {
+		} else {
 			flashMap.forEach((name, value) -> {
 				this.printer.printValue("Attribute", name);
 				this.printer.printValue("value", value);
@@ -264,6 +259,7 @@ public class PrintingResultHandler implements ResultHandler {
 	/**
 	 * Print the supplied cookies in a human-readable form, assuming the
 	 * {@link Cookie} implementation does not provide its own {@code toString()}.
+	 *
 	 * @since 4.2
 	 */
 	private void printCookies(Cookie[] cookies) {
@@ -271,16 +267,16 @@ public class PrintingResultHandler implements ResultHandler {
 		for (int i = 0; i < cookies.length; i++) {
 			Cookie cookie = cookies[i];
 			cookieStrings[i] = new ToStringCreator(cookie)
-				.append("name", cookie.getName())
-				.append("value", cookie.getValue())
-				.append("comment", cookie.getComment())
-				.append("domain", cookie.getDomain())
-				.append("maxAge", cookie.getMaxAge())
-				.append("path", cookie.getPath())
-				.append("secure", cookie.getSecure())
-				.append("version", cookie.getVersion())
-				.append("httpOnly", cookie.isHttpOnly())
-				.toString();
+					.append("name", cookie.getName())
+					.append("value", cookie.getValue())
+					.append("comment", cookie.getComment())
+					.append("domain", cookie.getDomain())
+					.append("maxAge", cookie.getMaxAge())
+					.append("path", cookie.getPath())
+					.append("secure", cookie.getSecure())
+					.append("version", cookie.getVersion())
+					.append("httpOnly", cookie.isHttpOnly())
+					.toString();
 		}
 		this.printer.printValue("Cookies", cookieStrings);
 	}

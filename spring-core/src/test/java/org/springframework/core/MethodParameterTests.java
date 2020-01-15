@@ -16,6 +16,9 @@
 
 package org.springframework.core;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,10 +28,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Arjen Poutsma
@@ -192,23 +196,16 @@ public class MethodParameterTests {
 		return 42;
 	}
 
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.PARAMETER)
+	private @interface Param {
+	}
+
 	@SuppressWarnings("unused")
 	private static class NestedClass {
 
 		NestedClass(@Param String s) {
 		}
-	}
-
-	@SuppressWarnings("unused")
-	private class InnerClass {
-
-		public InnerClass(@Param String s, Callable<Integer> i) {
-		}
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.PARAMETER)
-	private @interface Param {
 	}
 
 	@SuppressWarnings("serial")
@@ -217,6 +214,13 @@ public class MethodParameterTests {
 
 	@SuppressWarnings("serial")
 	private static class IntegerList extends ArrayList<Integer> {
+	}
+
+	@SuppressWarnings("unused")
+	private class InnerClass {
+
+		public InnerClass(@Param String s, Callable<Integer> i) {
+		}
 	}
 
 }

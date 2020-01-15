@@ -16,13 +16,12 @@
 
 package org.springframework.test.web.servlet.result;
 
-import javax.servlet.http.Cookie;
-
 import org.hamcrest.Matcher;
-
 import org.springframework.test.util.AssertionErrors;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
+
+import javax.servlet.http.Cookie;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
@@ -47,6 +46,13 @@ public class CookieResultMatchers {
 	protected CookieResultMatchers() {
 	}
 
+	private static Cookie getCookie(MvcResult result, String name) {
+		Cookie cookie = result.getResponse().getCookie(name);
+		if (cookie == null) {
+			AssertionErrors.fail("No cookie with name '" + name + "'");
+		}
+		return cookie;
+	}
 
 	/**
 	 * Assert a cookie value with the given Hamcrest {@link Matcher}.
@@ -196,6 +202,7 @@ public class CookieResultMatchers {
 
 	/**
 	 * Assert whether the cookie must be HTTP only.
+	 *
 	 * @since 4.3.9
 	 */
 	public ResultMatcher httpOnly(final String name, final boolean httpOnly) {
@@ -203,15 +210,6 @@ public class CookieResultMatchers {
 			Cookie cookie = getCookie(result, name);
 			assertEquals("Response cookie '" + name + "' httpOnly", httpOnly, cookie.isHttpOnly());
 		};
-	}
-
-
-	private static Cookie getCookie(MvcResult result, String name) {
-		Cookie cookie = result.getResponse().getCookie(name);
-		if (cookie == null) {
-			AssertionErrors.fail("No cookie with name '" + name + "'");
-		}
-		return cookie;
 	}
 
 }

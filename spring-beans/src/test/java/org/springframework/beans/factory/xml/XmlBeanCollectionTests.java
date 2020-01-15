@@ -16,6 +16,18 @@
 
 package org.springframework.beans.factory.xml;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.BeanDefinitionStoreException;
+import org.springframework.beans.factory.config.ListFactoryBean;
+import org.springframework.beans.factory.config.MapFactoryBean;
+import org.springframework.beans.factory.config.SetFactoryBean;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.tests.sample.beans.HasMap;
+import org.springframework.tests.sample.beans.TestBean;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,20 +41,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.BeanDefinitionStoreException;
-import org.springframework.beans.factory.config.ListFactoryBean;
-import org.springframework.beans.factory.config.MapFactoryBean;
-import org.springframework.beans.factory.config.SetFactoryBean;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.tests.sample.beans.HasMap;
-import org.springframework.tests.sample.beans.TestBean;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for collections in XML bean definitions.
@@ -177,8 +179,7 @@ public class XmlBeanCollectionTests {
 		try {
 			this.beanFactory.getBean("jumble2");
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getCause() instanceof BeanDefinitionStoreException);
 			assertTrue(ex.getCause().getMessage().contains("rod2"));
 		}
@@ -350,7 +351,7 @@ public class XmlBeanCollectionTests {
 	@Test
 	public void testClassList() throws Exception {
 		HasMap hasMap = (HasMap) this.beanFactory.getBean("classList");
-		assertTrue(hasMap.getClassList().size()== 2);
+		assertTrue(hasMap.getClassList().size() == 2);
 		assertTrue(hasMap.getClassList().get(0).equals(String.class));
 		assertTrue(hasMap.getClassList().get(1).equals(Exception.class));
 	}

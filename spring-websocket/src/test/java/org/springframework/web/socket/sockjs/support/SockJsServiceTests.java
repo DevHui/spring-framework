@@ -16,16 +16,8 @@
 
 package org.springframework.web.socket.sockjs.support;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
@@ -38,8 +30,21 @@ import org.springframework.web.socket.AbstractHttpRequestTests;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.sockjs.SockJsException;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Test fixture for {@link AbstractSockJsService}.
@@ -296,13 +301,13 @@ public class SockJsServiceTests extends AbstractHttpRequestTests {
 
 		@Override
 		protected void handleRawWebSocketRequest(ServerHttpRequest req, ServerHttpResponse res,
-				WebSocketHandler handler) throws IOException {
+												 WebSocketHandler handler) throws IOException {
 			this.handler = handler;
 		}
 
 		@Override
 		protected void handleTransportRequest(ServerHttpRequest req, ServerHttpResponse res, WebSocketHandler handler,
-				String sessionId, String transport) throws SockJsException {
+											  String sessionId, String transport) throws SockJsException {
 			this.sessionId = sessionId;
 			this.transport = transport;
 			this.handler = handler;

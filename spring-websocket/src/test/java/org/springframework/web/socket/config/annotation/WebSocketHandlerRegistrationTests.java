@@ -16,13 +16,9 @@
 
 package org.springframework.web.socket.config.annotation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -35,6 +31,9 @@ import org.springframework.web.socket.sockjs.SockJsService;
 import org.springframework.web.socket.sockjs.transport.TransportType;
 import org.springframework.web.socket.sockjs.transport.handler.DefaultSockJsService;
 import org.springframework.web.socket.sockjs.transport.handler.WebSocketTransportHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -212,14 +211,14 @@ public class WebSocketHandlerRegistrationTests {
 
 		@Override
 		protected void addSockJsServiceMapping(List<Mapping> mappings, SockJsService sockJsService,
-				WebSocketHandler wsHandler, String pathPattern) {
+											   WebSocketHandler wsHandler, String pathPattern) {
 
 			mappings.add(new Mapping(wsHandler, pathPattern, sockJsService));
 		}
 
 		@Override
 		protected void addWebSocketHandlerMapping(List<Mapping> mappings, WebSocketHandler handler,
-				HandshakeHandler handshakeHandler, HandshakeInterceptor[] interceptors, String path) {
+												  HandshakeHandler handshakeHandler, HandshakeInterceptor[] interceptors, String path) {
 
 			mappings.add(new Mapping(handler, path, handshakeHandler, interceptors));
 		}

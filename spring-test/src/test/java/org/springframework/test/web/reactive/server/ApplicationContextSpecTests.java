@@ -16,8 +16,6 @@
 package org.springframework.test.web.reactive.server;
 
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -28,9 +26,11 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.session.WebSessionManager;
+import reactor.core.publisher.Mono;
 
 /**
  * Unit tests with {@link ApplicationContextSpec}.
+ *
  * @author Rossen Stoyanchev
  */
 public class ApplicationContextSpecTests {
@@ -42,7 +42,7 @@ public class ApplicationContextSpecTests {
 		ApplicationContextSpec spec = new ApplicationContextSpec(context);
 		WebTestClient testClient = spec.configureClient().build();
 
-		for (int i=0; i < 2; i++) {
+		for (int i = 0; i < 2; i++) {
 			testClient.get().uri("/sessionClassName")
 					.exchange()
 					.expectStatus().isOk()

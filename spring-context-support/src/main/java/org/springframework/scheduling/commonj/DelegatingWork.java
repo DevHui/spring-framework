@@ -17,7 +17,6 @@
 package org.springframework.scheduling.commonj;
 
 import commonj.work.Work;
-
 import org.springframework.scheduling.SchedulingAwareRunnable;
 import org.springframework.util.Assert;
 
@@ -37,8 +36,9 @@ public class DelegatingWork implements Work {
 
 	/**
 	 * Create a new DelegatingWork.
+	 *
 	 * @param delegate the Runnable implementation to delegate to
-	 * (may be a SchedulingAwareRunnable for extended support)
+	 *                 (may be a SchedulingAwareRunnable for extended support)
 	 * @see org.springframework.scheduling.SchedulingAwareRunnable
 	 * @see #isDaemon()
 	 */

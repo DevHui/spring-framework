@@ -16,17 +16,8 @@
 
 package org.springframework.web.servlet.handler;
 
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.stereotype.Controller;
@@ -38,6 +29,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UrlPathHelper;
+
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -244,7 +242,6 @@ public class HandlerMethodMappingTests {
 		assertNotNull(config);
 		assertEquals("http://" + beanName.hashCode() + this.method1.getName(), config.getAllowedOrigins().get(0));
 	}
-
 
 
 	private static class MyHandlerMethodMapping extends AbstractHandlerMethodMapping<String> {

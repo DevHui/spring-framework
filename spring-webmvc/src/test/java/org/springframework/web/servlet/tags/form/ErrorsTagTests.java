@@ -16,18 +16,7 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.BodyTag;
-import javax.servlet.jsp.tagext.Tag;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockBodyContent;
 import org.springframework.mock.web.test.MockPageContext;
 import org.springframework.tests.sample.beans.TestBean;
@@ -37,7 +26,20 @@ import org.springframework.validation.Errors;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.tags.RequestContextAwareTag;
 
-import static org.junit.Assert.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.BodyTag;
+import javax.servlet.jsp.tagext.Tag;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rob Harrop
@@ -46,7 +48,7 @@ import static org.junit.Assert.*;
  * @author Mark Fisher
  * @author Jeremy Grelle
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ErrorsTagTests extends AbstractFormTagTests {
 
 	private static final String COMMAND_NAME = "testBean";

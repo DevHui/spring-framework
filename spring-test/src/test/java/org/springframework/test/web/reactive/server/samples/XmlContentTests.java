@@ -16,18 +16,7 @@
 
 package org.springframework.test.web.reactive.server.samples;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +28,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.hamcrest.Matchers.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.startsWith;
 
 /**
  * Samples of tests using {@link WebTestClient} with XML content.
@@ -51,11 +49,11 @@ public class XmlContentTests {
 
 	private static final String persons_XML =
 			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
-			+ "<persons>"
-			+ "<person><name>Jane</name></person>"
-			+ "<person><name>Jason</name></person>"
-			+ "<person><name>John</name></person>"
-			+ "</persons>";
+					+ "<persons>"
+					+ "<person><name>Jane</name></person>"
+					+ "<person><name>Jason</name></person>"
+					+ "<person><name>John</name></person>"
+					+ "</persons>";
 
 
 	private final WebTestClient client = WebTestClient.bindToController(new PersonController()).build();
@@ -111,7 +109,7 @@ public class XmlContentTests {
 
 		String content =
 				"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-				"<person><name>John</name></person>";
+						"<person><name>John</name></person>";
 
 		this.client.post().uri("/persons")
 				.contentType(MediaType.APPLICATION_XML)
@@ -124,11 +122,11 @@ public class XmlContentTests {
 
 
 	@SuppressWarnings("unused")
-	@XmlRootElement(name="persons")
+	@XmlRootElement(name = "persons")
 	@XmlAccessorType(XmlAccessType.FIELD)
 	private static class PersonsWrapper {
 
-		@XmlElement(name="person")
+		@XmlElement(name = "person")
 		private final List<Person> persons = new ArrayList<>();
 
 		public PersonsWrapper() {

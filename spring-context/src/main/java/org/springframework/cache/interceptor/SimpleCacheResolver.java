@@ -16,11 +16,11 @@
 
 package org.springframework.cache.interceptor;
 
-import java.util.Collection;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.lang.Nullable;
+
+import java.util.Collection;
 
 /**
  * A simple {@link CacheResolver} that resolves the {@link Cache} instance(s)
@@ -29,13 +29,14 @@ import org.springframework.lang.Nullable;
  *
  * @author Stephane Nicoll
  * @author Juergen Hoeller
- * @since 4.1
  * @see BasicOperation#getCacheNames()
+ * @since 4.1
  */
 public class SimpleCacheResolver extends AbstractCacheResolver {
 
 	/**
 	 * Construct a new {@code SimpleCacheResolver}.
+	 *
 	 * @see #setCacheManager
 	 */
 	public SimpleCacheResolver() {
@@ -43,21 +44,16 @@ public class SimpleCacheResolver extends AbstractCacheResolver {
 
 	/**
 	 * Construct a new {@code SimpleCacheResolver} for the given {@link CacheManager}.
+	 *
 	 * @param cacheManager the CacheManager to use
 	 */
 	public SimpleCacheResolver(CacheManager cacheManager) {
 		super(cacheManager);
 	}
 
-
-	@Override
-	protected Collection<String> getCacheNames(CacheOperationInvocationContext<?> context) {
-		return context.getOperation().getCacheNames();
-	}
-
-
 	/**
 	 * Return a {@code SimpleCacheResolver} for the given {@link CacheManager}.
+	 *
 	 * @param cacheManager the CacheManager (potentially {@code null})
 	 * @return the SimpleCacheResolver ({@code null} if the CacheManager was {@code null})
 	 * @since 5.1
@@ -65,6 +61,11 @@ public class SimpleCacheResolver extends AbstractCacheResolver {
 	@Nullable
 	static SimpleCacheResolver of(@Nullable CacheManager cacheManager) {
 		return (cacheManager != null ? new SimpleCacheResolver(cacheManager) : null);
+	}
+
+	@Override
+	protected Collection<String> getCacheNames(CacheOperationInvocationContext<?> context) {
+		return context.getOperation().getCacheNames();
 	}
 
 }

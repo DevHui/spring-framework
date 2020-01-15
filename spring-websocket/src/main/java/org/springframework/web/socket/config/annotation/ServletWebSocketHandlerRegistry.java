@@ -16,12 +16,6 @@
 
 package org.springframework.web.socket.config.annotation;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.MultiValueMap;
@@ -31,6 +25,12 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.WebSocketHandlerMapping;
 import org.springframework.web.util.UrlPathHelper;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * {@link WebSocketHandlerRegistry} with Spring MVC handler mappings for the
@@ -61,6 +61,10 @@ public class ServletWebSocketHandlerRegistry implements WebSocketHandlerRegistry
 		return registration;
 	}
 
+	public int getOrder() {
+		return this.order;
+	}
+
 	/**
 	 * Set the order for the resulting {@link SimpleUrlHandlerMapping} relative to
 	 * other handler mappings configured in Spring MVC.
@@ -70,8 +74,9 @@ public class ServletWebSocketHandlerRegistry implements WebSocketHandlerRegistry
 		this.order = order;
 	}
 
-	public int getOrder() {
-		return this.order;
+	@Nullable
+	public UrlPathHelper getUrlPathHelper() {
+		return this.urlPathHelper;
 	}
 
 	/**
@@ -81,12 +86,6 @@ public class ServletWebSocketHandlerRegistry implements WebSocketHandlerRegistry
 	public void setUrlPathHelper(@Nullable UrlPathHelper urlPathHelper) {
 		this.urlPathHelper = urlPathHelper;
 	}
-
-	@Nullable
-	public UrlPathHelper getUrlPathHelper() {
-		return this.urlPathHelper;
-	}
-
 
 	/**
 	 * Whether there are any endpoint SockJS registrations without a TaskScheduler.

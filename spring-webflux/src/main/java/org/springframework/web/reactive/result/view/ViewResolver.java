@@ -16,9 +16,9 @@
 
 package org.springframework.web.reactive.result.view;
 
-import java.util.Locale;
-
 import reactor.core.publisher.Mono;
+
+import java.util.Locale;
 
 /**
  * Contract to resolve a view name to a {@link View} instance. The view name may
@@ -30,15 +30,16 @@ import reactor.core.publisher.Mono;
  * ViewResolutionResultHandler}.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see ViewResolutionResultHandler
+ * @since 5.0
  */
 public interface ViewResolver {
 
 	/**
 	 * Resolve the view name to a View instance.
+	 *
 	 * @param viewName the name of the view to resolve
-	 * @param locale the locale for the request
+	 * @param locale   the locale for the request
 	 * @return the resolved view or an empty stream
 	 */
 	Mono<View> resolveViewName(String viewName, Locale locale);

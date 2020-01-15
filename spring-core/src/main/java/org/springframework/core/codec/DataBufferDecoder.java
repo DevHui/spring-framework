@@ -16,16 +16,15 @@
 
 package org.springframework.core.codec;
 
-import java.util.Map;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.lang.Nullable;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
+import reactor.core.publisher.Flux;
+
+import java.util.Map;
 
 /**
  * Simple pass-through decoder for {@link DataBuffer DataBuffers}.
@@ -58,14 +57,14 @@ public class DataBufferDecoder extends AbstractDataBufferDecoder<DataBuffer> {
 
 	@Override
 	public Flux<DataBuffer> decode(Publisher<DataBuffer> input, ResolvableType elementType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+								   @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		return Flux.from(input);
 	}
 
 	@Override
 	protected DataBuffer decodeDataBuffer(DataBuffer buffer, ResolvableType elementType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+										  @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		if (logger.isDebugEnabled()) {
 			logger.debug(Hints.getLogPrefix(hints) + "Read " + buffer.readableByteCount() + " bytes");

@@ -16,19 +16,8 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.aop.interceptor.SimpleTraceInterceptor;
 import org.springframework.aop.scope.ScopedObject;
@@ -65,7 +54,20 @@ import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
-import static org.junit.Assert.*;
+import javax.annotation.PostConstruct;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Chris Beams
@@ -258,8 +260,7 @@ public class ConfigurationClassPostProcessorTests {
 		try {
 			beanFactory.getBean(SimpleComponent.class);
 			fail("Should have thrown NoSuchBeanDefinitionException");
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			// expected
 		}
 	}
@@ -314,8 +315,7 @@ public class ConfigurationClassPostProcessorTests {
 		try {
 			pp.postProcessBeanFactory(beanFactory);
 			fail("Should have thrown BeanDefinitionStoreException");
-		}
-		catch (BeanDefinitionStoreException ex) {
+		} catch (BeanDefinitionStoreException ex) {
 			assertTrue(ex.getMessage().contains("bar"));
 			assertTrue(ex.getMessage().contains("SingletonBeanConfig"));
 			assertTrue(ex.getMessage().contains(TestBean.class.getName()));
@@ -360,8 +360,7 @@ public class ConfigurationClassPostProcessorTests {
 		try {
 			beanFactory.getBean(Bar.class);
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getMessage().contains("OverridingSingletonBeanConfig.foo"));
 			assertTrue(ex.getMessage().contains(ExtendedFoo.class.getName()));
 			assertTrue(ex.getMessage().contains(Foo.class.getName()));
@@ -419,15 +418,13 @@ public class ConfigurationClassPostProcessorTests {
 		try {
 			pp.postProcessBeanFactory(bf1); // second invocation for bf1 -- should throw
 			fail("expected exception");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 		}
 		pp.postProcessBeanFactory(bf2); // first invocation for bf2 -- should succeed
 		try {
 			pp.postProcessBeanFactory(bf2); // second invocation for bf2 -- should throw
 			fail("expected exception");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 		}
 	}
 
@@ -925,8 +922,7 @@ public class ConfigurationClassPostProcessorTests {
 		try {
 			beanFactory.preInstantiateSingletons();
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getMessage().contains("Circular reference"));
 		}
 	}
@@ -936,8 +932,7 @@ public class ConfigurationClassPostProcessorTests {
 		try {
 			new AnnotationConfigApplicationContext(A.class, AStrich.class);
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getMessage().contains("Circular reference"));
 		}
 	}
@@ -1058,15 +1053,96 @@ public class ConfigurationClassPostProcessorTests {
 
 	// -------------------------------------------------------------------------
 
+	public interface RepositoryInterface<T> {
+
+		String toString();
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Scope(scopeName = "prototype")
+	public @interface PrototypeScoped {
+
+		ScopedProxyMode proxyMode() default ScopedProxyMode.TARGET_CLASS;
+	}
+
+	@Configuration
+	@ComponentScan(basePackages = "org.springframework.context.annotation.componentscan.simple")
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface ComposedConfiguration {
+	}
+
+	@Configuration
+	@ComponentScan
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface ComposedConfigurationWithAttributeOverrides {
+
+		String[] basePackages() default {};
+
+		ComponentScan.Filter[] excludeFilters() default {};
+	}
+
+	@ComposedConfigurationWithAttributeOverrides
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface ComposedComposedConfigurationWithAttributeOverrides {
+
+		String[] basePackages() default {};
+	}
+
+	@ComponentScan
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface MetaComponentScan {
+	}
+
+	@MetaComponentScan
+	@Configuration
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface MetaComponentScanConfigurationWithAttributeOverrides {
+
+		String[] basePackages() default {};
+	}
+
+	public interface BaseInterface {
+
+		ServiceBean serviceBean();
+	}
+
+	public interface BaseDefaultMethods extends BaseInterface {
+
+		@Bean
+		default ServiceBeanProvider provider() {
+			return new ServiceBeanProvider();
+		}
+
+		@Bean
+		@Override
+		default ServiceBean serviceBean() {
+			return provider().getServiceBean();
+		}
+	}
+
+	public interface DefaultMethodsConfig extends BaseDefaultMethods {
+
+	}
+
+	interface BarInterface {
+	}
+
 	@Configuration
 	@Order(1)
 	static class SingletonBeanConfig {
 
-		public @Bean Foo foo() {
+		public @Bean
+		Foo foo() {
 			return new Foo();
 		}
 
-		public @Bean Bar bar() {
+		public @Bean
+		Bar bar() {
 			return new Bar(foo());
 		}
 	}
@@ -1075,11 +1151,13 @@ public class ConfigurationClassPostProcessorTests {
 	@Order(2)
 	static class OverridingSingletonBeanConfig {
 
-		public @Bean ExtendedFoo foo() {
+		public @Bean
+		ExtendedFoo foo() {
 			return new ExtendedFoo();
 		}
 
-		public @Bean Bar bar() {
+		public @Bean
+		Bar bar() {
 			return new Bar(foo());
 		}
 	}
@@ -1087,7 +1165,8 @@ public class ConfigurationClassPostProcessorTests {
 	@Configuration
 	static class OverridingAgainSingletonBeanConfig {
 
-		public @Bean ExtendedAgainFoo foo() {
+		public @Bean
+		ExtendedAgainFoo foo() {
 			return new ExtendedAgainFoo();
 		}
 	}
@@ -1095,7 +1174,8 @@ public class ConfigurationClassPostProcessorTests {
 	@Configuration
 	static class InvalidOverridingSingletonBeanConfig {
 
-		public @Bean Foo foo() {
+		public @Bean
+		Foo foo() {
 			return new Foo();
 		}
 	}
@@ -1107,11 +1187,13 @@ public class ConfigurationClassPostProcessorTests {
 		@Order(1)
 		static class SingletonBeanConfig {
 
-			public @Bean Foo foo() {
+			public @Bean
+			Foo foo() {
 				return new Foo();
 			}
 
-			public @Bean Bar bar() {
+			public @Bean
+			Bar bar() {
 				return new Bar(foo());
 			}
 		}
@@ -1120,11 +1202,13 @@ public class ConfigurationClassPostProcessorTests {
 		@Order(2)
 		static class OverridingSingletonBeanConfig {
 
-			public @Bean ExtendedFoo foo() {
+			public @Bean
+			ExtendedFoo foo() {
 				return new ExtendedFoo();
 			}
 
-			public @Bean Bar bar() {
+			public @Bean
+			Bar bar() {
 				return new Bar(foo());
 			}
 		}
@@ -1140,11 +1224,13 @@ public class ConfigurationClassPostProcessorTests {
 			public SingletonBeanConfig(ConfigWithOrderedInnerClasses other) {
 			}
 
-			public @Bean Foo foo() {
+			public @Bean
+			Foo foo() {
 				return new Foo();
 			}
 
-			public @Bean Bar bar() {
+			public @Bean
+			Bar bar() {
 				return new Bar(foo());
 			}
 		}
@@ -1157,11 +1243,13 @@ public class ConfigurationClassPostProcessorTests {
 				other.getObject();
 			}
 
-			public @Bean ExtendedFoo foo() {
+			public @Bean
+			ExtendedFoo foo() {
 				return new ExtendedFoo();
 			}
 
-			public @Bean Bar bar() {
+			public @Bean
+			Bar bar() {
 				return new Bar(foo());
 			}
 		}
@@ -1188,7 +1276,8 @@ public class ConfigurationClassPostProcessorTests {
 	@Configuration
 	static class UnloadedConfig {
 
-		public @Bean Foo foo() {
+		public @Bean
+		Foo foo() {
 			return new Foo();
 		}
 	}
@@ -1196,7 +1285,8 @@ public class ConfigurationClassPostProcessorTests {
 	@Configuration
 	static class LoadedConfig {
 
-		public @Bean Bar bar() {
+		public @Bean
+		Bar bar() {
 			return new Bar(new Foo());
 		}
 	}
@@ -1210,15 +1300,12 @@ public class ConfigurationClassPostProcessorTests {
 	@Configuration
 	public static class ScopedProxyConfigurationClass {
 
-		@Bean @Lazy @Scope(proxyMode = ScopedProxyMode.INTERFACES)
+		@Bean
+		@Lazy
+		@Scope(proxyMode = ScopedProxyMode.INTERFACES)
 		public ITestBean scopedClass() {
 			return new TestBean();
 		}
-	}
-
-	public interface RepositoryInterface<T> {
-
-		String toString();
 	}
 
 	public static class Repository<T> implements RepositoryInterface<T> {
@@ -1353,13 +1440,6 @@ public class ConfigurationClassPostProcessorTests {
 				}
 			};
 		}
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Scope(scopeName = "prototype")
-	public @interface PrototypeScoped {
-
-		ScopedProxyMode proxyMode() default ScopedProxyMode.TARGET_CLASS;
 	}
 
 	@Configuration
@@ -1499,26 +1579,8 @@ public class ConfigurationClassPostProcessorTests {
 		}
 	}
 
-	@Configuration
-	@ComponentScan(basePackages = "org.springframework.context.annotation.componentscan.simple")
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	public @interface ComposedConfiguration {
-	}
-
 	@ComposedConfiguration
 	public static class ComposedConfigurationClass {
-	}
-
-	@Configuration
-	@ComponentScan
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	public @interface ComposedConfigurationWithAttributeOverrides {
-
-		String[] basePackages() default {};
-
-		ComponentScan.Filter[] excludeFilters() default {};
 	}
 
 	@ComposedConfigurationWithAttributeOverrides(basePackages = "org.springframework.context.annotation.componentscan.simple")
@@ -1539,31 +1601,8 @@ public class ConfigurationClassPostProcessorTests {
 	public static class ExtendedConfigurationWithAttributeOverrideForExcludeFilter extends BaseConfigurationWithEmptyExcludeFilters {
 	}
 
-	@ComposedConfigurationWithAttributeOverrides
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	public @interface ComposedComposedConfigurationWithAttributeOverrides {
-
-		String[] basePackages() default {};
-	}
-
 	@ComposedComposedConfigurationWithAttributeOverrides(basePackages = "org.springframework.context.annotation.componentscan.simple")
 	public static class ComposedComposedConfigurationWithAttributeOverridesClass {
-	}
-
-	@ComponentScan
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	public @interface MetaComponentScan {
-	}
-
-	@MetaComponentScan
-	@Configuration
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	public @interface MetaComponentScanConfigurationWithAttributeOverrides {
-
-		String[] basePackages() default {};
 	}
 
 	@MetaComponentScanConfigurationWithAttributeOverrides(basePackages = "org.springframework.context.annotation.componentscan.simple")
@@ -1618,29 +1657,6 @@ public class ConfigurationClassPostProcessorTests {
 		public void validate() {
 			Assert.notNull(provider, "No ServiceBeanProvider injected");
 		}
-	}
-
-	public interface BaseInterface {
-
-		ServiceBean serviceBean();
-	}
-
-	public interface BaseDefaultMethods extends BaseInterface {
-
-		@Bean
-		default ServiceBeanProvider provider() {
-			return new ServiceBeanProvider();
-		}
-
-		@Bean
-		@Override
-		default ServiceBean serviceBean() {
-			return provider().getServiceBean();
-		}
-	}
-
-	public interface DefaultMethodsConfig extends BaseDefaultMethods {
-
 	}
 
 	@Configuration
@@ -1728,7 +1744,8 @@ public class ConfigurationClassPostProcessorTests {
 	@Configuration
 	static class BeanArgumentConfigWithSingleton {
 
-		@Bean @Lazy
+		@Bean
+		@Lazy
 		public DependingFoo foo(BarArgument bar) {
 			return new DependingFoo(bar);
 		}
@@ -1752,7 +1769,8 @@ public class ConfigurationClassPostProcessorTests {
 			return foo(null);
 		}
 
-		@Bean @Lazy
+		@Bean
+		@Lazy
 		public DependingFoo foo(BarArgument bar) {
 			return new DependingFoo(bar);
 		}
@@ -1776,9 +1794,6 @@ public class ConfigurationClassPostProcessorTests {
 	static abstract class FooFactory {
 
 		abstract DependingFoo createFoo(BarArgument bar);
-	}
-
-	interface BarInterface {
 	}
 
 	static class BarImpl implements BarInterface {
@@ -1846,12 +1861,13 @@ public class ConfigurationClassPostProcessorTests {
 
 		@Bean(autowireCandidate = false)
 		Runnable testBean(Map<String, Runnable> testBeans,
-				@Qualifier("systemProperties") Map<String, String> sysprops,
-				@Qualifier("systemEnvironment") Map<String, String> sysenv) {
+						  @Qualifier("systemProperties") Map<String, String> sysprops,
+						  @Qualifier("systemEnvironment") Map<String, String> sysenv) {
 			this.testBeans = testBeans;
 			assertSame(env.getSystemProperties(), sysprops);
 			assertSame(env.getSystemEnvironment(), sysenv);
-			return () -> {};
+			return () -> {
+			};
 		}
 
 		// Unrelated, not to be considered as a factory method
@@ -1880,7 +1896,8 @@ public class ConfigurationClassPostProcessorTests {
 
 		@Bean
 		Runnable testBean() {
-			return () -> {};
+			return () -> {
+			};
 		}
 
 		// Unrelated, not to be considered as a factory method
@@ -1911,6 +1928,7 @@ public class ConfigurationClassPostProcessorTests {
 				public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
 					registry.registerBeanDefinition("myTestBean", new RootBeanDefinition(TestBean.class));
 				}
+
 				@Override
 				public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 				}

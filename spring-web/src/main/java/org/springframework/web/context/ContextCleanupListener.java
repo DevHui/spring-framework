@@ -16,16 +16,14 @@
 
 package org.springframework.web.context;
 
-import java.util.Enumeration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.DisposableBean;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.beans.factory.DisposableBean;
+import java.util.Enumeration;
 
 /**
  * Web application listener that cleans up remaining disposable attributes
@@ -35,28 +33,18 @@ import org.springframework.beans.factory.DisposableBean;
  * very end of the web application's shutdown phase.
  *
  * @author Juergen Hoeller
- * @since 3.0
  * @see org.springframework.web.context.support.ServletContextScope
  * @see ContextLoaderListener
+ * @since 3.0
  */
 public class ContextCleanupListener implements ServletContextListener {
 
 	private static final Log logger = LogFactory.getLog(ContextCleanupListener.class);
 
-
-	@Override
-	public void contextInitialized(ServletContextEvent event) {
-	}
-
-	@Override
-	public void contextDestroyed(ServletContextEvent event) {
-		cleanupAttributes(event.getServletContext());
-	}
-
-
 	/**
 	 * Find all Spring-internal ServletContext attributes which implement
 	 * {@link DisposableBean} and invoke the destroy method on them.
+	 *
 	 * @param servletContext the ServletContext to check
 	 * @see DisposableBean#destroy()
 	 */
@@ -69,8 +57,7 @@ public class ContextCleanupListener implements ServletContextListener {
 				if (attrValue instanceof DisposableBean) {
 					try {
 						((DisposableBean) attrValue).destroy();
-					}
-					catch (Throwable ex) {
+					} catch (Throwable ex) {
 						if (logger.isWarnEnabled()) {
 							logger.warn("Invocation of destroy method failed on ServletContext " +
 									"attribute with name '" + attrName + "'", ex);
@@ -79,6 +66,15 @@ public class ContextCleanupListener implements ServletContextListener {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void contextInitialized(ServletContextEvent event) {
+	}
+
+	@Override
+	public void contextDestroyed(ServletContextEvent event) {
+		cleanupAttributes(event.getServletContext());
 	}
 
 }

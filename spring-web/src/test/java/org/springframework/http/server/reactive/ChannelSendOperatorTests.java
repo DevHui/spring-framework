@@ -16,6 +16,19 @@
 
 package org.springframework.http.server.reactive;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.LeakAwareDataBufferFactory;
+import reactor.core.publisher.BaseSubscriber;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.Signal;
+import reactor.test.StepVerifier;
+
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -24,21 +37,10 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-import reactor.core.publisher.BaseSubscriber;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.Signal;
-import reactor.test.StepVerifier;
-
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.LeakAwareDataBufferFactory;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rossen Stoyanchev
@@ -110,7 +112,7 @@ public class ChannelSendOperatorTests {
 	@Test
 	public void errorAfterMultipleItems() {
 		IllegalStateException error = new IllegalStateException("boo");
-		Flux<String> publisher = Flux.generate(() -> 0, (idx , subscriber) -> {
+		Flux<String> publisher = Flux.generate(() -> 0, (idx, subscriber) -> {
 			int i = ++idx;
 			subscriber.next(String.valueOf(i));
 			if (i == 3) {
@@ -147,7 +149,8 @@ public class ChannelSendOperatorTests {
 					return Mono.never();
 				});
 
-		BaseSubscriber<Void> subscriber = new BaseSubscriber<Void>() {};
+		BaseSubscriber<Void> subscriber = new BaseSubscriber<Void>() {
+		};
 		operator.subscribe(subscriber);
 		subscriber.cancel();
 
@@ -177,11 +180,11 @@ public class ChannelSendOperatorTests {
 				});
 
 
-		operator.subscribe(new BaseSubscriber<Void>() {});
+		operator.subscribe(new BaseSubscriber<Void>() {
+		});
 		try {
 			writeSubscriber.signalDemand(1);  // Let cached signals ("foo" and error) be published..
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			assertNotNull(ex.getCause());
 			assertEquals("err", ex.getCause().getMessage());
 		}
@@ -232,7 +235,7 @@ public class ChannelSendOperatorTests {
 	}
 
 
-	private <T> Mono<Void> sendOperator(Publisher<String> source){
+	private <T> Mono<Void> sendOperator(Publisher<String> source) {
 		return new ChannelSendOperator<>(source, writer::send);
 	}
 
@@ -248,15 +251,14 @@ public class ChannelSendOperatorTests {
 
 		public Publisher<Void> send(Publisher<String> publisher) {
 			return subscriber -> Executors.newSingleThreadScheduledExecutor().schedule(() ->
-							publisher.subscribe(new WriteSubscriber(subscriber)),50, TimeUnit.MILLISECONDS);
+					publisher.subscribe(new WriteSubscriber(subscriber)), 50, TimeUnit.MILLISECONDS);
 		}
 
 
 		private class WriteSubscriber implements Subscriber<String> {
 
-			private Subscription subscription;
-
 			private final Subscriber<? super Void> subscriber;
+			private Subscription subscription;
 
 			public WriteSubscriber(Subscriber<? super Void> subscriber) {
 				this.subscriber = subscriber;

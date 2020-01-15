@@ -16,16 +16,11 @@
 
 package org.springframework.web.socket.messaging;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ScheduledFuture;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.ConnectionHandlingStompSession;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -47,8 +42,23 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ScheduledFuture;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.notNull;
+import static org.mockito.Mockito.same;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link WebSocketStompClient}.
@@ -222,31 +232,30 @@ public class WebSocketStompClientTests {
 	@Test
 	public void heartbeatDefaultValue() throws Exception {
 		WebSocketStompClient stompClient = new WebSocketStompClient(mock(WebSocketClient.class));
-		assertArrayEquals(new long[] {0, 0}, stompClient.getDefaultHeartbeat());
+		assertArrayEquals(new long[]{0, 0}, stompClient.getDefaultHeartbeat());
 
 		StompHeaders connectHeaders = stompClient.processConnectHeaders(null);
-		assertArrayEquals(new long[] {0, 0}, connectHeaders.getHeartbeat());
+		assertArrayEquals(new long[]{0, 0}, connectHeaders.getHeartbeat());
 	}
 
 	@Test
 	public void heartbeatDefaultValueWithScheduler() throws Exception {
 		WebSocketStompClient stompClient = new WebSocketStompClient(mock(WebSocketClient.class));
 		stompClient.setTaskScheduler(mock(TaskScheduler.class));
-		assertArrayEquals(new long[] {10000, 10000}, stompClient.getDefaultHeartbeat());
+		assertArrayEquals(new long[]{10000, 10000}, stompClient.getDefaultHeartbeat());
 
 		StompHeaders connectHeaders = stompClient.processConnectHeaders(null);
-		assertArrayEquals(new long[] {10000, 10000}, connectHeaders.getHeartbeat());
+		assertArrayEquals(new long[]{10000, 10000}, connectHeaders.getHeartbeat());
 	}
 
 	@Test
 	public void heartbeatDefaultValueSetWithoutScheduler() throws Exception {
 		WebSocketStompClient stompClient = new WebSocketStompClient(mock(WebSocketClient.class));
-		stompClient.setDefaultHeartbeat(new long[] {5, 5});
+		stompClient.setDefaultHeartbeat(new long[]{5, 5});
 		try {
 			stompClient.processConnectHeaders(null);
 			fail("Expected IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// ignore
 		}
 	}
@@ -330,7 +339,7 @@ public class WebSocketStompClientTests {
 			throws InterruptedException {
 
 		ArgumentCaptor<Runnable> inactivityTaskCaptor = ArgumentCaptor.forClass(Runnable.class);
-		verify(this.taskScheduler).scheduleWithFixedDelay(inactivityTaskCaptor.capture(), eq(delay/2));
+		verify(this.taskScheduler).scheduleWithFixedDelay(inactivityTaskCaptor.capture(), eq(delay / 2));
 		verifyNoMoreInteractions(this.taskScheduler);
 
 		if (sleepTime > 0) {
@@ -343,8 +352,7 @@ public class WebSocketStompClientTests {
 
 		if (sleepTime > 0) {
 			verify(runnable).run();
-		}
-		else {
+		} else {
 			verifyNoMoreInteractions(runnable);
 		}
 	}

@@ -16,15 +16,17 @@
 
 package org.springframework.test.context.junit4;
 
-import java.util.ArrayList;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Simple unit test to verify the expected functionality of standard JUnit 4.4+
@@ -41,22 +43,18 @@ import static org.junit.Assume.*;
  * </p>
  *
  * @author Sam Brannen
- * @since 2.5
  * @see StandardJUnit4FeaturesSpringRunnerTests
+ * @since 2.5
  */
 public class StandardJUnit4FeaturesTests {
 
 	private static int staticBeforeCounter = 0;
-
+	private int beforeCounter = 0;
 
 	@BeforeClass
 	public static void incrementStaticBeforeCounter() {
 		StandardJUnit4FeaturesTests.staticBeforeCounter++;
 	}
-
-
-	private int beforeCounter = 0;
-
 
 	@Test
 	@Ignore

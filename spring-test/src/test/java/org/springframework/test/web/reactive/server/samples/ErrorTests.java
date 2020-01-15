@@ -16,10 +16,7 @@
 
 package org.springframework.test.web.reactive.server.samples;
 
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Test;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
@@ -29,7 +26,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.junit.Assert.*;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests with error status codes or error conditions.
@@ -43,7 +43,7 @@ public class ErrorTests {
 
 
 	@Test
-	public void notFound(){
+	public void notFound() {
 		this.client.get().uri("/invalid")
 				.exchange()
 				.expectStatus().isNotFound()

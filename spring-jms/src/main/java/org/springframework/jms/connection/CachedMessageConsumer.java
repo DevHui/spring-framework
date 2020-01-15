@@ -16,6 +16,8 @@
 
 package org.springframework.jms.connection;
 
+import org.springframework.lang.Nullable;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -24,8 +26,6 @@ import javax.jms.Queue;
 import javax.jms.QueueReceiver;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
-
-import org.springframework.lang.Nullable;
 
 /**
  * JMS MessageConsumer decorator that adapts all calls

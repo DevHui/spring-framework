@@ -16,12 +16,10 @@
 
 package org.springframework.web.util;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Arjen Poutsma

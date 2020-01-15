@@ -16,23 +16,25 @@
 
 package org.springframework.web.reactive.resource;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 
-import static org.junit.Assert.*;
-import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.*;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.get;
 
 /**
  * Unit tests for {@link CachingResourceResolver}.
@@ -50,6 +52,9 @@ public class CachingResourceResolverTests {
 
 	private List<Resource> locations;
 
+	private static String resourceKey(String key) {
+		return CachingResourceResolver.RESOLVED_RESOURCE_CACHE_KEY_PREFIX + key;
+	}
 
 	@Before
 	public void setup() {
@@ -64,7 +69,6 @@ public class CachingResourceResolverTests {
 		this.locations = new ArrayList<>();
 		this.locations.add(new ClassPathResource("test/", getClass()));
 	}
-
 
 	@Test
 	public void resolveResourceInternal() {
@@ -173,10 +177,6 @@ public class CachingResourceResolverTests {
 
 		exchange = MockServerWebExchange.from(get(file).header("Accept-Encoding", "gzip"));
 		assertSame(gzipped, this.chain.resolveResource(exchange, file, this.locations).block(TIMEOUT));
-	}
-
-	private static String resourceKey(String key) {
-		return CachingResourceResolver.RESOLVED_RESOURCE_CACHE_KEY_PREFIX + key;
 	}
 
 }

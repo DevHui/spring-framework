@@ -16,18 +16,19 @@
 
 package org.springframework.test.context.junit4.statements;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runners.model.Statement;
 import org.mockito.stubbing.Answer;
-
 import org.springframework.test.context.junit4.statements.SpringFailOnTimeout;
 
-import static org.mockito.Mockito.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link SpringFailOnTimeout}.
@@ -38,11 +39,9 @@ import static org.mockito.Mockito.*;
  */
 public class SpringFailOnTimeoutTests {
 
-	private Statement statement = mock(Statement.class);
-
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
-
+	private Statement statement = mock(Statement.class);
 
 	@Test
 	public void nullNextStatement() throws Throwable {

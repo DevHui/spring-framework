@@ -16,18 +16,10 @@
 
 package org.springframework.messaging.handler.annotation.support;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-import java.util.Locale;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.SynthesizingMethodParameter;
@@ -40,7 +32,17 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 
-import static org.junit.Assert.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+import java.util.Locale;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test fixture for {@link PayloadArgumentResolver}.
@@ -51,26 +53,16 @@ import static org.junit.Assert.*;
  */
 public class PayloadArgumentResolverTests {
 
-	private PayloadArgumentResolver resolver;
-
-	private MethodParameter paramAnnotated;
-
-	private MethodParameter paramAnnotatedNotRequired;
-
-	private MethodParameter paramAnnotatedRequired;
-
-	private MethodParameter paramWithSpelExpression;
-
-	private MethodParameter paramNotAnnotated;
-
-	private MethodParameter paramValidatedNotAnnotated;
-
-	private MethodParameter paramValidated;
-
-
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
-
+	private PayloadArgumentResolver resolver;
+	private MethodParameter paramAnnotated;
+	private MethodParameter paramAnnotatedNotRequired;
+	private MethodParameter paramAnnotatedRequired;
+	private MethodParameter paramWithSpelExpression;
+	private MethodParameter paramNotAnnotated;
+	private MethodParameter paramValidatedNotAnnotated;
+	private MethodParameter paramValidated;
 
 	@Before
 	public void setup() throws Exception {
@@ -207,6 +199,7 @@ public class PayloadArgumentResolverTests {
 			public boolean supports(Class<?> clazz) {
 				return String.class.isAssignableFrom(clazz);
 			}
+
 			@Override
 			public void validate(Object target, Errors errors) {
 				String value = (String) target;
@@ -221,8 +214,8 @@ public class PayloadArgumentResolverTests {
 	@SuppressWarnings("unused")
 	private void handleMessage(
 			@Payload String param,
-			@Payload(required=false) String paramNotRequired,
-			@Payload(required=true) Locale nonConvertibleRequiredParam,
+			@Payload(required = false) String paramNotRequired,
+			@Payload(required = true) Locale nonConvertibleRequiredParam,
 			@Payload("foo.bar") String paramWithSpelExpression,
 			@MyValid @Payload String validParam,
 			@Validated String validParamNotAnnotated,

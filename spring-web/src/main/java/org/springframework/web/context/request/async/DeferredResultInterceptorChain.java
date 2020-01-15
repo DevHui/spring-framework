@@ -16,12 +16,11 @@
 
 package org.springframework.web.context.request.async;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.web.context.request.NativeWebRequest;
+
+import java.util.List;
 
 /**
  * Assists with the invocation of {@link DeferredResultProcessingInterceptor}'s.
@@ -57,15 +56,14 @@ class DeferredResultInterceptorChain {
 		}
 	}
 
-	public Object applyPostProcess(NativeWebRequest request,  DeferredResult<?> deferredResult,
-			Object concurrentResult) {
+	public Object applyPostProcess(NativeWebRequest request, DeferredResult<?> deferredResult,
+								   Object concurrentResult) {
 
 		try {
 			for (int i = this.preProcessingIndex; i >= 0; i--) {
 				this.interceptors.get(i).postProcess(request, deferredResult, concurrentResult);
 			}
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			return ex;
 		}
 		return concurrentResult;
@@ -76,7 +74,7 @@ class DeferredResultInterceptorChain {
 			if (deferredResult.isSetOrExpired()) {
 				return;
 			}
-			if (!interceptor.handleTimeout(request, deferredResult)){
+			if (!interceptor.handleTimeout(request, deferredResult)) {
 				break;
 			}
 		}
@@ -84,6 +82,7 @@ class DeferredResultInterceptorChain {
 
 	/**
 	 * Determine if further error handling should be bypassed.
+	 *
 	 * @return {@code true} to continue error handling, or false to bypass any further
 	 * error handling
 	 */
@@ -94,7 +93,7 @@ class DeferredResultInterceptorChain {
 			if (deferredResult.isSetOrExpired()) {
 				return false;
 			}
-			if (!interceptor.handleError(request, deferredResult, ex)){
+			if (!interceptor.handleError(request, deferredResult, ex)) {
 				return false;
 			}
 		}
@@ -105,8 +104,7 @@ class DeferredResultInterceptorChain {
 		for (int i = this.preProcessingIndex; i >= 0; i--) {
 			try {
 				this.interceptors.get(i).afterCompletion(request, deferredResult);
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				logger.trace("Ignoring failure in afterCompletion method", ex);
 			}
 		}

@@ -16,9 +16,6 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.util.Collection;
-import java.util.function.Supplier;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -36,6 +33,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.function.SingletonSupplier;
 import org.springframework.util.function.SupplierUtils;
+
+import java.util.Collection;
+import java.util.function.Supplier;
 
 /**
  * The default {@link JCacheOperationSource} implementation delegating
@@ -69,6 +69,7 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 
 	/**
 	 * Construct a new {@code DefaultJCacheOperationSource} with the default key generator.
+	 *
 	 * @see SimpleKeyGenerator
 	 */
 	public DefaultJCacheOperationSource() {
@@ -79,6 +80,7 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 	 * Construct a new {@code DefaultJCacheOperationSource} with the given cache manager,
 	 * cache resolver and key generator suppliers, applying the corresponding default
 	 * if a supplier is not resolvable.
+	 *
 	 * @since 5.1
 	 */
 	public DefaultJCacheOperationSource(
@@ -91,15 +93,6 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 		this.keyGenerator = new SingletonSupplier<>(keyGenerator, SimpleKeyGenerator::new);
 	}
 
-
-	/**
-	 * Set the default {@link CacheManager} to use to lookup cache by name.
-	 * Only mandatory if the {@linkplain CacheResolver cache resolver} has not been set.
-	 */
-	public void setCacheManager(@Nullable CacheManager cacheManager) {
-		this.cacheManager = SingletonSupplier.ofNullable(cacheManager);
-	}
-
 	/**
 	 * Return the specified cache manager to use, if any.
 	 */
@@ -109,11 +102,11 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 	}
 
 	/**
-	 * Set the {@link CacheResolver} to resolve regular caches. If none is set, a default
-	 * implementation using the specified cache manager will be used.
+	 * Set the default {@link CacheManager} to use to lookup cache by name.
+	 * Only mandatory if the {@linkplain CacheResolver cache resolver} has not been set.
 	 */
-	public void setCacheResolver(@Nullable CacheResolver cacheResolver) {
-		this.cacheResolver = SingletonSupplier.ofNullable(cacheResolver);
+	public void setCacheManager(@Nullable CacheManager cacheManager) {
+		this.cacheManager = SingletonSupplier.ofNullable(cacheManager);
 	}
 
 	/**
@@ -125,11 +118,11 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 	}
 
 	/**
-	 * Set the {@link CacheResolver} to resolve exception caches. If none is set, a default
+	 * Set the {@link CacheResolver} to resolve regular caches. If none is set, a default
 	 * implementation using the specified cache manager will be used.
 	 */
-	public void setExceptionCacheResolver(@Nullable CacheResolver exceptionCacheResolver) {
-		this.exceptionCacheResolver = SingletonSupplier.ofNullable(exceptionCacheResolver);
+	public void setCacheResolver(@Nullable CacheResolver cacheResolver) {
+		this.cacheResolver = SingletonSupplier.ofNullable(cacheResolver);
 	}
 
 	/**
@@ -141,12 +134,11 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 	}
 
 	/**
-	 * Set the default {@link KeyGenerator}. If none is set, a {@link SimpleKeyGenerator}
-	 * honoring the JSR-107 {@link javax.cache.annotation.CacheKey} and
-	 * {@link javax.cache.annotation.CacheValue} will be used.
+	 * Set the {@link CacheResolver} to resolve exception caches. If none is set, a default
+	 * implementation using the specified cache manager will be used.
 	 */
-	public void setKeyGenerator(KeyGenerator keyGenerator) {
-		this.keyGenerator = SingletonSupplier.of(keyGenerator);
+	public void setExceptionCacheResolver(@Nullable CacheResolver exceptionCacheResolver) {
+		this.exceptionCacheResolver = SingletonSupplier.ofNullable(exceptionCacheResolver);
 	}
 
 	/**
@@ -154,6 +146,15 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 	 */
 	public KeyGenerator getKeyGenerator() {
 		return this.keyGenerator.obtain();
+	}
+
+	/**
+	 * Set the default {@link KeyGenerator}. If none is set, a {@link SimpleKeyGenerator}
+	 * honoring the JSR-107 {@link javax.cache.annotation.CacheKey} and
+	 * {@link javax.cache.annotation.CacheValue} will be used.
+	 */
+	public void setKeyGenerator(KeyGenerator keyGenerator) {
+		this.keyGenerator = SingletonSupplier.of(keyGenerator);
 	}
 
 	@Override
@@ -175,12 +176,10 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 		Assert.state(this.beanFactory != null, () -> "BeanFactory required for resolution of [" + type + "]");
 		try {
 			return this.beanFactory.getBean(type);
-		}
-		catch (NoUniqueBeanDefinitionException ex) {
+		} catch (NoUniqueBeanDefinitionException ex) {
 			throw new IllegalStateException("No unique [" + type.getName() + "] bean found in application context - " +
 					"mark one as primary, or declare a more specific implementation type for your cache", ex);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("No bean of type [" + type.getName() + "] found in application context", ex);
 			}
@@ -193,13 +192,11 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 			Assert.state(this.beanFactory != null, "BeanFactory required for default CacheManager resolution");
 			try {
 				this.cacheManager = SingletonSupplier.of(this.beanFactory.getBean(CacheManager.class));
-			}
-			catch (NoUniqueBeanDefinitionException ex) {
-				throw new IllegalStateException("No unique bean of type CacheManager found. "+
+			} catch (NoUniqueBeanDefinitionException ex) {
+				throw new IllegalStateException("No unique bean of type CacheManager found. " +
 						"Mark one as primary or declare a specific CacheManager to use.");
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				throw new IllegalStateException("No bean of type CacheManager found. Register a CacheManager "+
+			} catch (NoSuchBeanDefinitionException ex) {
+				throw new IllegalStateException("No bean of type CacheManager found. Register a CacheManager " +
 						"bean or remove the @EnableCaching annotation from your configuration.");
 			}
 		}

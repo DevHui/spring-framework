@@ -16,22 +16,21 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.util.UriTemplate;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Dummy request context used for VTL and FTL macro tests.
  *
  * @author Darren Davison
  * @author Juergen Hoeller
- * @since 25.01.2005
  * @see org.springframework.web.servlet.support.RequestContext
+ * @since 25.01.2005
  */
 public class DummyMacroRequestContext {
 
@@ -118,15 +117,15 @@ public class DummyMacroRequestContext {
 		return (msg != null ? msg + args : defaultMsg);
 	}
 
-	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
-	}
-
 	/**
 	 * @see org.springframework.web.servlet.support.RequestContext#getContextPath()
 	 */
 	public String getContextPath() {
 		return this.contextPath;
+	}
+
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
 	}
 
 	/**
@@ -139,7 +138,7 @@ public class DummyMacroRequestContext {
 	/**
 	 * @see org.springframework.web.servlet.support.RequestContext#getContextUrl(String, Map)
 	 */
-	public String getContextUrl(String relativeUrl, Map<String,String> params) {
+	public String getContextUrl(String relativeUrl, Map<String, String> params) {
 		UriTemplate template = new UriTemplate(relativeUrl);
 		return getContextPath() + template.expand(params).toASCIIString();
 	}

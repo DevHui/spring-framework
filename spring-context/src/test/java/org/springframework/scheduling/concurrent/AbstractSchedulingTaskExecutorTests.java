@@ -16,6 +16,14 @@
 
 package org.springframework.scheduling.concurrent;
 
+import org.awaitility.Awaitility;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.core.task.AsyncListenableTaskExecutor;
+import org.springframework.util.concurrent.ListenableFuture;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
@@ -24,16 +32,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.awaitility.Awaitility;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.core.task.AsyncListenableTaskExecutor;
-import org.springframework.util.concurrent.ListenableFuture;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Juergen Hoeller
@@ -93,8 +95,7 @@ public abstract class AbstractSchedulingTaskExecutorTests {
 		Future<?> future = executor.submit(task);
 		try {
 			future.get(1000, TimeUnit.MILLISECONDS);
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			assertTrue(future.isDone());
 			throw ex;
 		}
@@ -119,9 +120,9 @@ public abstract class AbstractSchedulingTaskExecutorTests {
 		future.addCallback(result -> outcome = result, ex -> outcome = ex);
 		// Assert
 		Awaitility.await()
-					.atMost(1, TimeUnit.SECONDS)
-					.pollInterval(10, TimeUnit.MILLISECONDS)
-					.until(future::isDone);
+				.atMost(1, TimeUnit.SECONDS)
+				.pollInterval(10, TimeUnit.MILLISECONDS)
+				.until(future::isDone);
 		assertNull(outcome);
 		assertThreadNamePrefix(task);
 	}
@@ -133,10 +134,10 @@ public abstract class AbstractSchedulingTaskExecutorTests {
 		future.addCallback(result -> outcome = result, ex -> outcome = ex);
 
 		Awaitility.await()
-					.dontCatchUncaughtExceptions()
-					.atMost(1, TimeUnit.SECONDS)
-					.pollInterval(10, TimeUnit.MILLISECONDS)
-					.until(() -> future.isDone() && outcome != null);
+				.dontCatchUncaughtExceptions()
+				.atMost(1, TimeUnit.SECONDS)
+				.pollInterval(10, TimeUnit.MILLISECONDS)
+				.until(() -> future.isDone() && outcome != null);
 		assertSame(RuntimeException.class, outcome.getClass());
 	}
 
@@ -186,9 +187,9 @@ public abstract class AbstractSchedulingTaskExecutorTests {
 		future.addCallback(result -> outcome = result, ex -> outcome = ex);
 		// Assert
 		Awaitility.await()
-					.atMost(1, TimeUnit.SECONDS)
-					.pollInterval(10, TimeUnit.MILLISECONDS)
-					.until(() -> future.isDone() && outcome != null);
+				.atMost(1, TimeUnit.SECONDS)
+				.pollInterval(10, TimeUnit.MILLISECONDS)
+				.until(() -> future.isDone() && outcome != null);
 		assertEquals(THREAD_NAME_PREFIX, outcome.toString().substring(0, THREAD_NAME_PREFIX.length()));
 	}
 
@@ -200,10 +201,10 @@ public abstract class AbstractSchedulingTaskExecutorTests {
 		future.addCallback(result -> outcome = result, ex -> outcome = ex);
 		// Assert
 		Awaitility.await()
-					.dontCatchUncaughtExceptions()
-					.atMost(1, TimeUnit.SECONDS)
-					.pollInterval(10, TimeUnit.MILLISECONDS)
-					.until(() -> future.isDone() && outcome != null);
+				.dontCatchUncaughtExceptions()
+				.atMost(1, TimeUnit.SECONDS)
+				.pollInterval(10, TimeUnit.MILLISECONDS)
+				.until(() -> future.isDone() && outcome != null);
 		assertSame(RuntimeException.class, outcome.getClass());
 	}
 
@@ -230,8 +231,7 @@ public abstract class AbstractSchedulingTaskExecutorTests {
 	private void await(CountDownLatch latch) {
 		try {
 			latch.await(1000, TimeUnit.MILLISECONDS);
-		}
-		catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 			throw new IllegalStateException(ex);
 		}
 		assertEquals("latch did not count down,", 0, latch.getCount());
@@ -258,8 +258,7 @@ public abstract class AbstractSchedulingTaskExecutorTests {
 			lastThread = Thread.currentThread();
 			try {
 				Thread.sleep(10);
-			}
-			catch (InterruptedException ex) {
+			} catch (InterruptedException ex) {
 			}
 			if (expectedRunCount >= 0) {
 				if (actualRunCount.incrementAndGet() > expectedRunCount) {
@@ -285,8 +284,7 @@ public abstract class AbstractSchedulingTaskExecutorTests {
 		public String call() throws Exception {
 			try {
 				Thread.sleep(10);
-			}
-			catch (InterruptedException ex) {
+			} catch (InterruptedException ex) {
 			}
 			if (expectedRunCount >= 0) {
 				if (actualRunCount.incrementAndGet() > expectedRunCount) {

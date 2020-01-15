@@ -16,9 +16,6 @@
 
 package org.springframework.http.converter.xml;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,6 +23,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.util.Assert;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
 
 /**
  * Implementation of {@link org.springframework.http.converter.HttpMessageConverter HttpMessageConverter}
@@ -64,6 +64,7 @@ public class MarshallingHttpMessageConverter extends AbstractXmlHttpMessageConve
 	 * it is used for both marshalling and unmarshalling. Otherwise, an exception is thrown.
 	 * <p>Note that all {@code Marshaller} implementations in Spring also implement the
 	 * {@code Unmarshaller} interface, so that you can safely use this constructor.
+	 *
 	 * @param marshaller object used as marshaller and unmarshaller
 	 */
 	public MarshallingHttpMessageConverter(Marshaller marshaller) {
@@ -77,7 +78,8 @@ public class MarshallingHttpMessageConverter extends AbstractXmlHttpMessageConve
 	/**
 	 * Construct a new {@code MarshallingMessageConverter} with the given
 	 * {@code Marshaller} and {@code Unmarshaller}.
-	 * @param marshaller the Marshaller to use
+	 *
+	 * @param marshaller   the Marshaller to use
 	 * @param unmarshaller the Unmarshaller to use
 	 */
 	public MarshallingHttpMessageConverter(Marshaller marshaller, Unmarshaller unmarshaller) {

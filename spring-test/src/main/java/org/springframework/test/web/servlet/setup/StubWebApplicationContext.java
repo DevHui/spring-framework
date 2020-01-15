@@ -16,15 +16,6 @@
 
 package org.springframework.test.web.servlet.setup;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.TypeConverter;
@@ -52,6 +43,14 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.ServletContextResourcePatternResolver;
+
+import javax.servlet.ServletContext;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A stub WebApplicationContext that accepts registrations of object instances.
@@ -136,7 +135,7 @@ class StubWebApplicationContext implements WebApplicationContext {
 
 	@Override
 	public Environment getEnvironment() {
-		return this.environment ;
+		return this.environment;
 	}
 
 	public void addBean(String name, Object bean) {
@@ -289,7 +288,7 @@ class StubWebApplicationContext implements WebApplicationContext {
 	@Override
 	@Nullable
 	public <A extends Annotation> A findAnnotationOnBean(String beanName, Class<A> annotationType)
-			throws NoSuchBeanDefinitionException{
+			throws NoSuchBeanDefinitionException {
 
 		return this.beanFactory.findAnnotationOnBean(beanName, annotationType);
 	}
@@ -426,7 +425,7 @@ class StubWebApplicationContext implements WebApplicationContext {
 		@Override
 		@Nullable
 		public Object resolveDependency(DependencyDescriptor descriptor, @Nullable String requestingBeanName,
-				@Nullable Set<String> autowiredBeanNames, @Nullable TypeConverter typeConverter) {
+										@Nullable Set<String> autowiredBeanNames, @Nullable TypeConverter typeConverter) {
 			throw new UnsupportedOperationException("Dependency resolution not supported");
 		}
 

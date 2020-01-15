@@ -16,12 +16,6 @@
 
 package org.springframework.test.web.servlet.setup;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.Filter;
-import javax.servlet.ServletContext;
-
 import org.springframework.lang.Nullable;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.test.web.servlet.DispatcherServletCustomizer;
@@ -37,6 +31,11 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.servlet.Filter;
+import javax.servlet.ServletContext;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Abstract implementation of {@link MockMvcBuilder} with common methods for
  * configuring filters, default request properties, global expectations and
@@ -46,27 +45,21 @@ import org.springframework.web.context.WebApplicationContext;
  * {@code WebApplicationContext} that will be passed to the
  * {@code DispatcherServlet}.
  *
+ * @param <B> a self reference to the builder type
  * @author Rossen Stoyanchev
  * @author Stephane Nicoll
  * @since 4.0
- * @param <B> a self reference to the builder type
  */
 public abstract class AbstractMockMvcBuilder<B extends AbstractMockMvcBuilder<B>>
 		extends MockMvcBuilderSupport implements ConfigurableMockMvcBuilder<B> {
 
+	private final List<ResultMatcher> globalResultMatchers = new ArrayList<>();
+	private final List<ResultHandler> globalResultHandlers = new ArrayList<>();
+	private final List<DispatcherServletCustomizer> dispatcherServletCustomizers = new ArrayList<>();
+	private final List<MockMvcConfigurer> configurers = new ArrayList<>(4);
 	private List<Filter> filters = new ArrayList<>();
-
 	@Nullable
 	private RequestBuilder defaultRequestBuilder;
-
-	private final List<ResultMatcher> globalResultMatchers = new ArrayList<>();
-
-	private final List<ResultHandler> globalResultHandlers = new ArrayList<>();
-
-	private final List<DispatcherServletCustomizer> dispatcherServletCustomizers = new ArrayList<>();
-
-	private final List<MockMvcConfigurer> configurers = new ArrayList<>(4);
-
 
 	public final <T extends B> T addFilters(Filter... filters) {
 		Assert.notNull(filters, "filters cannot be null");

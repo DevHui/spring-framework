@@ -16,22 +16,25 @@
 
 package org.springframework.http.server;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.util.FileCopyUtils;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Arjen Poutsma
@@ -105,7 +108,7 @@ public class ServletServerHttpRequestTests {
 		mockRequest.setRequestURI(uri.getRawPath());
 		mockRequest.setQueryString(uri.getRawQuery());
 		assertEquals(uri, request.getURI());
-    }
+	}
 
 	@Test
 	public void getHeaders() {
@@ -163,7 +166,7 @@ public class ServletServerHttpRequestTests {
 		mockRequest.setContentType("application/x-www-form-urlencoded; charset=UTF-8");
 		mockRequest.setMethod("POST");
 		mockRequest.addParameter("name 1", "value 1");
-		mockRequest.addParameter("name 2", new String[] {"value 2+1", "value 2+2"});
+		mockRequest.addParameter("name 2", new String[]{"value 2+1", "value 2+2"});
 		mockRequest.addParameter("name 3", (String) null);
 
 		byte[] result = FileCopyUtils.copyToByteArray(request.getBody());

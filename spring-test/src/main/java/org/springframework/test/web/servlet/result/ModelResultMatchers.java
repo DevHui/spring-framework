@@ -17,7 +17,6 @@
 package org.springframework.test.web.servlet.result;
 
 import org.hamcrest.Matcher;
-
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.ui.ModelMap;
@@ -151,6 +150,7 @@ public class ModelResultMatchers {
 
 	/**
 	 * Assert a field error code for a model attribute using exact String match.
+	 *
 	 * @since 4.1
 	 */
 	public ResultMatcher attributeHasFieldErrorCode(final String name, final String fieldName, final String error) {
@@ -169,10 +169,11 @@ public class ModelResultMatchers {
 
 	/**
 	 * Assert a field error code for a model attribute using a {@link org.hamcrest.Matcher}.
+	 *
 	 * @since 4.1
 	 */
 	public <T> ResultMatcher attributeHasFieldErrorCode(final String name, final String fieldName,
-			final Matcher<? super String> matcher) {
+														final Matcher<? super String> matcher) {
 
 		return mvcResult -> {
 			ModelAndView mav = getModelAndView(mvcResult);

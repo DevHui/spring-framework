@@ -16,6 +16,9 @@
 
 package org.springframework.http;
 
+import org.hamcrest.Matchers;
+import org.junit.Test;
+
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,12 +38,15 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import org.hamcrest.Matchers;
-import org.junit.Test;
-
 import static java.util.stream.Collectors.toList;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for {@link org.springframework.http.HttpHeaders}.
@@ -55,6 +61,14 @@ public class HttpHeadersTests {
 
 	private final HttpHeaders headers = new HttpHeaders();
 
+	private static void unsupported(Runnable runnable) {
+		try {
+			runnable.run();
+			fail("should have thrown an UnsupportedOperationException");
+		} catch (UnsupportedOperationException e) {
+			// expected
+		}
+	}
 
 	@Test
 	public void getFirst() {
@@ -265,8 +279,7 @@ public class HttpHeadersTests {
 			headers.setDate(date);
 			assertEquals("Invalid Date header", "Thu, 18 Dec 2008 10:20:00 GMT", headers.getFirst("date"));
 			assertEquals("Invalid Date header", date, headers.getDate());
-		}
-		finally {
+		} finally {
 			Locale.setDefault(defaultLocale);
 		}
 	}
@@ -493,7 +506,7 @@ public class HttpHeadersTests {
 
 	@Test
 	public void contentLanguageSerialized() {
-		headers.set(HttpHeaders.CONTENT_LANGUAGE,  "de, en_CA");
+		headers.set(HttpHeaders.CONTENT_LANGUAGE, "de, en_CA");
 		assertEquals("Expected one (first) locale", Locale.GERMAN, headers.getContentLanguage());
 	}
 
@@ -568,7 +581,7 @@ public class HttpHeadersTests {
 		assertEquals(2, headers.size());
 		assertTrue("Alpha should be present", headers.containsKey("Alpha"));
 		assertTrue("Bravo should be present", headers.containsKey("Bravo"));
-		assertArrayEquals(new String[] {"Alpha", "Bravo"}, headers.keySet().toArray());
+		assertArrayEquals(new String[]{"Alpha", "Bravo"}, headers.keySet().toArray());
 
 		// When
 		boolean removed = headers.keySet().remove("Alpha");
@@ -579,7 +592,7 @@ public class HttpHeadersTests {
 		assertEquals(1, headers.size());
 		assertFalse("Alpha should have been removed", headers.containsKey("Alpha"));
 		assertTrue("Bravo should be present", headers.containsKey("Bravo"));
-		assertArrayEquals(new String[] {"Bravo"}, headers.keySet().toArray());
+		assertArrayEquals(new String[]{"Bravo"}, headers.keySet().toArray());
 		assertEquals(Collections.singletonMap("Bravo", Arrays.asList("banana")).entrySet(), headers.entrySet());
 	}
 
@@ -600,7 +613,7 @@ public class HttpHeadersTests {
 		assertFalse("Charlie should not be present", headers.keySet().contains("Charlie"));
 
 		// toArray()
-		assertArrayEquals(new String[] {"Alpha", "Bravo"}, headers.keySet().toArray());
+		assertArrayEquals(new String[]{"Alpha", "Bravo"}, headers.keySet().toArray());
 
 		// spliterator() via stream()
 		assertEquals(Arrays.asList("Alpha", "Bravo"), headers.keySet().stream().collect(toList()));
@@ -622,16 +635,6 @@ public class HttpHeadersTests {
 		// Unsupported operations
 		unsupported(() -> headers.keySet().add("x"));
 		unsupported(() -> headers.keySet().addAll(Collections.singleton("enigma")));
-	}
-
-	private static void unsupported(Runnable runnable) {
-		try {
-			runnable.run();
-			fail("should have thrown an UnsupportedOperationException");
-		}
-		catch (UnsupportedOperationException e) {
-			// expected
-		}
 	}
 
 	@Test
@@ -670,7 +673,7 @@ public class HttpHeadersTests {
 		headers.add("dog", "enigma");
 		headers.add("elephant", "enigma");
 
-		String[] expectedKeys = new String[] { "aardvark", "beaver", "cat", "dog", "elephant" };
+		String[] expectedKeys = new String[]{"aardvark", "beaver", "cat", "dog", "elephant"};
 
 		assertArrayEquals(expectedKeys, headers.entrySet().stream().map(Entry::getKey).toArray());
 

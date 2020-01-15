@@ -16,13 +16,8 @@
 
 package org.springframework.core.codec;
 
-import java.util.Map;
-
 import org.junit.Test;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
@@ -31,9 +26,14 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.lang.Nullable;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
+
+import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Arjen Poutsma
@@ -74,7 +74,7 @@ public class ResourceEncoderTests extends AbstractEncoderTestCase<ResourceEncode
 
 	@Override
 	protected void testEncodeError(Publisher<?> input, ResolvableType outputType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+								   @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		Flux<Resource> i = Flux.error(new InputException());
 

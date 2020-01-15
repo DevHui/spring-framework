@@ -16,16 +16,15 @@
 
 package org.springframework.web.servlet.resource;
 
+import org.springframework.core.io.Resource;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.core.io.Resource;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Default immutable implementation of {@link ResourceResolverChain}.
@@ -49,6 +48,13 @@ class DefaultResourceResolverChain implements ResourceResolverChain {
 		this.nextChain = chain.nextChain;
 	}
 
+	private DefaultResourceResolverChain(@Nullable ResourceResolver resolver, @Nullable ResourceResolverChain chain) {
+		Assert.isTrue((resolver == null && chain == null) || (resolver != null && chain != null),
+				"Both resolver and resolver chain must be null, or neither is");
+		this.resolver = resolver;
+		this.nextChain = chain;
+	}
+
 	private static DefaultResourceResolverChain initChain(ArrayList<? extends ResourceResolver> resolvers) {
 		DefaultResourceResolverChain chain = new DefaultResourceResolverChain(null, null);
 		ListIterator<? extends ResourceResolver> it = resolvers.listIterator(resolvers.size());
@@ -57,14 +63,6 @@ class DefaultResourceResolverChain implements ResourceResolverChain {
 		}
 		return chain;
 	}
-
-	private DefaultResourceResolverChain(@Nullable ResourceResolver resolver, @Nullable ResourceResolverChain chain) {
-		Assert.isTrue((resolver == null && chain == null) || (resolver != null && chain != null),
-				"Both resolver and resolver chain must be null, or neither is");
-		this.resolver = resolver;
-		this.nextChain = chain;
-	}
-
 
 	@Override
 	@Nullable

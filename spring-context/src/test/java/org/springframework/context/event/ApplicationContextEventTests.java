@@ -16,15 +16,8 @@
 
 package org.springframework.context.event;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Executor;
-
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -48,8 +41,23 @@ import org.springframework.scheduling.support.TaskUtils;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.ReflectionUtils;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Executor;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.isA;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.willThrow;
 
 /**
  * Unit and integration tests for the ApplicationContext event support.
@@ -116,8 +124,7 @@ public class ApplicationContextEventTests extends AbstractApplicationEventListen
 
 		if (eventType != null) {
 			smc.multicastEvent(event, eventType);
-		}
-		else {
+		} else {
 			smc.multicastEvent(event);
 		}
 		int invocation = match ? 1 : 0;
@@ -158,8 +165,7 @@ public class ApplicationContextEventTests extends AbstractApplicationEventListen
 		try {
 			smc.multicastEvent(evt);
 			fail("Should have thrown RuntimeException");
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			assertSame(thrown, ex);
 		}
 	}
@@ -478,7 +484,9 @@ public class ApplicationContextEventTests extends AbstractApplicationEventListen
 	public void lambdaAsListenerWithJava8StyleClassCastMessage() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		ApplicationListener<ApplicationEvent> listener =
-				event -> { throw new ClassCastException(event.getClass().getName()); };
+				event -> {
+					throw new ClassCastException(event.getClass().getName());
+				};
 		context.addApplicationListener(listener);
 		context.refresh();
 
@@ -490,7 +498,9 @@ public class ApplicationContextEventTests extends AbstractApplicationEventListen
 	public void lambdaAsListenerWithJava9StyleClassCastMessage() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		ApplicationListener<ApplicationEvent> listener =
-				event -> { throw new ClassCastException("spring.context/" + event.getClass().getName()); };
+				event -> {
+					throw new ClassCastException("spring.context/" + event.getClass().getName());
+				};
 		context.addApplicationListener(listener);
 		context.refresh();
 
@@ -514,6 +524,9 @@ public class ApplicationContextEventTests extends AbstractApplicationEventListen
 	}
 
 
+	public interface MyOrderedListenerIfc<E extends ApplicationEvent> extends ApplicationListener<E>, Ordered {
+	}
+
 	@SuppressWarnings("serial")
 	public static class MyEvent extends ApplicationEvent {
 
@@ -522,7 +535,6 @@ public class ApplicationContextEventTests extends AbstractApplicationEventListen
 		}
 	}
 
-
 	@SuppressWarnings("serial")
 	public static class MyOtherEvent extends ApplicationEvent {
 
@@ -530,7 +542,6 @@ public class ApplicationContextEventTests extends AbstractApplicationEventListen
 			super(source);
 		}
 	}
-
 
 	public static class MyOrderedListener1 implements ApplicationListener<ApplicationEvent>, Ordered {
 
@@ -546,11 +557,6 @@ public class ApplicationContextEventTests extends AbstractApplicationEventListen
 			return 0;
 		}
 	}
-
-
-	public interface MyOrderedListenerIfc<E extends ApplicationEvent> extends ApplicationListener<E>, Ordered {
-	}
-
 
 	public static abstract class MyOrderedListenerBase implements MyOrderedListenerIfc<MyEvent> {
 

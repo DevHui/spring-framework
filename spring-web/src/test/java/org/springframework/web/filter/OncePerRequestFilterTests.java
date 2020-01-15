@@ -15,7 +15,12 @@
  */
 package org.springframework.web.filter;
 
-import java.io.IOException;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.mock.web.test.MockFilterChain;
+import org.springframework.mock.web.test.MockHttpServletRequest;
+import org.springframework.mock.web.test.MockHttpServletResponse;
+import org.springframework.web.util.WebUtils;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterChain;
@@ -23,20 +28,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.mock.web.test.MockFilterChain;
-import org.springframework.mock.web.test.MockHttpServletRequest;
-import org.springframework.mock.web.test.MockHttpServletResponse;
-import org.springframework.web.util.WebUtils;
+import java.io.IOException;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link OncePerRequestFilter}.
+ *
  * @author Rossen Stoyanchev
  * @since 5.1.9
  */
@@ -56,7 +55,8 @@ public class OncePerRequestFilterTests {
 		this.request.setScheme("http");
 		this.request.setServerName("localhost");
 		this.request.setServerPort(80);
-		this.filterChain = new MockFilterChain(new HttpServlet() {});
+		this.filterChain = new MockFilterChain(new HttpServlet() {
+		});
 	}
 
 
@@ -177,14 +177,14 @@ public class OncePerRequestFilterTests {
 
 		@Override
 		protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-				FilterChain filterChain) {
+										FilterChain filterChain) {
 
 			this.didFilter = true;
 		}
 
 		@Override
 		protected void doFilterNestedErrorDispatch(HttpServletRequest request, HttpServletResponse response,
-				FilterChain filterChain) throws ServletException, IOException {
+												   FilterChain filterChain) throws ServletException, IOException {
 
 			this.didFilterNestedErrorDispatch = true;
 			super.doFilterNestedErrorDispatch(request, response, filterChain);

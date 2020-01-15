@@ -16,18 +16,6 @@
 
 package org.springframework.http.codec;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.Hints;
 import org.springframework.core.io.buffer.DataBufferLimitException;
@@ -40,6 +28,17 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of an {@link HttpMessageReader} to read HTML form data, i.e.
@@ -65,6 +64,12 @@ public class FormHttpMessageReader extends LoggingCodecSupport
 
 	private int maxInMemorySize = 256 * 1024;
 
+	/**
+	 * Return the configured default charset.
+	 */
+	public Charset getDefaultCharset() {
+		return this.defaultCharset;
+	}
 
 	/**
 	 * Set the default character set to use for reading form data when the
@@ -77,10 +82,12 @@ public class FormHttpMessageReader extends LoggingCodecSupport
 	}
 
 	/**
-	 * Return the configured default charset.
+	 * Return the {@link #setMaxInMemorySize configured} byte count limit.
+	 *
+	 * @since 5.1.11
 	 */
-	public Charset getDefaultCharset() {
-		return this.defaultCharset;
+	public int getMaxInMemorySize() {
+		return this.maxInMemorySize;
 	}
 
 	/**
@@ -88,21 +95,13 @@ public class FormHttpMessageReader extends LoggingCodecSupport
 	 * before it is parsed, this helps to limit the amount of buffering. Once
 	 * the limit is exceeded, {@link DataBufferLimitException} is raised.
 	 * <p>By default this is set to 256K.
+	 *
 	 * @param byteCount the max number of bytes to buffer, or -1 for unlimited
 	 * @since 5.1.11
 	 */
 	public void setMaxInMemorySize(int byteCount) {
 		this.maxInMemorySize = byteCount;
 	}
-
-	/**
-	 * Return the {@link #setMaxInMemorySize configured} byte count limit.
-	 * @since 5.1.11
-	 */
-	public int getMaxInMemorySize() {
-		return this.maxInMemorySize;
-	}
-
 
 	@Override
 	public boolean canRead(ResolvableType elementType, @Nullable MediaType mediaType) {
@@ -116,14 +115,14 @@ public class FormHttpMessageReader extends LoggingCodecSupport
 
 	@Override
 	public Flux<MultiValueMap<String, String>> read(ResolvableType elementType,
-			ReactiveHttpInputMessage message, Map<String, Object> hints) {
+													ReactiveHttpInputMessage message, Map<String, Object> hints) {
 
 		return Flux.from(readMono(elementType, message, hints));
 	}
 
 	@Override
 	public Mono<MultiValueMap<String, String>> readMono(ResolvableType elementType,
-			ReactiveHttpInputMessage message, Map<String, Object> hints) {
+														ReactiveHttpInputMessage message, Map<String, Object> hints) {
 
 		MediaType contentType = message.getHeaders().getContentType();
 		Charset charset = getMediaTypeCharset(contentType);
@@ -149,8 +148,7 @@ public class FormHttpMessageReader extends LoggingCodecSupport
 	private Charset getMediaTypeCharset(@Nullable MediaType mediaType) {
 		if (mediaType != null && mediaType.getCharset() != null) {
 			return mediaType.getCharset();
-		}
-		else {
+		} else {
 			return getDefaultCharset();
 		}
 	}
@@ -163,15 +161,13 @@ public class FormHttpMessageReader extends LoggingCodecSupport
 				int idx = pair.indexOf('=');
 				if (idx == -1) {
 					result.add(URLDecoder.decode(pair, charset.name()), null);
-				}
-				else {
-					String name = URLDecoder.decode(pair.substring(0, idx),  charset.name());
+				} else {
+					String name = URLDecoder.decode(pair.substring(0, idx), charset.name());
 					String value = URLDecoder.decode(pair.substring(idx + 1), charset.name());
 					result.add(name, value);
 				}
 			}
-		}
-		catch (UnsupportedEncodingException ex) {
+		} catch (UnsupportedEncodingException ex) {
 			throw new IllegalStateException(ex);
 		}
 		return result;

@@ -16,14 +16,14 @@
 
 package org.springframework.context.index.sample;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Indexed;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Indexed;
 
 /**
  * A test annotation that triggers a dedicated entry in the index.

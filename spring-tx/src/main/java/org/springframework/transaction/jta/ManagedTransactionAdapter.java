@@ -16,6 +16,8 @@
 
 package org.springframework.transaction.jta;
 
+import org.springframework.util.Assert;
+
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.RollbackException;
@@ -24,8 +26,6 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
-
-import org.springframework.util.Assert;
 
 /**
  * Adapter for a managed JTA Transaction handle, taking a JTA
@@ -42,6 +42,7 @@ public class ManagedTransactionAdapter implements Transaction {
 
 	/**
 	 * Create a new ManagedTransactionAdapter for the given TransactionManager.
+	 *
 	 * @param transactionManager the JTA TransactionManager to wrap
 	 */
 	public ManagedTransactionAdapter(TransactionManager transactionManager) throws SystemException {

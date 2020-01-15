@@ -16,18 +16,6 @@
 
 package org.springframework.messaging.converter;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Arrays;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
@@ -36,6 +24,17 @@ import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Arrays;
 
 /**
  * Implementation of {@link MessageConverter} that can read and write XML using Spring's
@@ -67,6 +66,7 @@ public class MarshallingMessageConverter extends AbstractMessageConverter {
 
 	/**
 	 * Constructor with a given list of MIME types to support.
+	 *
 	 * @param supportedMimeTypes the MIME types
 	 */
 	public MarshallingMessageConverter(MimeType... supportedMimeTypes) {
@@ -78,6 +78,7 @@ public class MarshallingMessageConverter extends AbstractMessageConverter {
 	 * implements {@link Unmarshaller}, it is also used for unmarshalling.
 	 * <p>Note that all {@code Marshaller} implementations in Spring also implement
 	 * {@code Unmarshaller} so that you can safely use this constructor.
+	 *
 	 * @param marshaller object used as marshaller and unmarshaller
 	 */
 	public MarshallingMessageConverter(Marshaller marshaller) {
@@ -89,14 +90,6 @@ public class MarshallingMessageConverter extends AbstractMessageConverter {
 		}
 	}
 
-
-	/**
-	 * Set the {@link Marshaller} to be used by this message converter.
-	 */
-	public void setMarshaller(@Nullable Marshaller marshaller) {
-		this.marshaller = marshaller;
-	}
-
 	/**
 	 * Return the configured Marshaller.
 	 */
@@ -106,10 +99,10 @@ public class MarshallingMessageConverter extends AbstractMessageConverter {
 	}
 
 	/**
-	 * Set the {@link Unmarshaller} to be used by this message converter.
+	 * Set the {@link Marshaller} to be used by this message converter.
 	 */
-	public void setUnmarshaller(@Nullable Unmarshaller unmarshaller) {
-		this.unmarshaller = unmarshaller;
+	public void setMarshaller(@Nullable Marshaller marshaller) {
+		this.marshaller = marshaller;
 	}
 
 	/**
@@ -120,6 +113,12 @@ public class MarshallingMessageConverter extends AbstractMessageConverter {
 		return this.unmarshaller;
 	}
 
+	/**
+	 * Set the {@link Unmarshaller} to be used by this message converter.
+	 */
+	public void setUnmarshaller(@Nullable Unmarshaller unmarshaller) {
+		this.unmarshaller = unmarshaller;
+	}
 
 	@Override
 	protected boolean canConvertFrom(Message<?> message, Class<?> targetClass) {
@@ -150,8 +149,7 @@ public class MarshallingMessageConverter extends AbstractMessageConverter {
 				throw new TypeMismatchException(result, targetClass);
 			}
 			return result;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new MessageConversionException(message, "Could not unmarshal XML: " + ex.getMessage(), ex);
 		}
 	}
@@ -159,8 +157,7 @@ public class MarshallingMessageConverter extends AbstractMessageConverter {
 	private Source getSource(Object payload) {
 		if (payload instanceof byte[]) {
 			return new StreamSource(new ByteArrayInputStream((byte[]) payload));
-		}
-		else {
+		} else {
 			return new StreamSource(new StringReader((String) payload));
 		}
 	}
@@ -168,7 +165,7 @@ public class MarshallingMessageConverter extends AbstractMessageConverter {
 	@Override
 	@Nullable
 	protected Object convertToInternal(Object payload, @Nullable MessageHeaders headers,
-			@Nullable Object conversionHint) {
+									   @Nullable Object conversionHint) {
 
 		Assert.notNull(this.marshaller, "Property 'marshaller' is required");
 		try {
@@ -177,15 +174,13 @@ public class MarshallingMessageConverter extends AbstractMessageConverter {
 				Result result = new StreamResult(out);
 				this.marshaller.marshal(payload, result);
 				payload = out.toByteArray();
-			}
-			else {
+			} else {
 				Writer writer = new StringWriter();
 				Result result = new StreamResult(writer);
 				this.marshaller.marshal(payload, result);
 				payload = writer.toString();
 			}
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new MessageConversionException("Could not marshal XML: " + ex.getMessage(), ex);
 		}
 		return payload;

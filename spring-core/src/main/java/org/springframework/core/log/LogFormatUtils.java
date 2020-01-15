@@ -16,11 +16,10 @@
 
 package org.springframework.core.log;
 
-import java.util.function.Function;
-
 import org.apache.commons.logging.Log;
-
 import org.springframework.lang.Nullable;
+
+import java.util.function.Function;
 
 /**
  * Utility methods for formatting and logging messages.
@@ -39,7 +38,8 @@ public abstract class LogFormatUtils {
 	 * Format the given value via {@code toString()}, quoting it if it is a
 	 * {@link CharSequence}, and possibly truncating at 100 if limitLength is
 	 * set to true.
-	 * @param value the value to format
+	 *
+	 * @param value       the value to format
 	 * @param limitLength whether to truncate large formatted values (over 100)
 	 * @return the formatted value
 	 */
@@ -50,12 +50,10 @@ public abstract class LogFormatUtils {
 		String str;
 		if (value instanceof CharSequence) {
 			str = "\"" + value + "\"";
-		}
-		else {
+		} else {
 			try {
 				str = value.toString();
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				str = ex.toString();
 			}
 		}
@@ -76,9 +74,10 @@ public abstract class LogFormatUtils {
 	 *   }
 	 * }
 	 * </pre>
-	 * @param logger the logger to use to log the message
+	 *
+	 * @param logger         the logger to use to log the message
 	 * @param messageFactory function that accepts a boolean set to the value
-	 * of {@link Log#isTraceEnabled()}
+	 *                       of {@link Log#isTraceEnabled()}
 	 */
 	public static void traceDebug(Log logger, Function<Boolean, String> messageFactory) {
 		if (logger.isDebugEnabled()) {
@@ -86,8 +85,7 @@ public abstract class LogFormatUtils {
 			String logMessage = messageFactory.apply(traceEnabled);
 			if (traceEnabled) {
 				logger.trace(logMessage);
-			}
-			else {
+			} else {
 				logger.debug(logMessage);
 			}
 		}

@@ -16,17 +16,16 @@
 
 package org.springframework.messaging.handler.invocation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.util.concurrent.ListenableFuture;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A HandlerMethodReturnValueHandler that wraps and delegates to others.
@@ -36,30 +35,30 @@ import org.springframework.util.concurrent.ListenableFuture;
  */
 public class HandlerMethodReturnValueHandlerComposite implements AsyncHandlerMethodReturnValueHandler {
 
-	/** Public for wrapping with fallback logger. */
+	/**
+	 * Public for wrapping with fallback logger.
+	 */
 	public static final Log defaultLogger = LogFactory.getLog(HandlerMethodReturnValueHandlerComposite.class);
-
-
+	private final List<HandlerMethodReturnValueHandler> returnValueHandlers = new ArrayList<>();
 	private Log logger = defaultLogger;
 
-	private final List<HandlerMethodReturnValueHandler> returnValueHandlers = new ArrayList<>();
-
+	/**
+	 * Return the currently configured Logger.
+	 *
+	 * @since 5.1
+	 */
+	public Log getLogger() {
+		return logger;
+	}
 
 	/**
 	 * Set an alternative logger to use than the one based on the class name.
+	 *
 	 * @param logger the logger to use
 	 * @since 5.1
 	 */
 	public void setLogger(Log logger) {
 		this.logger = logger;
-	}
-
-	/**
-	 * Return the currently configured Logger.
-	 * @since 5.1
-	 */
-	public Log getLogger() {
-		return logger;
 	}
 
 	/**

@@ -15,12 +15,7 @@
  */
 package org.springframework.test.web.reactive.server;
 
-import java.util.Arrays;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
@@ -28,12 +23,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static java.nio.charset.StandardCharsets.*;
-import static org.junit.Assert.*;
+import java.util.Arrays;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Test scenarios involving a mock server.
+ *
  * @author Rossen Stoyanchev
  */
 public class MockServerTests {
@@ -48,8 +49,7 @@ public class MockServerTests {
 						return exchange.getSession()
 								.doOnNext(session -> session.getAttributes().put("foo", "bar"))
 								.then();
-					}
-					else {
+					} else {
 						return exchange.getSession()
 								.map(session -> session.getAttributeOrDefault("foo", "none"))
 								.flatMap(value -> {
@@ -120,8 +120,7 @@ public class MockServerTests {
 					if (exchange.getRequest().getURI().getPath().equals("/cookie")) {
 						response.addCookie(ResponseCookie.from("a", "alpha").path("/pathA").build());
 						response.addCookie(ResponseCookie.from("b", "beta").path("/pathB").build());
-					}
-					else {
+					} else {
 						response.setStatusCode(HttpStatus.NOT_FOUND);
 					}
 					return response.setComplete();

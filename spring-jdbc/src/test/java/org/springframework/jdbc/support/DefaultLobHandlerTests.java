@@ -16,6 +16,11 @@
 
 package org.springframework.jdbc.support;
 
+import org.junit.Test;
+import org.springframework.jdbc.support.lob.DefaultLobHandler;
+import org.springframework.jdbc.support.lob.LobCreator;
+import org.springframework.jdbc.support.lob.LobHandler;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,13 +30,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.junit.Test;
-
-import org.springframework.jdbc.support.lob.DefaultLobHandler;
-import org.springframework.jdbc.support.lob.LobCreator;
-import org.springframework.jdbc.support.lob.LobHandler;
-
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Juergen Hoeller

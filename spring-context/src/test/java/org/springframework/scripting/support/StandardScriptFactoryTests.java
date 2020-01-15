@@ -16,17 +16,18 @@
 
 package org.springframework.scripting.support;
 
-import java.util.Arrays;
-
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.aop.target.dynamic.Refreshable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scripting.Messenger;
 
-import static org.junit.Assert.*;
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * {@link StandardScriptFactory} (lang:std) tests for JavaScript.

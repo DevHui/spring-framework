@@ -16,14 +16,7 @@
 
 package org.springframework.web.multipart.support;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -33,7 +26,13 @@ import org.springframework.mock.web.test.MockMultipartHttpServletRequest;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.junit.Assert.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Rossen Stoyanchev

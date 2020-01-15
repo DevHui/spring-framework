@@ -19,7 +19,6 @@ package org.springframework.context.annotation.scope;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
@@ -303,26 +302,27 @@ public class ClassPathBeanDefinitionScannerScopeIntegrationTests {
 	}
 
 
+	static interface AnotherScopeTestInterface {
+	}
+
 	static abstract class ScopedTestBean implements IScopedTestBean {
 
 		private String name = DEFAULT_NAME;
 
 		@Override
-		public String getName() { return this.name; }
+		public String getName() {
+			return this.name;
+		}
 
 		@Override
-		public void setName(String name) { this.name = name; }
+		public void setName(String name) {
+			this.name = name;
+		}
 	}
-
 
 	@Component
 	static class SingletonScopedTestBean extends ScopedTestBean {
 	}
-
-
-	static interface AnotherScopeTestInterface {
-	}
-
 
 	@Component
 	@RequestScope(proxyMode = DEFAULT)

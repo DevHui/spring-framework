@@ -16,6 +16,14 @@
 
 package org.springframework.mock.web;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StreamUtils;
+
+import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -28,17 +36,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StreamUtils;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link MockHttpServletRequest}.
@@ -54,12 +56,9 @@ import static org.junit.Assert.*;
 public class MockHttpServletRequestTests {
 
 	private static final String HOST = "Host";
-
-	private final MockHttpServletRequest request = new MockHttpServletRequest();
-
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
-
+	private final MockHttpServletRequest request = new MockHttpServletRequest();
 
 	@Test
 	public void protocolAndScheme() {
@@ -236,7 +235,7 @@ public class MockHttpServletRequestTests {
 		request.setParameter("key2", "value2");
 		Map<String, Object> params = new HashMap<>(2);
 		params.put("key1", "newValue1");
-		params.put("key3", new String[] { "value3A", "value3B" });
+		params.put("key3", new String[]{"value3A", "value3B"});
 		request.setParameters(params);
 		String[] values1 = request.getParameterValues("key1");
 		assertEquals(1, values1.length);
@@ -254,7 +253,7 @@ public class MockHttpServletRequestTests {
 		request.setParameter("key2", "value2");
 		Map<String, Object> params = new HashMap<>(2);
 		params.put("key1", "newValue1");
-		params.put("key3", new String[] { "value3A", "value3B" });
+		params.put("key3", new String[]{"value3A", "value3B"});
 		request.addParameters(params);
 		String[] values1 = request.getParameterValues("key1");
 		assertEquals(2, values1.length);
@@ -272,7 +271,7 @@ public class MockHttpServletRequestTests {
 		request.setParameter("key1", "value1");
 		Map<String, Object> params = new HashMap<>(2);
 		params.put("key2", "value2");
-		params.put("key3", new String[] { "value3A", "value3B" });
+		params.put("key3", new String[]{"value3A", "value3B"});
 		request.addParameters(params);
 		assertEquals(3, request.getParameterMap().size());
 		request.removeAllParameters();
@@ -313,8 +312,7 @@ public class MockHttpServletRequestTests {
 			MockHttpServletRequest request = new MockHttpServletRequest();
 			assertFalse(newDefaultLocale.equals(request.getLocale()));
 			assertEquals(Locale.ENGLISH, request.getLocale());
-		}
-		finally {
+		} finally {
 			Locale.setDefault(originalDefaultLocale);
 		}
 	}

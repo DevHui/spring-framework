@@ -16,13 +16,13 @@
 
 package org.springframework.web.server;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Exception for errors that fit response status 406 (not acceptable).
@@ -55,6 +55,7 @@ public class NotAcceptableStatusException extends ResponseStatusException {
 
 	/**
 	 * Return a Map with an "Accept" header, or an empty map.
+	 *
 	 * @since 5.1.11
 	 */
 	@Override

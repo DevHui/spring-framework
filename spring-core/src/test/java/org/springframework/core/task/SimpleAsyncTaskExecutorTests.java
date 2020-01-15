@@ -16,16 +16,18 @@
 
 package org.springframework.core.task;
 
-import java.util.concurrent.ThreadFactory;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.util.ConcurrencyThrottleSupport;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.util.concurrent.ThreadFactory;
+
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rick Evans
@@ -88,8 +90,7 @@ public class SimpleAsyncTaskExecutorTests {
 			executor.execute(task);
 			try {
 				monitor.wait();
-			}
-			catch (InterruptedException ignored) {
+			} catch (InterruptedException ignored) {
 			}
 		}
 	}
@@ -117,8 +118,7 @@ public class SimpleAsyncTaskExecutorTests {
 			synchronized (this.monitor) {
 				try {
 					doRun();
-				}
-				finally {
+				} finally {
 					this.monitor.notifyAll();
 				}
 			}

@@ -16,18 +16,18 @@
 
 package org.springframework.web.server.session;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 import org.springframework.http.HttpCookie;
 import org.springframework.http.ResponseCookie;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Cookie-based {@link WebSessionIdResolver}.
@@ -45,17 +45,6 @@ public class CookieWebSessionIdResolver implements WebSessionIdResolver {
 	@Nullable
 	private Consumer<ResponseCookie.ResponseCookieBuilder> cookieInitializer = null;
 
-
-	/**
-	 * Set the name of the cookie to use for the session id.
-	 * <p>By default set to "SESSION".
-	 * @param cookieName the cookie name
-	 */
-	public void setCookieName(String cookieName) {
-		Assert.hasText(cookieName, "'cookieName' must not be empty");
-		this.cookieName = cookieName;
-	}
-
 	/**
 	 * Return the configured cookie name.
 	 */
@@ -64,13 +53,14 @@ public class CookieWebSessionIdResolver implements WebSessionIdResolver {
 	}
 
 	/**
-	 * Set the value for the "Max-Age" attribute of the cookie that holds the
-	 * session id. For the range of values see {@link ResponseCookie#getMaxAge()}.
-	 * <p>By default set to -1.
-	 * @param maxAge the maxAge duration value
+	 * Set the name of the cookie to use for the session id.
+	 * <p>By default set to "SESSION".
+	 *
+	 * @param cookieName the cookie name
 	 */
-	public void setCookieMaxAge(Duration maxAge) {
-		this.cookieMaxAge = maxAge;
+	public void setCookieName(String cookieName) {
+		Assert.hasText(cookieName, "'cookieName' must not be empty");
+		this.cookieName = cookieName;
 	}
 
 	/**
@@ -81,8 +71,20 @@ public class CookieWebSessionIdResolver implements WebSessionIdResolver {
 	}
 
 	/**
+	 * Set the value for the "Max-Age" attribute of the cookie that holds the
+	 * session id. For the range of values see {@link ResponseCookie#getMaxAge()}.
+	 * <p>By default set to -1.
+	 *
+	 * @param maxAge the maxAge duration value
+	 */
+	public void setCookieMaxAge(Duration maxAge) {
+		this.cookieMaxAge = maxAge;
+	}
+
+	/**
 	 * Add a {@link Consumer} for a {@code ResponseCookieBuilder} that will be invoked
 	 * for each cookie being built, just before the call to {@code build()}.
+	 *
 	 * @param initializer consumer for a cookie builder
 	 * @since 5.1
 	 */

@@ -34,8 +34,8 @@ import org.springframework.lang.Nullable;
  * readers that want to follow standard naming conventions.
  *
  * @author Juergen Hoeller
- * @since 1.1
  * @see org.springframework.core.io.Resource
+ * @since 1.1
  */
 public interface BeanDefinitionReader {
 
@@ -62,6 +62,7 @@ public interface BeanDefinitionReader {
 	 * <p>There is also a {@code loadBeanDefinitions(String)} method available,
 	 * for loading bean definitions from a resource location (or location pattern).
 	 * This is a convenience to avoid explicit ResourceLoader handling.
+	 *
 	 * @see #loadBeanDefinitions(String)
 	 * @see org.springframework.core.io.support.ResourcePatternResolver
 	 */
@@ -86,6 +87,7 @@ public interface BeanDefinitionReader {
 
 	/**
 	 * Load bean definitions from the specified resource.
+	 *
 	 * @param resource the resource descriptor
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
@@ -94,6 +96,7 @@ public interface BeanDefinitionReader {
 
 	/**
 	 * Load bean definitions from the specified resources.
+	 *
 	 * @param resources the resource descriptors
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
@@ -104,8 +107,9 @@ public interface BeanDefinitionReader {
 	 * Load bean definitions from the specified resource location.
 	 * <p>The location can also be a location pattern, provided that the
 	 * ResourceLoader of this bean definition reader is a ResourcePatternResolver.
+	 *
 	 * @param location the resource location, to be loaded with the ResourceLoader
-	 * (or ResourcePatternResolver) of this bean definition reader
+	 *                 (or ResourcePatternResolver) of this bean definition reader
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
 	 * @see #getResourceLoader()
@@ -116,8 +120,9 @@ public interface BeanDefinitionReader {
 
 	/**
 	 * Load bean definitions from the specified resource locations.
+	 *
 	 * @param locations the resource locations, to be loaded with the ResourceLoader
-	 * (or ResourcePatternResolver) of this bean definition reader
+	 *                  (or ResourcePatternResolver) of this bean definition reader
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
 	 */

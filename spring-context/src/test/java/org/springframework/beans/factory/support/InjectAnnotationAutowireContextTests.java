@@ -16,17 +16,7 @@
 
 package org.springframework.beans.factory.support;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Qualifier;
-
 import org.junit.Test;
-
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -36,7 +26,17 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.support.GenericApplicationContext;
 
-import static org.junit.Assert.*;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Qualifier;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Integration tests for handling JSR-303 {@link javax.inject.Qualifier} annotations.
@@ -64,8 +64,7 @@ public class InjectAnnotationAutowireContextTests {
 		try {
 			context.refresh();
 			fail("expected BeanCreationException");
-		}
-		catch (BeanCreationException e) {
+		} catch (BeanCreationException e) {
 			assertTrue(e.getRootCause() instanceof NoSuchBeanDefinitionException);
 			assertEquals("autowired", e.getBeanName());
 		}
@@ -84,8 +83,7 @@ public class InjectAnnotationAutowireContextTests {
 		try {
 			context.refresh();
 			fail("expected BeanCreationException");
-		}
-		catch (BeanCreationException e) {
+		} catch (BeanCreationException e) {
 			assertTrue(e.getRootCause() instanceof NoSuchBeanDefinitionException);
 			assertEquals("autowired", e.getBeanName());
 		}
@@ -104,8 +102,7 @@ public class InjectAnnotationAutowireContextTests {
 		try {
 			context.refresh();
 			fail("expected BeanCreationException");
-		}
-		catch (BeanCreationException e) {
+		} catch (BeanCreationException e) {
 			assertTrue(e instanceof UnsatisfiedDependencyException);
 			assertEquals("autowired", e.getBeanName());
 		}
@@ -214,8 +211,7 @@ public class InjectAnnotationAutowireContextTests {
 		try {
 			context.refresh();
 			fail("expected BeanCreationException");
-		}
-		catch (BeanCreationException e) {
+		} catch (BeanCreationException e) {
 			assertTrue(e.getRootCause() instanceof NoSuchBeanDefinitionException);
 			assertEquals("autowired", e.getBeanName());
 		}
@@ -238,8 +234,7 @@ public class InjectAnnotationAutowireContextTests {
 		try {
 			context.refresh();
 			fail("expected BeanCreationException");
-		}
-		catch (BeanCreationException e) {
+		} catch (BeanCreationException e) {
 			assertTrue(e.getRootCause() instanceof NoSuchBeanDefinitionException);
 			assertEquals("autowired", e.getBeanName());
 		}
@@ -262,8 +257,7 @@ public class InjectAnnotationAutowireContextTests {
 		try {
 			context.refresh();
 			fail("expected BeanCreationException");
-		}
-		catch (BeanCreationException e) {
+		} catch (BeanCreationException e) {
 			assertTrue(e instanceof UnsatisfiedDependencyException);
 			assertEquals("autowired", e.getBeanName());
 		}
@@ -372,8 +366,7 @@ public class InjectAnnotationAutowireContextTests {
 		try {
 			context.refresh();
 			fail("expected BeanCreationException");
-		}
-		catch (BeanCreationException e) {
+		} catch (BeanCreationException e) {
 			assertTrue(e.getRootCause() instanceof NoSuchBeanDefinitionException);
 			assertEquals("autowired", e.getBeanName());
 		}
@@ -451,8 +444,7 @@ public class InjectAnnotationAutowireContextTests {
 		try {
 			context.refresh();
 			fail("expected BeanCreationException");
-		}
-		catch (BeanCreationException e) {
+		} catch (BeanCreationException e) {
 			assertTrue(e.getRootCause() instanceof NoSuchBeanDefinitionException);
 			assertEquals("autowired", e.getBeanName());
 		}
@@ -509,8 +501,7 @@ public class InjectAnnotationAutowireContextTests {
 		try {
 			context.refresh();
 			fail("expected BeanCreationException");
-		}
-		catch (BeanCreationException e) {
+		} catch (BeanCreationException e) {
 			assertTrue(e.getRootCause() instanceof NoSuchBeanDefinitionException);
 			assertEquals("autowired", e.getBeanName());
 		}
@@ -535,132 +526,9 @@ public class InjectAnnotationAutowireContextTests {
 		try {
 			context.refresh();
 			fail("expected BeanCreationException");
-		}
-		catch (BeanCreationException e) {
+		} catch (BeanCreationException e) {
 			assertTrue(e instanceof UnsatisfiedDependencyException);
 			assertEquals("autowired", e.getBeanName());
-		}
-	}
-
-
-	private static class QualifiedFieldTestBean {
-
-		@Inject
-		@TestQualifier
-		private Person person;
-
-		public Person getPerson() {
-			return this.person;
-		}
-	}
-
-
-	private static class QualifiedMethodParameterTestBean {
-
-		private Person person;
-
-		@Inject
-		public void setPerson(@TestQualifier Person person) {
-			this.person = person;
-		}
-
-		public Person getPerson() {
-			return this.person;
-		}
-	}
-
-
-	private static class QualifiedConstructorArgumentTestBean {
-
-		private Person person;
-
-		@Inject
-		public QualifiedConstructorArgumentTestBean(@TestQualifier Person person) {
-			this.person = person;
-		}
-
-		public Person getPerson() {
-			return this.person;
-		}
-
-	}
-
-
-	public static class QualifiedFieldWithDefaultValueTestBean {
-
-		@Inject
-		@TestQualifierWithDefaultValue
-		private Person person;
-
-		public Person getPerson() {
-			return this.person;
-		}
-	}
-
-
-	public static class QualifiedFieldWithMultipleAttributesTestBean {
-
-		@Inject
-		@TestQualifierWithMultipleAttributes(number=123)
-		private Person person;
-
-		public Person getPerson() {
-			return this.person;
-		}
-	}
-
-
-	@SuppressWarnings("unused")
-	private static class QualifiedFieldWithBaseQualifierDefaultValueTestBean {
-
-		@Inject
-		private Person person;
-
-		public Person getPerson() {
-			return this.person;
-		}
-	}
-
-
-	public static class QualifiedConstructorArgumentWithBaseQualifierNonDefaultValueTestBean {
-
-		private Person person;
-
-		@Inject
-		public QualifiedConstructorArgumentWithBaseQualifierNonDefaultValueTestBean(
-				@Named("juergen") Person person) {
-			this.person = person;
-		}
-
-		public Person getPerson() {
-			return this.person;
-		}
-	}
-
-
-	private static class Person {
-
-		private String name;
-
-		public Person(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-	}
-
-
-	@TestQualifier
-	private static class QualifiedPerson extends Person {
-
-		public QualifiedPerson() {
-			super(null);
-		}
-
-		public QualifiedPerson(String name) {
-			super(name);
 		}
 	}
 
@@ -689,6 +557,119 @@ public class InjectAnnotationAutowireContextTests {
 		String value() default "default";
 
 		int number();
+	}
+
+	private static class QualifiedFieldTestBean {
+
+		@Inject
+		@TestQualifier
+		private Person person;
+
+		public Person getPerson() {
+			return this.person;
+		}
+	}
+
+	private static class QualifiedMethodParameterTestBean {
+
+		private Person person;
+
+		public Person getPerson() {
+			return this.person;
+		}
+
+		@Inject
+		public void setPerson(@TestQualifier Person person) {
+			this.person = person;
+		}
+	}
+
+	private static class QualifiedConstructorArgumentTestBean {
+
+		private Person person;
+
+		@Inject
+		public QualifiedConstructorArgumentTestBean(@TestQualifier Person person) {
+			this.person = person;
+		}
+
+		public Person getPerson() {
+			return this.person;
+		}
+
+	}
+
+	public static class QualifiedFieldWithDefaultValueTestBean {
+
+		@Inject
+		@TestQualifierWithDefaultValue
+		private Person person;
+
+		public Person getPerson() {
+			return this.person;
+		}
+	}
+
+	public static class QualifiedFieldWithMultipleAttributesTestBean {
+
+		@Inject
+		@TestQualifierWithMultipleAttributes(number = 123)
+		private Person person;
+
+		public Person getPerson() {
+			return this.person;
+		}
+	}
+
+	@SuppressWarnings("unused")
+	private static class QualifiedFieldWithBaseQualifierDefaultValueTestBean {
+
+		@Inject
+		private Person person;
+
+		public Person getPerson() {
+			return this.person;
+		}
+	}
+
+	public static class QualifiedConstructorArgumentWithBaseQualifierNonDefaultValueTestBean {
+
+		private Person person;
+
+		@Inject
+		public QualifiedConstructorArgumentWithBaseQualifierNonDefaultValueTestBean(
+				@Named("juergen") Person person) {
+			this.person = person;
+		}
+
+		public Person getPerson() {
+			return this.person;
+		}
+	}
+
+	private static class Person {
+
+		private String name;
+
+		public Person(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+	}
+
+	@TestQualifier
+	private static class QualifiedPerson extends Person {
+
+		public QualifiedPerson() {
+			super(null);
+		}
+
+		public QualifiedPerson(String name) {
+			super(name);
+		}
 	}
 
 }

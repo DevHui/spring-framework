@@ -16,13 +16,12 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.util.Set;
-import java.util.function.Function;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
+import reactor.core.publisher.Mono;
+
+import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Implementation of {@link RouterFunctions.Visitor} that creates a formatted
@@ -76,7 +75,7 @@ class ToStringVisitor implements RouterFunctions.Visitor, RequestPredicates.Visi
 	}
 
 	private void indent() {
-		for (int i=0; i < this.indent; i++) {
+		for (int i = 0; i < this.indent; i++) {
 			this.builder.append(' ');
 		}
 	}
@@ -88,8 +87,7 @@ class ToStringVisitor implements RouterFunctions.Visitor, RequestPredicates.Visi
 	public void method(Set<HttpMethod> methods) {
 		if (methods.size() == 1) {
 			this.builder.append(methods.iterator().next());
-		}
-		else {
+		} else {
 			this.builder.append(methods);
 		}
 	}

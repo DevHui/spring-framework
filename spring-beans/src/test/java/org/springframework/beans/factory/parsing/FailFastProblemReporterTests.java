@@ -18,10 +18,12 @@ package org.springframework.beans.factory.parsing;
 
 import org.apache.commons.logging.Log;
 import org.junit.Test;
-
 import org.springframework.core.io.DescriptiveResource;
 
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.isA;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Rick Evans

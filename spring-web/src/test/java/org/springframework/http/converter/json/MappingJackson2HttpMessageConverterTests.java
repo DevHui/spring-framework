@@ -16,14 +16,6 @@
 
 package org.springframework.http.converter.json;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JavaType;
@@ -33,7 +25,6 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.MockHttpInputMessage;
@@ -42,8 +33,21 @@ import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.Nullable;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Jackson 2.x converter tests.
@@ -92,9 +96,9 @@ public class MappingJackson2HttpMessageConverterTests {
 		assertEquals("Foo", result.getString());
 		assertEquals(42, result.getNumber());
 		assertEquals(42F, result.getFraction(), 0F);
-		assertArrayEquals(new String[] {"Foo", "Bar"}, result.getArray());
+		assertArrayEquals(new String[]{"Foo", "Bar"}, result.getArray());
 		assertTrue(result.isBool());
-		assertArrayEquals(new byte[] {0x1, 0x2}, result.getBytes());
+		assertArrayEquals(new byte[]{0x1, 0x2}, result.getBytes());
 	}
 
 	@Test
@@ -128,9 +132,9 @@ public class MappingJackson2HttpMessageConverterTests {
 		body.setString("Foo");
 		body.setNumber(42);
 		body.setFraction(42F);
-		body.setArray(new String[] {"Foo", "Bar"});
+		body.setArray(new String[]{"Foo", "Bar"});
 		body.setBool(true);
-		body.setBytes(new byte[] {0x1, 0x2});
+		body.setBytes(new byte[]{0x1, 0x2});
 		converter.write(body, null, outputMessage);
 		String result = outputMessage.getBodyAsString(StandardCharsets.UTF_8);
 		assertTrue(result.contains("\"string\":\"Foo\""));
@@ -150,9 +154,9 @@ public class MappingJackson2HttpMessageConverterTests {
 		body.setString("Foo");
 		body.setNumber(42);
 		body.setFraction(42F);
-		body.setArray(new String[] {"Foo", "Bar"});
+		body.setArray(new String[]{"Foo", "Bar"});
 		body.setBool(true);
-		body.setBytes(new byte[] {0x1, 0x2});
+		body.setBytes(new byte[]{0x1, 0x2});
 		converter.write(body, MyBase.class, null, outputMessage);
 		String result = outputMessage.getBodyAsString(StandardCharsets.UTF_8);
 		assertTrue(result.contains("\"string\":\"Foo\""));
@@ -198,10 +202,9 @@ public class MappingJackson2HttpMessageConverterTests {
 		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter() {
 			@Override
 			protected JavaType getJavaType(Type type, @Nullable Class<?> contextClass) {
-				if (type instanceof Class && List.class.isAssignableFrom((Class<?>)type)) {
+				if (type instanceof Class && List.class.isAssignableFrom((Class<?>) type)) {
 					return new ObjectMapper().getTypeFactory().constructCollectionType(ArrayList.class, MyBean.class);
-				}
-				else {
+				} else {
 					return super.getJavaType(type, contextClass);
 				}
 			}
@@ -222,9 +225,9 @@ public class MappingJackson2HttpMessageConverterTests {
 		assertEquals("Foo", result.getString());
 		assertEquals(42, result.getNumber());
 		assertEquals(42F, result.getFraction(), 0F);
-		assertArrayEquals(new String[] {"Foo", "Bar"}, result.getArray());
+		assertArrayEquals(new String[]{"Foo", "Bar"}, result.getArray());
 		assertTrue(result.isBool());
-		assertArrayEquals(new byte[] {0x1, 0x2}, result.getBytes());
+		assertArrayEquals(new byte[]{0x1, 0x2}, result.getBytes());
 
 		MockHttpOutputMessage outputMessage = new MockHttpOutputMessage();
 		converter.write(results, new MediaType("application", "json"), outputMessage);
@@ -234,7 +237,8 @@ public class MappingJackson2HttpMessageConverterTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void readAndWriteParameterizedType() throws Exception {
-		ParameterizedTypeReference<List<MyBean>> beansList = new ParameterizedTypeReference<List<MyBean>>() {};
+		ParameterizedTypeReference<List<MyBean>> beansList = new ParameterizedTypeReference<List<MyBean>>() {
+		};
 
 		String body = "[{" +
 				"\"bytes\":\"AQI=\"," +
@@ -253,9 +257,9 @@ public class MappingJackson2HttpMessageConverterTests {
 		assertEquals("Foo", result.getString());
 		assertEquals(42, result.getNumber());
 		assertEquals(42F, result.getFraction(), 0F);
-		assertArrayEquals(new String[] {"Foo", "Bar"}, result.getArray());
+		assertArrayEquals(new String[]{"Foo", "Bar"}, result.getArray());
 		assertTrue(result.isBool());
-		assertArrayEquals(new byte[] {0x1, 0x2}, result.getBytes());
+		assertArrayEquals(new byte[]{0x1, 0x2}, result.getBytes());
 
 		MockHttpOutputMessage outputMessage = new MockHttpOutputMessage();
 		converter.write(results, beansList.getType(), new MediaType("application", "json"), outputMessage);
@@ -265,8 +269,10 @@ public class MappingJackson2HttpMessageConverterTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void writeParameterizedBaseType() throws Exception {
-		ParameterizedTypeReference<List<MyBean>> beansList = new ParameterizedTypeReference<List<MyBean>>() {};
-		ParameterizedTypeReference<List<MyBase>> baseList = new ParameterizedTypeReference<List<MyBase>>() {};
+		ParameterizedTypeReference<List<MyBean>> beansList = new ParameterizedTypeReference<List<MyBean>>() {
+		};
+		ParameterizedTypeReference<List<MyBase>> baseList = new ParameterizedTypeReference<List<MyBase>>() {
+		};
 
 		String body = "[{" +
 				"\"bytes\":\"AQI=\"," +
@@ -285,9 +291,9 @@ public class MappingJackson2HttpMessageConverterTests {
 		assertEquals("Foo", result.getString());
 		assertEquals(42, result.getNumber());
 		assertEquals(42F, result.getFraction(), 0F);
-		assertArrayEquals(new String[] {"Foo", "Bar"}, result.getArray());
+		assertArrayEquals(new String[]{"Foo", "Bar"}, result.getArray());
 		assertTrue(result.isBool());
-		assertArrayEquals(new byte[] {0x1, 0x2}, result.getBytes());
+		assertArrayEquals(new byte[]{0x1, 0x2}, result.getBytes());
 
 		MockHttpOutputMessage outputMessage = new MockHttpOutputMessage();
 		converter.write(results, baseList.getType(), new MediaType("application", "json"), outputMessage);
@@ -421,7 +427,8 @@ public class MappingJackson2HttpMessageConverterTests {
 		bar.setNumber(123);
 		beans.add(bar);
 		ParameterizedTypeReference<List<MyInterface>> typeReference =
-				new ParameterizedTypeReference<List<MyInterface>>() {};
+				new ParameterizedTypeReference<List<MyInterface>>() {
+				};
 
 		this.converter.writeInternal(beans, typeReference.getType(), outputMessage);
 
@@ -439,8 +446,7 @@ public class MappingJackson2HttpMessageConverterTests {
 		inputMessage.getHeaders().setContentType(new MediaType("application", "json"));
 		try {
 			converter.read(BeanWithNoDefaultConstructor.class, inputMessage);
-		}
-		catch (HttpMessageConversionException ex) {
+		} catch (HttpMessageConversionException ex) {
 			assertTrue(ex.getMessage(), ex.getMessage().startsWith("Type definition error:"));
 			return;
 		}
@@ -456,7 +462,18 @@ public class MappingJackson2HttpMessageConverterTests {
 	}
 
 
-	public static class MyBase implements MyInterface{
+	private interface MyJacksonView1 {
+	}
+
+
+	private interface MyJacksonView2 {
+	}
+
+
+	private interface MyJacksonView3 {
+	}
+
+	public static class MyBase implements MyInterface {
 
 		private String string;
 
@@ -468,7 +485,6 @@ public class MappingJackson2HttpMessageConverterTests {
 			this.string = string;
 		}
 	}
-
 
 	public static class MyBean extends MyBase {
 
@@ -523,7 +539,6 @@ public class MappingJackson2HttpMessageConverterTests {
 		}
 	}
 
-
 	public static class PrettyPrintBean {
 
 		private String name;
@@ -536,14 +551,6 @@ public class MappingJackson2HttpMessageConverterTests {
 			this.name = name;
 		}
 	}
-
-
-	private interface MyJacksonView1 {}
-
-	private interface MyJacksonView2 {}
-
-	private interface MyJacksonView3 {}
-
 
 	@SuppressWarnings("unused")
 	@JsonView(MyJacksonView3.class)

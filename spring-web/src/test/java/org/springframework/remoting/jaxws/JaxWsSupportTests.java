@@ -16,8 +16,13 @@
 
 package org.springframework.remoting.jaxws;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import org.junit.Test;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.annotation.AnnotationConfigUtils;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.remoting.RemoteAccessException;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -27,17 +32,12 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.WebServiceRef;
 import javax.xml.ws.soap.AddressingFeature;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import org.junit.Test;
-
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.context.annotation.AnnotationConfigUtils;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.remoting.RemoteAccessException;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Juergen Hoeller
@@ -103,11 +103,9 @@ public class JaxWsSupportTests {
 			try {
 				orderService.getOrder(0);
 				fail("Should have thrown OrderNotFoundException");
-			}
-			catch (OrderNotFoundException ex) {
+			} catch (OrderNotFoundException ex) {
 				// expected
-			}
-			catch (RemoteAccessException ex) {
+			} catch (RemoteAccessException ex) {
 				// ignore - probably setup issue with JAX-WS provider vs JAXB
 			}
 
@@ -117,23 +115,18 @@ public class JaxWsSupportTests {
 			try {
 				serviceAccessor.orderService.getOrder(0);
 				fail("Should have thrown OrderNotFoundException");
-			}
-			catch (OrderNotFoundException ex) {
+			} catch (OrderNotFoundException ex) {
 				// expected
-			}
-			catch (WebServiceException ex) {
+			} catch (WebServiceException ex) {
 				// ignore - probably setup issue with JAX-WS provider vs JAXB
 			}
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			if ("exporter".equals(ex.getBeanName()) && ex.getRootCause() instanceof ClassNotFoundException) {
 				// ignore - probably running on JDK without the JAX-WS impl present
-			}
-			else {
+			} else {
 				throw ex;
 			}
-		}
-		finally {
+		} finally {
 			ac.close();
 		}
 	}
@@ -153,7 +146,7 @@ public class JaxWsSupportTests {
 	}
 
 
-	@WebServiceClient(targetNamespace = "http://jaxws.remoting.springframework.org/", name="OrderService")
+	@WebServiceClient(targetNamespace = "http://jaxws.remoting.springframework.org/", name = "OrderService")
 	public static class OrderServiceService extends Service {
 
 		public OrderServiceService() throws MalformedURLException {

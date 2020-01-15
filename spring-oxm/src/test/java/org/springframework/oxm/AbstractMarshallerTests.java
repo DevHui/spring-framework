@@ -16,8 +16,14 @@
 
 package org.springframework.oxm;
 
-import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.util.xml.StaxUtils;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+import org.xmlunit.matchers.CompareMatcher;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,18 +34,11 @@ import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stax.StAXResult;
 import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
-import org.xmlunit.matchers.CompareMatcher;
-
-import org.springframework.util.xml.StaxUtils;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Arjen Poutsma
@@ -54,6 +53,11 @@ public abstract class AbstractMarshallerTests<M extends Marshaller> {
 	protected M marshaller;
 
 	protected Object flights;
+
+	private static CompareMatcher isSimilarTo(final Object content) {
+		return CompareMatcher.isSimilarTo(content)
+				.ignoreWhitespace();
+	}
 
 	@Before
 	public final void setUp() throws Exception {
@@ -167,10 +171,5 @@ public abstract class AbstractMarshallerTests<M extends Marshaller> {
 		StAXResult result = new StAXResult(eventWriter);
 		marshaller.marshal(flights, result);
 		assertThat("Marshaller writes invalid StreamResult", writer.toString(), isSimilarTo(EXPECTED_STRING));
-	}
-
-	private static CompareMatcher isSimilarTo(final Object content) {
-		return CompareMatcher.isSimilarTo(content)
-				.ignoreWhitespace();
 	}
 }

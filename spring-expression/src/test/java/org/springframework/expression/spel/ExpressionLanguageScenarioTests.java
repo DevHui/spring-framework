@@ -16,15 +16,7 @@
 
 package org.springframework.expression.spel;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.expression.AccessException;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.EvaluationException;
@@ -35,7 +27,15 @@ import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import static org.junit.Assert.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 ///CLOVER:OFF
 
@@ -62,6 +62,10 @@ import static org.junit.Assert.*;
  */
 public class ExpressionLanguageScenarioTests extends AbstractExpressionTests {
 
+	public static String repeat(String s) {
+		return s + s;
+	}
+
 	/**
 	 * Scenario: using the standard infrastructure and running simple expression evaluation.
 	 */
@@ -79,8 +83,7 @@ public class ExpressionLanguageScenarioTests extends AbstractExpressionTests {
 
 			assertEquals("hello world", value);
 			assertEquals(String.class, value.getClass());
-		}
-		catch (EvaluationException | ParseException ex) {
+		} catch (EvaluationException | ParseException ex) {
 			ex.printStackTrace();
 			fail("Unexpected Exception: " + ex.getMessage());
 		}
@@ -95,10 +98,10 @@ public class ExpressionLanguageScenarioTests extends AbstractExpressionTests {
 		SpelExpressionParser parser = new SpelExpressionParser();
 		// Use the standard evaluation context
 		StandardEvaluationContext ctx = new StandardEvaluationContext();
-		ctx.setVariable("favouriteColour","blue");
+		ctx.setVariable("favouriteColour", "blue");
 		List<Integer> primes = new ArrayList<>();
-		primes.addAll(Arrays.asList(2,3,5,7,11,13,17));
-		ctx.setVariable("primes",primes);
+		primes.addAll(Arrays.asList(2, 3, 5, 7, 11, 13, 17));
+		ctx.setVariable("primes", primes);
 
 		Expression expr = parser.parseRaw("#favouriteColour");
 		Object value = expr.getValue(ctx);
@@ -112,14 +115,6 @@ public class ExpressionLanguageScenarioTests extends AbstractExpressionTests {
 		expr = parser.parseRaw("#primes.?[#this>10]");
 		value = expr.getValue(ctx);
 		assertEquals("[11, 13, 17]", value.toString());
-	}
-
-
-	static class TestClass {
-		public String str;
-		private int property;
-		public int getProperty() { return property; }
-		public void setProperty(int i) { property = i; }
 	}
 
 	/**
@@ -163,10 +158,8 @@ public class ExpressionLanguageScenarioTests extends AbstractExpressionTests {
 		value = expr.getValue(ctx);
 		expr = parser.parseRaw("property");
 		value = expr.getValue(ctx);
-		assertEquals(4,value);
+		assertEquals(4, value);
 	}
-
-	public static String repeat(String s) { return s+s; }
 
 	/**
 	 * Scenario: using your own java methods and calling them from the expression
@@ -178,14 +171,13 @@ public class ExpressionLanguageScenarioTests extends AbstractExpressionTests {
 			SpelExpressionParser parser = new SpelExpressionParser();
 			// Use the standard evaluation context
 			StandardEvaluationContext ctx = new StandardEvaluationContext();
-			ctx.registerFunction("repeat",ExpressionLanguageScenarioTests.class.getDeclaredMethod("repeat",String.class));
+			ctx.registerFunction("repeat", ExpressionLanguageScenarioTests.class.getDeclaredMethod("repeat", String.class));
 
 			Expression expr = parser.parseRaw("#repeat('hello')");
 			Object value = expr.getValue(ctx);
 			assertEquals("hellohello", value);
 
-		}
-		catch (EvaluationException | ParseException ex) {
+		} catch (EvaluationException | ParseException ex) {
 			ex.printStackTrace();
 			fail("Unexpected Exception: " + ex.getMessage());
 		}
@@ -209,8 +201,7 @@ public class ExpressionLanguageScenarioTests extends AbstractExpressionTests {
 		try {
 			expr.setValue(ctx, Color.blue);
 			fail("Should not be allowed to set oranges to be blue !");
-		}
-		catch (SpelEvaluationException ee) {
+		} catch (SpelEvaluationException ee) {
 			assertEquals(SpelMessage.PROPERTY_OR_FIELD_NOT_WRITABLE_ON_NULL, ee.getMessageCode());
 		}
 	}
@@ -230,12 +221,23 @@ public class ExpressionLanguageScenarioTests extends AbstractExpressionTests {
 		try {
 			expr.setValue(ctx, Color.blue);
 			fail("Should not be allowed to set peas to be blue !");
-		}
-		catch (SpelEvaluationException ee) {
+		} catch (SpelEvaluationException ee) {
 			assertEquals(SpelMessage.PROPERTY_OR_FIELD_NOT_WRITABLE_ON_NULL, ee.getMessageCode());
 		}
 	}
 
+	static class TestClass {
+		public String str;
+		private int property;
+
+		public int getProperty() {
+			return property;
+		}
+
+		public void setProperty(int i) {
+			property = i;
+		}
+	}
 
 	/**
 	 * Regardless of the current context object, or root context object, this resolver can tell you what colour a fruit is !
@@ -243,12 +245,12 @@ public class ExpressionLanguageScenarioTests extends AbstractExpressionTests {
 	 */
 	private static class FruitColourAccessor implements PropertyAccessor {
 
-		private static Map<String,Color> propertyMap = new HashMap<>();
+		private static Map<String, Color> propertyMap = new HashMap<>();
 
 		static {
-			propertyMap.put("banana",Color.yellow);
-			propertyMap.put("apple",Color.red);
-			propertyMap.put("orange",Color.orange);
+			propertyMap.put("banana", Color.yellow);
+			propertyMap.put("apple", Color.red);
+			propertyMap.put("orange", Color.orange);
 		}
 
 		/**
@@ -288,11 +290,11 @@ public class ExpressionLanguageScenarioTests extends AbstractExpressionTests {
 	 */
 	private static class VegetableColourAccessor implements PropertyAccessor {
 
-		private static Map<String,Color> propertyMap = new HashMap<>();
+		private static Map<String, Color> propertyMap = new HashMap<>();
 
 		static {
-			propertyMap.put("carrot",Color.orange);
-			propertyMap.put("pea",Color.green);
+			propertyMap.put("carrot", Color.orange);
+			propertyMap.put("pea", Color.green);
 		}
 
 		/**

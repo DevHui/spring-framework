@@ -16,16 +16,13 @@
 
 package org.springframework.web.servlet.mvc.method;
 
-import java.lang.reflect.Method;
-
 import org.junit.Test;
-
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerMethodMappingNamingStrategy;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
 
 /**
  * Unit tests for

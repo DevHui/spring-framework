@@ -16,15 +16,15 @@
 
 package org.springframework.cglib.core;
 
-import java.lang.reflect.Method;
-import java.security.ProtectionDomain;
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.asm.ClassVisitor;
 import org.springframework.asm.Label;
 import org.springframework.asm.Type;
 import org.springframework.cglib.core.internal.CustomizerRegistry;
+
+import java.lang.reflect.Method;
+import java.security.ProtectionDomain;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Generates classes to handle multi-valued keys, for use in things such as Maps and Sets.
@@ -52,6 +52,7 @@ import org.springframework.cglib.core.internal.CustomizerRegistry;
  * <b>Note:</b>
  * <code>hashCode</code> equality between two keys <code>key1</code> and <code>key2</code> is only guaranteed if
  * <code>key1.equals(key2)</code> <i>and</i> the keys were produced by the same factory.
+ *
  * @version $Id: KeyFactory.java,v 1.26 2006/03/05 02:43:19 herbyderby Exp $
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -59,28 +60,64 @@ abstract public class KeyFactory {
 
 	private static final Signature GET_NAME =
 			TypeUtils.parseSignature("String getName()");
+	public static final Customizer CLASS_BY_NAME = new Customizer() {
+		public void customize(CodeEmitter e, Type type) {
+			if (type.equals(Constants.TYPE_CLASS)) {
+				e.invoke_virtual(Constants.TYPE_CLASS, GET_NAME);
+			}
+		}
+	};
+	public static final FieldTypeCustomizer STORE_CLASS_AS_STRING = new FieldTypeCustomizer() {
+		public void customize(CodeEmitter e, int index, Type type) {
+			if (type.equals(Constants.TYPE_CLASS)) {
+				e.invoke_virtual(Constants.TYPE_CLASS, GET_NAME);
+			}
+		}
 
+		public Type getOutType(int index, Type type) {
+			if (type.equals(Constants.TYPE_CLASS)) {
+				return Constants.TYPE_STRING;
+			}
+			return type;
+		}
+	};
 	private static final Signature GET_CLASS =
 			TypeUtils.parseSignature("Class getClass()");
-
+	/**
+	 * @deprecated this customizer might result in unexpected class leak since key object still holds a strong reference to the Object and class.
+	 * It is recommended to have pre-processing method that would strip Objects and represent Classes as Strings
+	 */
+	@Deprecated
+	public static final Customizer OBJECT_BY_CLASS = new Customizer() {
+		public void customize(CodeEmitter e, Type type) {
+			e.invoke_virtual(Constants.TYPE_OBJECT, GET_CLASS);
+		}
+	};
 	private static final Signature HASH_CODE =
 			TypeUtils.parseSignature("int hashCode()");
-
 	private static final Signature EQUALS =
 			TypeUtils.parseSignature("boolean equals(Object)");
-
 	private static final Signature TO_STRING =
 			TypeUtils.parseSignature("String toString()");
-
 	private static final Signature APPEND_STRING =
 			TypeUtils.parseSignature("StringBuffer append(String)");
-
 	private static final Type KEY_FACTORY =
 			TypeUtils.parseType("org.springframework.cglib.core.KeyFactory");
-
 	private static final Signature GET_SORT =
 			TypeUtils.parseSignature("int getSort()");
-
+	/**
+	 * {@link Type#hashCode()} is very expensive as it traverses full descriptor to calculate hash code.
+	 * This customizer uses {@link Type#getSort()} as a hash code.
+	 */
+	public static final HashCodeCustomizer HASH_ASM_TYPE = new HashCodeCustomizer() {
+		public boolean customize(CodeEmitter e, Type type) {
+			if (Constants.TYPE_TYPE.equals(type)) {
+				e.invoke_virtual(type, GET_SORT);
+				return true;
+			}
+			return false;
+		}
+	};
 	//generated numbers:
 	private final static int PRIMES[] = {
 			11, 73, 179, 331,
@@ -96,54 +133,6 @@ abstract public class KeyFactory {
 			74391461, 102123817, 140194277, 192456917,
 			264202273, 362693231, 497900099, 683510293,
 			938313161, 1288102441, 1768288259};
-
-
-	public static final Customizer CLASS_BY_NAME = new Customizer() {
-		public void customize(CodeEmitter e, Type type) {
-			if (type.equals(Constants.TYPE_CLASS)) {
-				e.invoke_virtual(Constants.TYPE_CLASS, GET_NAME);
-			}
-		}
-	};
-
-	public static final FieldTypeCustomizer STORE_CLASS_AS_STRING = new FieldTypeCustomizer() {
-		public void customize(CodeEmitter e, int index, Type type) {
-			if (type.equals(Constants.TYPE_CLASS)) {
-				e.invoke_virtual(Constants.TYPE_CLASS, GET_NAME);
-			}
-		}
-		public Type getOutType(int index, Type type) {
-			if (type.equals(Constants.TYPE_CLASS)) {
-				return Constants.TYPE_STRING;
-			}
-			return type;
-		}
-	};
-
-	/**
-	 * {@link Type#hashCode()} is very expensive as it traverses full descriptor to calculate hash code.
-	 * This customizer uses {@link Type#getSort()} as a hash code.
-	 */
-	public static final HashCodeCustomizer HASH_ASM_TYPE = new HashCodeCustomizer() {
-		public boolean customize(CodeEmitter e, Type type) {
-			if (Constants.TYPE_TYPE.equals(type)) {
-				e.invoke_virtual(type, GET_SORT);
-				return true;
-			}
-			return false;
-		}
-	};
-
-	/**
-	 * @deprecated this customizer might result in unexpected class leak since key object still holds a strong reference to the Object and class.
-	 * It is recommended to have pre-processing method that would strip Objects and represent Classes as Strings
-	 */
-	@Deprecated
-	public static final Customizer OBJECT_BY_CLASS = new Customizer() {
-		public void customize(CodeEmitter e, Type type) {
-			e.invoke_virtual(Constants.TYPE_OBJECT, GET_CLASS);
-		}
-	};
 
 	protected KeyFactory() {
 	}
@@ -165,7 +154,7 @@ abstract public class KeyFactory {
 	}
 
 	public static KeyFactory create(ClassLoader loader, Class keyInterface, KeyFactoryCustomizer customizer,
-			List<KeyFactoryCustomizer> next) {
+									List<KeyFactoryCustomizer> next) {
 		Generator gen = new Generator();
 		gen.setInterface(keyInterface);
 		// SPRING PATCH BEGIN

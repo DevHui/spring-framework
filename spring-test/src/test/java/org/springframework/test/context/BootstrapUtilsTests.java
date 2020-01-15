@@ -16,18 +16,16 @@
 
 package org.springframework.test.context;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.test.context.support.DefaultTestContextBootstrapper;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebTestContextBootstrapper;
 
-import static org.junit.Assert.assertEquals;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.context.BootstrapUtils.resolveTestContextBootstrapper;
@@ -41,10 +39,9 @@ import static org.springframework.test.context.BootstrapUtils.resolveTestContext
  */
 public class BootstrapUtilsTests {
 
-	private final CacheAwareContextLoaderDelegate delegate = mock(CacheAwareContextLoaderDelegate.class);
-
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
+	private final CacheAwareContextLoaderDelegate delegate = mock(CacheAwareContextLoaderDelegate.class);
 
 	@Test
 	public void resolveTestContextBootstrapperWithEmptyBootstrapWithAnnotation() {
@@ -59,7 +56,7 @@ public class BootstrapUtilsTests {
 	@Test
 	public void resolveTestContextBootstrapperWithDoubleMetaBootstrapWithAnnotations() {
 		BootstrapContext bootstrapContext = BootstrapTestUtils.buildBootstrapContext(
-			DoubleMetaAnnotatedBootstrapWithAnnotationClass.class, delegate);
+				DoubleMetaAnnotatedBootstrapWithAnnotationClass.class, delegate);
 
 		exception.expect(IllegalStateException.class);
 		exception.expectMessage("Configuration error: found multiple declarations of @BootstrapWith");
@@ -116,53 +113,68 @@ public class BootstrapUtilsTests {
 
 	// -------------------------------------------------------------------
 
-	static class FooBootstrapper extends DefaultTestContextBootstrapper {}
-
-	static class BarBootstrapper extends DefaultTestContextBootstrapper {}
-
-	static class EnigmaBootstrapper extends DefaultTestContextBootstrapper {}
+	@BootstrapWith(FooBootstrapper.class)
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface BootWithFoo {
+	}
 
 	@BootstrapWith(FooBootstrapper.class)
 	@Retention(RetentionPolicy.RUNTIME)
-	@interface BootWithFoo {}
-
-	@BootstrapWith(FooBootstrapper.class)
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface BootWithFooAgain {}
+	@interface BootWithFooAgain {
+	}
 
 	@BootstrapWith(BarBootstrapper.class)
 	@Retention(RetentionPolicy.RUNTIME)
-	@interface BootWithBar {}
+	@interface BootWithBar {
+	}
+
+	static class FooBootstrapper extends DefaultTestContextBootstrapper {
+	}
+
+	static class BarBootstrapper extends DefaultTestContextBootstrapper {
+	}
+
+	static class EnigmaBootstrapper extends DefaultTestContextBootstrapper {
+	}
 
 	// Invalid
 	@BootstrapWith
-	static class EmptyBootstrapWithAnnotationClass {}
+	static class EmptyBootstrapWithAnnotationClass {
+	}
 
 	// Invalid
 	@BootWithBar
 	@BootWithFoo
-	static class DoubleMetaAnnotatedBootstrapWithAnnotationClass {}
+	static class DoubleMetaAnnotatedBootstrapWithAnnotationClass {
+	}
 
-	static class NonAnnotatedClass {}
+	static class NonAnnotatedClass {
+	}
 
 	@BootstrapWith(FooBootstrapper.class)
-	static class DirectBootstrapWithAnnotationClass {}
+	static class DirectBootstrapWithAnnotationClass {
+	}
 
-	static class InheritedBootstrapWithAnnotationClass extends DirectBootstrapWithAnnotationClass {}
+	static class InheritedBootstrapWithAnnotationClass extends DirectBootstrapWithAnnotationClass {
+	}
 
 	@BootWithBar
-	static class MetaAnnotatedBootstrapWithAnnotationClass {}
+	static class MetaAnnotatedBootstrapWithAnnotationClass {
+	}
 
 	@BootWithFoo
 	@BootWithFooAgain
-	static class DuplicateMetaAnnotatedBootstrapWithAnnotationClass {}
-	
+	static class DuplicateMetaAnnotatedBootstrapWithAnnotationClass {
+	}
+
 	@BootWithFoo
 	@BootWithBar
 	@BootstrapWith(EnigmaBootstrapper.class)
-	static class LocalDeclarationAndMetaAnnotatedBootstrapWithAnnotationClass {}
-	
+	static class LocalDeclarationAndMetaAnnotatedBootstrapWithAnnotationClass {
+	}
+
 	@WebAppConfiguration
-	static class WebAppConfigurationAnnotatedClass {}
+	static class WebAppConfigurationAnnotatedClass {
+	}
 
 }

@@ -16,26 +16,10 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.IntPredicate;
-
-import javax.net.ssl.SSLSession;
-
 import io.undertow.connector.ByteBufferPool;
 import io.undertow.connector.PooledByteBuffer;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
-import org.xnio.channels.StreamSourceChannel;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -48,6 +32,20 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.xnio.channels.StreamSourceChannel;
+import reactor.core.publisher.Flux;
+
+import javax.net.ssl.SSLSession;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntPredicate;
 
 /**
  * Adapt {@link ServerHttpRequest} to the Undertow {@link HttpServerExchange}.
@@ -131,82 +129,6 @@ class UndertowServerHttpRequest extends AbstractServerHttpRequest {
 		return ObjectUtils.getIdentityHexString(this.exchange.getConnection());
 	}
 
-
-	private class RequestBodyPublisher extends AbstractListenerReadPublisher<DataBuffer> {
-
-		private final StreamSourceChannel channel;
-
-		private final DataBufferFactory bufferFactory;
-
-		private final ByteBufferPool byteBufferPool;
-
-		public RequestBodyPublisher(HttpServerExchange exchange, DataBufferFactory bufferFactory) {
-			super(UndertowServerHttpRequest.this.getLogPrefix());
-			this.channel = exchange.getRequestChannel();
-			this.bufferFactory = bufferFactory;
-			this.byteBufferPool = exchange.getConnection().getByteBufferPool();
-		}
-
-		private void registerListeners(HttpServerExchange exchange) {
-			exchange.addExchangeCompleteListener((ex, next) -> {
-				onAllDataRead();
-				next.proceed();
-			});
-			this.channel.getReadSetter().set(c -> onDataAvailable());
-			this.channel.getCloseSetter().set(c -> onAllDataRead());
-			this.channel.resumeReads();
-		}
-
-		@Override
-		protected void checkOnDataAvailable() {
-			this.channel.resumeReads();
-			// We are allowed to try, it will return null if data is not available
-			onDataAvailable();
-		}
-
-		@Override
-		protected void readingPaused() {
-			this.channel.suspendReads();
-		}
-
-		@Override
-		@Nullable
-		protected DataBuffer read() throws IOException {
-			PooledByteBuffer pooledByteBuffer = this.byteBufferPool.allocate();
-			boolean release = true;
-			try {
-				ByteBuffer byteBuffer = pooledByteBuffer.getBuffer();
-				int read = this.channel.read(byteBuffer);
-
-				if (rsReadLogger.isTraceEnabled()) {
-					rsReadLogger.trace(getLogPrefix() + "Read " + read + (read != -1 ? " bytes" : ""));
-				}
-
-				if (read > 0) {
-					byteBuffer.flip();
-					DataBuffer dataBuffer = this.bufferFactory.wrap(byteBuffer);
-					release = false;
-					return new UndertowDataBuffer(dataBuffer, pooledByteBuffer);
-				}
-				else if (read == -1) {
-					onAllDataRead();
-				}
-				return null;
-			}
-			finally {
-				if (release && pooledByteBuffer.isOpen()) {
-					pooledByteBuffer.close();
-				}
-			}
-		}
-
-		@Override
-		protected void discardData() {
-			// Nothing to discard since we pass data buffers on immediately..
-		}
-	}
-
-
 	private static class UndertowDataBuffer implements PooledDataBuffer {
 
 		private final DataBuffer dataBuffer;
@@ -222,7 +144,7 @@ class UndertowServerHttpRequest extends AbstractServerHttpRequest {
 		}
 
 		private UndertowDataBuffer(DataBuffer dataBuffer, PooledByteBuffer pooledByteBuffer,
-				AtomicInteger refCount) {
+								   AtomicInteger refCount) {
 			this.refCount = refCount;
 			this.dataBuffer = dataBuffer;
 			this.pooledByteBuffer = pooledByteBuffer;
@@ -246,8 +168,7 @@ class UndertowServerHttpRequest extends AbstractServerHttpRequest {
 			if (refCount == 0) {
 				try {
 					return DataBufferUtils.release(this.dataBuffer);
-				}
-				finally {
+				} finally {
 					this.pooledByteBuffer.close();
 				}
 			}
@@ -404,6 +325,78 @@ class UndertowServerHttpRequest extends AbstractServerHttpRequest {
 		@Override
 		public OutputStream asOutputStream() {
 			return this.dataBuffer.asOutputStream();
+		}
+	}
+
+	private class RequestBodyPublisher extends AbstractListenerReadPublisher<DataBuffer> {
+
+		private final StreamSourceChannel channel;
+
+		private final DataBufferFactory bufferFactory;
+
+		private final ByteBufferPool byteBufferPool;
+
+		public RequestBodyPublisher(HttpServerExchange exchange, DataBufferFactory bufferFactory) {
+			super(UndertowServerHttpRequest.this.getLogPrefix());
+			this.channel = exchange.getRequestChannel();
+			this.bufferFactory = bufferFactory;
+			this.byteBufferPool = exchange.getConnection().getByteBufferPool();
+		}
+
+		private void registerListeners(HttpServerExchange exchange) {
+			exchange.addExchangeCompleteListener((ex, next) -> {
+				onAllDataRead();
+				next.proceed();
+			});
+			this.channel.getReadSetter().set(c -> onDataAvailable());
+			this.channel.getCloseSetter().set(c -> onAllDataRead());
+			this.channel.resumeReads();
+		}
+
+		@Override
+		protected void checkOnDataAvailable() {
+			this.channel.resumeReads();
+			// We are allowed to try, it will return null if data is not available
+			onDataAvailable();
+		}
+
+		@Override
+		protected void readingPaused() {
+			this.channel.suspendReads();
+		}
+
+		@Override
+		@Nullable
+		protected DataBuffer read() throws IOException {
+			PooledByteBuffer pooledByteBuffer = this.byteBufferPool.allocate();
+			boolean release = true;
+			try {
+				ByteBuffer byteBuffer = pooledByteBuffer.getBuffer();
+				int read = this.channel.read(byteBuffer);
+
+				if (rsReadLogger.isTraceEnabled()) {
+					rsReadLogger.trace(getLogPrefix() + "Read " + read + (read != -1 ? " bytes" : ""));
+				}
+
+				if (read > 0) {
+					byteBuffer.flip();
+					DataBuffer dataBuffer = this.bufferFactory.wrap(byteBuffer);
+					release = false;
+					return new UndertowDataBuffer(dataBuffer, pooledByteBuffer);
+				} else if (read == -1) {
+					onAllDataRead();
+				}
+				return null;
+			} finally {
+				if (release && pooledByteBuffer.isOpen()) {
+					pooledByteBuffer.close();
+				}
+			}
+		}
+
+		@Override
+		protected void discardData() {
+			// Nothing to discard since we pass data buffers on immediately..
 		}
 	}
 

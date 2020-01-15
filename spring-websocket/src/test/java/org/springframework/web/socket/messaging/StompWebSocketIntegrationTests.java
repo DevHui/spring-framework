@@ -16,18 +16,10 @@
 
 package org.springframework.web.socket.messaging;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -57,8 +49,15 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.server.HandshakeHandler;
 
-import static org.junit.Assert.*;
-import static org.springframework.web.socket.messaging.StompTextMessageBuilder.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertTrue;
+import static org.springframework.web.socket.messaging.StompTextMessageBuilder.create;
 
 /**
  * Integration tests with annotated message-handling methods.
@@ -73,7 +72,7 @@ public class StompWebSocketIntegrationTests extends AbstractWebSocketIntegration
 
 	@Parameters(name = "server [{0}], client [{1}]")
 	public static Object[][] arguments() {
-		return new Object[][] {
+		return new Object[][]{
 				{new JettyWebSocketTestServer(), new JettyWebSocketClient()},
 				{new TomcatWebSocketTestServer(), new StandardWebSocketClient()},
 				{new UndertowTestServer(), new StandardWebSocketClient()}
@@ -83,7 +82,7 @@ public class StompWebSocketIntegrationTests extends AbstractWebSocketIntegration
 
 	@Override
 	protected Class<?>[] getAnnotatedConfigClasses() {
-		return new Class<?>[] {TestMessageBrokerConfiguration.class, TestMessageBrokerConfigurer.class};
+		return new Class<?>[]{TestMessageBrokerConfiguration.class, TestMessageBrokerConfigurer.class};
 	}
 
 
@@ -95,8 +94,7 @@ public class StompWebSocketIntegrationTests extends AbstractWebSocketIntegration
 		SimpleController controller = this.wac.getBean(SimpleController.class);
 		try {
 			assertTrue(controller.latch.await(TIMEOUT, TimeUnit.SECONDS));
-		}
-		finally {
+		} finally {
 			session.close();
 		}
 	}
@@ -114,8 +112,7 @@ public class StompWebSocketIntegrationTests extends AbstractWebSocketIntegration
 
 		try {
 			assertTrue(clientHandler.latch.await(TIMEOUT, TimeUnit.SECONDS));
-		}
-		finally {
+		} finally {
 			session.close();
 		}
 	}
@@ -134,8 +131,7 @@ public class StompWebSocketIntegrationTests extends AbstractWebSocketIntegration
 
 			String payload = clientHandler.actual.get(1).getPayload();
 			assertTrue("Expected STOMP MESSAGE, got " + payload, payload.startsWith("MESSAGE\n"));
-		}
-		finally {
+		} finally {
 			session.close();
 		}
 	}
@@ -154,8 +150,7 @@ public class StompWebSocketIntegrationTests extends AbstractWebSocketIntegration
 			String payload = clientHandler.actual.get(1).getPayload();
 			assertTrue("Expected STOMP destination=/app/number, got " + payload, payload.contains(destHeader));
 			assertTrue("Expected STOMP Payload=42, got " + payload, payload.contains("42"));
-		}
-		finally {
+		} finally {
 			session.close();
 		}
 	}
@@ -176,8 +171,7 @@ public class StompWebSocketIntegrationTests extends AbstractWebSocketIntegration
 			assertTrue(payload.startsWith("MESSAGE\n"));
 			assertTrue(payload.contains("destination:/user/queue/error\n"));
 			assertTrue(payload.endsWith("Got error: Bad input\0"));
-		}
-		finally {
+		} finally {
 			session.close();
 		}
 	}
@@ -199,8 +193,7 @@ public class StompWebSocketIntegrationTests extends AbstractWebSocketIntegration
 			assertTrue(payload.startsWith("MESSAGE\n"));
 			assertTrue(payload.contains("destination:/topic/scopedBeanValue\n"));
 			assertTrue(payload.endsWith("55\0"));
-		}
-		finally {
+		} finally {
 			session.close();
 		}
 	}
@@ -211,6 +204,11 @@ public class StompWebSocketIntegrationTests extends AbstractWebSocketIntegration
 	private @interface IntegrationTestController {
 	}
 
+
+	interface ScopedBean {
+
+		String getValue();
+	}
 
 	@IntegrationTestController
 	static class SimpleController {
@@ -234,7 +232,6 @@ public class StompWebSocketIntegrationTests extends AbstractWebSocketIntegration
 		}
 	}
 
-
 	@IntegrationTestController
 	static class IncrementController {
 
@@ -248,7 +245,6 @@ public class StompWebSocketIntegrationTests extends AbstractWebSocketIntegration
 			return 42;
 		}
 	}
-
 
 	@IntegrationTestController
 	static class ScopedBeanController {
@@ -265,13 +261,6 @@ public class StompWebSocketIntegrationTests extends AbstractWebSocketIntegration
 			return this.scopedBean.getValue();
 		}
 	}
-
-
-	interface ScopedBean {
-
-		String getValue();
-	}
-
 
 	static class ScopedBeanImpl implements ScopedBean {
 

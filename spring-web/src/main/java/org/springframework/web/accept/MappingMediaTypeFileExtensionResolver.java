@@ -16,6 +16,9 @@
 
 package org.springframework.web.accept;
 
+import org.springframework.http.MediaType;
+import org.springframework.lang.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,9 +27,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 
 /**
  * An implementation of {@code MediaTypeFileExtensionResolver} that maintains
@@ -104,6 +104,7 @@ public class MappingMediaTypeFileExtensionResolver implements MediaTypeFileExten
 
 	/**
 	 * Use this method for a reverse lookup from extension to MediaType.
+	 *
 	 * @return a MediaType for the key, or {@code null} if none found
 	 */
 	@Nullable

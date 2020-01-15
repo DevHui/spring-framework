@@ -16,8 +16,6 @@
 
 package org.springframework.web.servlet.support;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -27,6 +25,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.UrlPathHelper;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * UriComponentsBuilder with additional static factory methods to create links
@@ -50,18 +50,20 @@ public class ServletUriComponentsBuilder extends UriComponentsBuilder {
 
 	/**
 	 * Default constructor. Protected to prevent direct instantiation.
+	 *
 	 * @see #fromContextPath(HttpServletRequest)
 	 * @see #fromServletMapping(HttpServletRequest)
 	 * @see #fromRequest(HttpServletRequest)
 	 * @see #fromCurrentContextPath()
 	 * @see #fromCurrentServletMapping()
- 	 * @see #fromCurrentRequest()
+	 * @see #fromCurrentRequest()
 	 */
 	protected ServletUriComponentsBuilder() {
 	}
 
 	/**
 	 * Create a deep copy of the given ServletUriComponentsBuilder.
+	 *
 	 * @param other the other builder to copy from
 	 */
 	protected ServletUriComponentsBuilder(ServletUriComponentsBuilder other) {
@@ -198,6 +200,7 @@ public class ServletUriComponentsBuilder extends UriComponentsBuilder {
 	 * String uri = builder.path("/pages/1.{ext}").buildAndExpand(ext).toUriString();
 	 * assertEquals("http://www.foo.com/rest/books/6/pages/1.json", result);
 	 * </pre>
+	 *
 	 * @return the removed path extension for possible re-use, or {@code null}
 	 * @since 4.0
 	 */

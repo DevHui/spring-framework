@@ -16,10 +16,6 @@
 
 package org.springframework.web.socket.config.annotation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.Assert;
@@ -31,6 +27,10 @@ import org.springframework.web.socket.sockjs.transport.TransportHandler;
 import org.springframework.web.socket.sockjs.transport.TransportHandlingSockJsService;
 import org.springframework.web.socket.sockjs.transport.handler.DefaultSockJsService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * A helper class for configuring SockJS fallback options for use with an
  * {@link org.springframework.web.socket.config.annotation.EnableWebSocket} and
@@ -41,38 +41,26 @@ import org.springframework.web.socket.sockjs.transport.handler.DefaultSockJsServ
  */
 public class SockJsServiceRegistration {
 
+	private final List<TransportHandler> transportHandlers = new ArrayList<>();
+	private final List<TransportHandler> transportHandlerOverrides = new ArrayList<>();
+	private final List<HandshakeInterceptor> interceptors = new ArrayList<>();
+	private final List<String> allowedOrigins = new ArrayList<>();
 	@Nullable
 	private TaskScheduler scheduler;
-
 	@Nullable
 	private String clientLibraryUrl;
-
 	@Nullable
 	private Integer streamBytesLimit;
-
 	@Nullable
 	private Boolean sessionCookieNeeded;
-
 	@Nullable
 	private Long heartbeatTime;
-
 	@Nullable
 	private Long disconnectDelay;
-
 	@Nullable
 	private Integer httpMessageCacheSize;
-
 	@Nullable
 	private Boolean webSocketEnabled;
-
-	private final List<TransportHandler> transportHandlers = new ArrayList<>();
-
-	private final List<TransportHandler> transportHandlerOverrides = new ArrayList<>();
-
-	private final List<HandshakeInterceptor> interceptors = new ArrayList<>();
-
-	private final List<String> allowedOrigins = new ArrayList<>();
-
 	@Nullable
 	private Boolean suppressCors;
 
@@ -81,16 +69,6 @@ public class SockJsServiceRegistration {
 
 
 	public SockJsServiceRegistration() {
-	}
-
-
-	/**
-	 * A scheduler instance to use for scheduling SockJS heart-beats.
-	 */
-	public SockJsServiceRegistration setTaskScheduler(TaskScheduler scheduler) {
-		Assert.notNull(scheduler, "TaskScheduler is required");
-		this.scheduler = scheduler;
-		return this;
 	}
 
 	/**
@@ -222,6 +200,7 @@ public class SockJsServiceRegistration {
 
 	/**
 	 * Configure allowed {@code Origin} header values.
+	 *
 	 * @since 4.1.2
 	 */
 	protected SockJsServiceRegistration setAllowedOrigins(String... allowedOrigins) {
@@ -236,6 +215,7 @@ public class SockJsServiceRegistration {
 	 * This option can be used to disable automatic addition of CORS headers for
 	 * SockJS requests.
 	 * <p>The default value is "false".
+	 *
 	 * @since 4.1.2
 	 */
 	public SockJsServiceRegistration setSupressCors(boolean suppressCors) {
@@ -247,6 +227,7 @@ public class SockJsServiceRegistration {
 	 * The codec to use for encoding and decoding SockJS messages.
 	 * <p>By default {@code Jackson2SockJsMessageCodec} is used requiring the
 	 * Jackson library to be present on the classpath.
+	 *
 	 * @param codec the codec to use.
 	 * @since 4.1
 	 */
@@ -297,6 +278,15 @@ public class SockJsServiceRegistration {
 	@Nullable
 	protected TaskScheduler getTaskScheduler() {
 		return this.scheduler;
+	}
+
+	/**
+	 * A scheduler instance to use for scheduling SockJS heart-beats.
+	 */
+	public SockJsServiceRegistration setTaskScheduler(TaskScheduler scheduler) {
+		Assert.notNull(scheduler, "TaskScheduler is required");
+		this.scheduler = scheduler;
+		return this;
 	}
 
 	private TransportHandlingSockJsService createSockJsService() {

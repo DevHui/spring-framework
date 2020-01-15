@@ -16,21 +16,22 @@
 
 package org.springframework.messaging.core;
 
-import java.io.Writer;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.converter.GenericMessageConverter;
 import org.springframework.messaging.converter.MessageConversionException;
 import org.springframework.messaging.support.GenericMessage;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.io.Writer;
+
+import static org.hamcrest.CoreMatchers.isA;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for receiving operations in {@link AbstractMessagingTemplate}.
@@ -117,13 +118,11 @@ public class MessageReceivingTemplateTests {
 		this.template.setMessageConverter(new GenericMessageConverter());
 		try {
 			this.template.receiveAndConvert(Writer.class);
-		}
-		catch (MessageConversionException ex) {
+		} catch (MessageConversionException ex) {
 			assertTrue("Invalid exception message '" + ex.getMessage() + "'", ex.getMessage().contains("payload"));
 			assertSame(expected, ex.getFailedMessage());
 		}
 	}
-
 
 
 	private static class TestMessagingTemplate extends AbstractMessagingTemplate<String> {

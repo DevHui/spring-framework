@@ -16,12 +16,7 @@
 
 package org.springframework.scripting.bsh;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.aop.target.dynamic.Refreshable;
 import org.springframework.context.ApplicationContext;
@@ -37,8 +32,20 @@ import org.springframework.scripting.TestBeanAwareMessenger;
 import org.springframework.scripting.support.ScriptFactoryPostProcessor;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Rob Harrop
@@ -194,8 +201,7 @@ public class BshScriptFactoryTests {
 		try {
 			new ClassPathXmlApplicationContext("org/springframework/scripting/bsh/bshBrokenContext.xml");
 			fail("Must throw exception for broken script file");
-		}
-		catch (NestedRuntimeException ex) {
+		} catch (NestedRuntimeException ex) {
 			assertTrue(ex.contains(ScriptCompilationException.class));
 		}
 	}
@@ -212,8 +218,7 @@ public class BshScriptFactoryTests {
 			Messenger messenger = (Messenger) factory.getScriptedObject(script, Messenger.class);
 			messenger.getMessage();
 			fail("Must have thrown a BshScriptUtils.BshExecutionException.");
-		}
-		catch (BshScriptUtils.BshExecutionException expected) {
+		} catch (BshScriptUtils.BshExecutionException expected) {
 		}
 	}
 
@@ -222,8 +227,7 @@ public class BshScriptFactoryTests {
 		try {
 			new BshScriptFactory(null, Messenger.class);
 			fail("Must have thrown exception by this point.");
-		}
-		catch (IllegalArgumentException expected) {
+		} catch (IllegalArgumentException expected) {
 		}
 	}
 
@@ -232,8 +236,7 @@ public class BshScriptFactoryTests {
 		try {
 			new BshScriptFactory("", Messenger.class);
 			fail("Must have thrown exception by this point.");
-		}
-		catch (IllegalArgumentException expected) {
+		} catch (IllegalArgumentException expected) {
 		}
 	}
 
@@ -242,8 +245,7 @@ public class BshScriptFactoryTests {
 		try {
 			new BshScriptFactory("\n   ", Messenger.class);
 			fail("Must have thrown exception by this point.");
-		}
-		catch (IllegalArgumentException expected) {
+		} catch (IllegalArgumentException expected) {
 		}
 	}
 

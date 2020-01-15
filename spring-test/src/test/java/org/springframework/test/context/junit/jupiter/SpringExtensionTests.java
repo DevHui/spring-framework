@@ -16,14 +16,10 @@
 
 package org.springframework.test.context.junit.jupiter;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +32,14 @@ import org.springframework.test.context.junit.jupiter.comics.Cat;
 import org.springframework.test.context.junit.jupiter.comics.Dog;
 import org.springframework.test.context.junit.jupiter.comics.Person;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Integration tests which demonstrate that the Spring TestContext Framework can
@@ -46,9 +49,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * Platform, simply run {@link SpringJUnitJupiterTestSuite} as a JUnit 4 test.
  *
  * @author Sam Brannen
- * @since 5.0
  * @see SpringExtension
  * @see ComposedSpringExtensionTests
+ * @since 5.0
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -186,7 +189,7 @@ class SpringExtensionTests {
 
 	@Test
 	void junitAndSpringMethodInjectionCombined(@Autowired Cat kittyCat, TestInfo testInfo, ApplicationContext context,
-			TestReporter testReporter) {
+											   TestReporter testReporter) {
 
 		assertNotNull(testInfo, "TestInfo should have been injected by JUnit");
 		assertNotNull(testReporter, "TestReporter should have been injected by JUnit");

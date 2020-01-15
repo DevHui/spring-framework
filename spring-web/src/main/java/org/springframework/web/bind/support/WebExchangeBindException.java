@@ -16,10 +16,6 @@
 
 package org.springframework.web.bind.support;
 
-import java.beans.PropertyEditor;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
@@ -30,6 +26,10 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.server.ServerWebInputException;
+
+import java.beans.PropertyEditor;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A specialization of {@link ServerWebInputException} thrown when after data
@@ -55,6 +55,7 @@ public class WebExchangeBindException extends ServerWebInputException implements
 	/**
 	 * Return the BindingResult that this BindException wraps.
 	 * Will typically be a BeanPropertyBindingResult.
+	 *
 	 * @see BeanPropertyBindingResult
 	 */
 	public final BindingResult getBindingResult() {
@@ -68,13 +69,13 @@ public class WebExchangeBindException extends ServerWebInputException implements
 	}
 
 	@Override
-	public void setNestedPath(String nestedPath) {
-		this.bindingResult.setNestedPath(nestedPath);
+	public String getNestedPath() {
+		return this.bindingResult.getNestedPath();
 	}
 
 	@Override
-	public String getNestedPath() {
-		return this.bindingResult.getNestedPath();
+	public void setNestedPath(String nestedPath) {
+		this.bindingResult.setNestedPath(nestedPath);
 	}
 
 	@Override

@@ -16,12 +16,6 @@
 
 package org.springframework.remoting.support;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executor;
-
 import com.sun.net.httpserver.Authenticator;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpContext;
@@ -29,10 +23,15 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * {@link org.springframework.beans.factory.FactoryBean} that creates a simple
@@ -47,9 +46,9 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * @author Juergen Hoeller
  * @author Arjen Poutsma
- * @since 2.5.1
  * @see #setPort
  * @see #setContexts
+ * @since 2.5.1
  * @deprecated as of Spring Framework 5.1, in favor of embedded Tomcat/Jetty/Undertow
  */
 @Deprecated
@@ -110,6 +109,7 @@ public class SimpleHttpServerFactoryBean implements FactoryBean<HttpServer>, Ini
 
 	/**
 	 * Set the JDK concurrent executor to use for dispatching incoming requests.
+	 *
 	 * @see com.sun.net.httpserver.HttpServer#setExecutor
 	 */
 	public void setExecutor(Executor executor) {
@@ -119,8 +119,9 @@ public class SimpleHttpServerFactoryBean implements FactoryBean<HttpServer>, Ini
 	/**
 	 * Register {@link com.sun.net.httpserver.HttpHandler HttpHandlers}
 	 * for specific context paths.
+	 *
 	 * @param contexts a Map with context paths as keys and HttpHandler
-	 * objects as values
+	 *                 objects as values
 	 * @see org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter
 	 * @see org.springframework.remoting.caucho.SimpleHessianServiceExporter
 	 */

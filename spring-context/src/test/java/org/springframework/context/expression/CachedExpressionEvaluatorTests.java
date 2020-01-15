@@ -16,18 +16,19 @@
 
 package org.springframework.context.expression;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.junit.Test;
-
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.ReflectionUtils;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Stephane Nicoll
@@ -76,13 +77,13 @@ public class CachedExpressionEvaluatorTests {
 			super(mockSpelExpressionParser());
 		}
 
-		public Expression getTestExpression(String expression, Method method, Class<?> type) {
-			return getExpression(this.testCache, new AnnotatedElementKey(method, type), expression);
-		}
-
 		private static SpelExpressionParser mockSpelExpressionParser() {
 			SpelExpressionParser parser = new SpelExpressionParser();
 			return spy(parser);
+		}
+
+		public Expression getTestExpression(String expression, Method method, Class<?> type) {
+			return getExpression(this.testCache, new AnnotatedElementKey(method, type), expression);
 		}
 	}
 

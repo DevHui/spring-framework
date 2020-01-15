@@ -16,12 +16,12 @@
 
 package org.springframework.orm.jpa;
 
-import javax.persistence.EntityManager;
-
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.SavepointManager;
 import org.springframework.transaction.support.ResourceHolderSupport;
 import org.springframework.util.Assert;
+
+import javax.persistence.EntityManager;
 
 /**
  * Resource holder wrapping a JPA {@link EntityManager}.
@@ -34,9 +34,9 @@ import org.springframework.util.Assert;
  * <p>Note: This is an SPI class, not intended to be used by applications.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see JpaTransactionManager
  * @see EntityManagerFactoryUtils
+ * @since 2.0
  */
 public class EntityManagerHolder extends ResourceHolderSupport {
 
@@ -59,16 +59,12 @@ public class EntityManagerHolder extends ResourceHolderSupport {
 		return this.entityManager;
 	}
 
-	protected void setTransactionActive(boolean transactionActive) {
-		this.transactionActive = transactionActive;
-	}
-
 	protected boolean isTransactionActive() {
 		return this.transactionActive;
 	}
 
-	protected void setSavepointManager(@Nullable SavepointManager savepointManager) {
-		this.savepointManager = savepointManager;
+	protected void setTransactionActive(boolean transactionActive) {
+		this.transactionActive = transactionActive;
 	}
 
 	@Nullable
@@ -76,6 +72,9 @@ public class EntityManagerHolder extends ResourceHolderSupport {
 		return this.savepointManager;
 	}
 
+	protected void setSavepointManager(@Nullable SavepointManager savepointManager) {
+		this.savepointManager = savepointManager;
+	}
 
 	@Override
 	public void clear() {

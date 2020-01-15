@@ -16,24 +16,26 @@
 
 package org.springframework.web.socket.handler;
 
-import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.junit.Test;
-
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator.OverflowStrategy;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for {@link ConcurrentWebSocketSessionDecorator}.
+ *
  * @author Rossen Stoyanchev
  */
 @SuppressWarnings("resource")
@@ -102,8 +104,7 @@ public class ConcurrentWebSocketSessionDecoratorTests {
 			TextMessage payload = new TextMessage("payload");
 			decorator.sendMessage(payload);
 			fail("Expected exception");
-		}
-		catch (SessionLimitExceededException ex) {
+		} catch (SessionLimitExceededException ex) {
 			String actual = ex.getMessage();
 			String regex = "Send time [\\d]+ \\(ms\\) for session '123' exceeded the allowed limit 100";
 			assertTrue("Unexpected message: " + actual, actual.matches(regex));
@@ -119,12 +120,12 @@ public class ConcurrentWebSocketSessionDecoratorTests {
 		session.setOpen(true);
 
 		final ConcurrentWebSocketSessionDecorator decorator =
-				new ConcurrentWebSocketSessionDecorator(session, 10*1000, 1024);
+				new ConcurrentWebSocketSessionDecorator(session, 10 * 1000, 1024);
 
 		sendBlockingMessage(decorator);
 
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0 ; i < 1023; i++) {
+		for (int i = 0; i < 1023; i++) {
 			sb.append("a");
 		}
 
@@ -137,8 +138,7 @@ public class ConcurrentWebSocketSessionDecoratorTests {
 		try {
 			decorator.sendMessage(message);
 			fail("Expected exception");
-		}
-		catch (SessionLimitExceededException ex) {
+		} catch (SessionLimitExceededException ex) {
 			String actual = ex.getMessage();
 			String regex = "Buffer size [\\d]+ bytes for session '123' exceeds the allowed limit 1024";
 			assertTrue("Unexpected message: " + actual, actual.matches(regex));
@@ -154,16 +154,16 @@ public class ConcurrentWebSocketSessionDecoratorTests {
 		session.setOpen(true);
 
 		final ConcurrentWebSocketSessionDecorator decorator =
-				new ConcurrentWebSocketSessionDecorator(session, 10*1000, 1024, OverflowStrategy.DROP);
+				new ConcurrentWebSocketSessionDecorator(session, 10 * 1000, 1024, OverflowStrategy.DROP);
 
 		sendBlockingMessage(decorator);
 
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0 ; i < 1023; i++) {
+		for (int i = 0; i < 1023; i++) {
 			sb.append("a");
 		}
 
-		for (int i=0; i < 5; i++) {
+		for (int i = 0; i < 5; i++) {
 			TextMessage message = new TextMessage(sb.toString());
 			decorator.sendMessage(message);
 		}
@@ -205,8 +205,7 @@ public class ConcurrentWebSocketSessionDecoratorTests {
 			TextMessage message = new TextMessage("slow message");
 			try {
 				decorator.sendMessage(message);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		});
@@ -227,15 +226,13 @@ public class ConcurrentWebSocketSessionDecoratorTests {
 			TextMessage message = new TextMessage("slow message");
 			try {
 				session.sendMessage(message);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		});
 		BlockingSession delegate = (BlockingSession) session.getDelegate();
 		assertTrue(delegate.getSentMessageLatch().await(5, TimeUnit.SECONDS));
 	}
-
 
 
 	private static class BlockingSession extends TestWebSocketSession {
@@ -263,8 +260,7 @@ public class ConcurrentWebSocketSessionDecoratorTests {
 			try {
 				this.releaseLatch.set(new CountDownLatch(1));
 				this.releaseLatch.get().await();
-			}
-			catch (InterruptedException e) {
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}

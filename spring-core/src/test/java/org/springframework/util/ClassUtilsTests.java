@@ -16,6 +16,13 @@
 
 package org.springframework.util;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.tests.sample.objects.DerivedTestObject;
+import org.springframework.tests.sample.objects.ITestInterface;
+import org.springframework.tests.sample.objects.ITestObject;
+import org.springframework.tests.sample.objects.TestObject;
+
 import java.io.Externalizable;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -29,15 +36,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.tests.sample.objects.DerivedTestObject;
-import org.springframework.tests.sample.objects.ITestInterface;
-import org.springframework.tests.sample.objects.ITestObject;
-import org.springframework.tests.sample.objects.TestObject;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link ClassUtils}.
@@ -121,8 +124,10 @@ public class ClassUtilsTests {
 
 	@Test
 	public void testIsCacheSafe() {
-		ClassLoader childLoader1 = new ClassLoader(classLoader) {};
-		ClassLoader childLoader2 = new ClassLoader(classLoader) {};
+		ClassLoader childLoader1 = new ClassLoader(classLoader) {
+		};
+		ClassLoader childLoader2 = new ClassLoader(classLoader) {
+		};
 		ClassLoader childLoader3 = new ClassLoader(classLoader) {
 			@Override
 			public Class<?> loadClass(String name) throws ClassNotFoundException {
@@ -130,7 +135,7 @@ public class ClassUtilsTests {
 			}
 		};
 		Class<?> composite = ClassUtils.createCompositeInterface(
-				new Class<?>[] {Serializable.class, Externalizable.class}, childLoader1);
+				new Class<?>[]{Serializable.class, Externalizable.class}, childLoader1);
 
 		assertTrue(ClassUtils.isCacheSafe(String.class, null));
 		assertTrue(ClassUtils.isCacheSafe(String.class, classLoader));

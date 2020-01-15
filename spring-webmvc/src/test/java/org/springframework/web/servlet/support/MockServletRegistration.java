@@ -16,15 +16,14 @@
 
 package org.springframework.web.servlet.support;
 
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletRegistration;
+import javax.servlet.ServletSecurityElement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletRegistration;
-import javax.servlet.ServletSecurityElement;
 
 class MockServletRegistration implements ServletRegistration.Dynamic {
 
@@ -46,11 +45,6 @@ class MockServletRegistration implements ServletRegistration.Dynamic {
 	}
 
 	@Override
-	public void setRunAsRole(String roleName) {
-		this.roleName = roleName;
-	}
-
-	@Override
 	public Set<String> addMapping(String... urlPatterns) {
 		mappings.addAll(Arrays.asList(urlPatterns));
 		return mappings;
@@ -67,12 +61,17 @@ class MockServletRegistration implements ServletRegistration.Dynamic {
 	}
 
 	@Override
-	public void setAsyncSupported(boolean isAsyncSupported) {
-		this.asyncSupported = isAsyncSupported;
+	public void setRunAsRole(String roleName) {
+		this.roleName = roleName;
 	}
 
 	public boolean isAsyncSupported() {
 		return this.asyncSupported;
+	}
+
+	@Override
+	public void setAsyncSupported(boolean isAsyncSupported) {
+		this.asyncSupported = isAsyncSupported;
 	}
 
 	// not implemented

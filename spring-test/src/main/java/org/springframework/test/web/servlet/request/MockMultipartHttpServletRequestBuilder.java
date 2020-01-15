@@ -16,14 +16,6 @@
 
 package org.springframework.test.web.servlet.request;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.Part;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
@@ -34,6 +26,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.Part;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Default builder for {@link MockMultipartHttpServletRequest}.
@@ -55,7 +54,8 @@ public class MockMultipartHttpServletRequestBuilder extends MockHttpServletReque
 	 * <p>For other ways to initialize a {@code MockMultipartHttpServletRequest},
 	 * see {@link #with(RequestPostProcessor)} and the
 	 * {@link RequestPostProcessor} extension point.
-	 * @param urlTemplate a URL template; the resulting URL will be encoded
+	 *
+	 * @param urlTemplate  a URL template; the resulting URL will be encoded
 	 * @param uriVariables zero or more URI variables
 	 */
 	MockMultipartHttpServletRequestBuilder(String urlTemplate, Object... uriVariables) {
@@ -69,6 +69,7 @@ public class MockMultipartHttpServletRequestBuilder extends MockHttpServletReque
 	 * <p>For other ways to initialize a {@code MockMultipartHttpServletRequest},
 	 * see {@link #with(RequestPostProcessor)} and the
 	 * {@link RequestPostProcessor} extension point.
+	 *
 	 * @param uri the URL
 	 * @since 4.0.3
 	 */
@@ -80,7 +81,8 @@ public class MockMultipartHttpServletRequestBuilder extends MockHttpServletReque
 
 	/**
 	 * Create a new MockMultipartFile with the given content.
-	 * @param name the name of the file
+	 *
+	 * @param name    the name of the file
 	 * @param content the content of the file
 	 */
 	public MockMultipartHttpServletRequestBuilder file(String name, byte[] content) {
@@ -90,6 +92,7 @@ public class MockMultipartHttpServletRequestBuilder extends MockHttpServletReque
 
 	/**
 	 * Add the given MockMultipartFile.
+	 *
 	 * @param file the multipart file
 	 */
 	public MockMultipartHttpServletRequestBuilder file(MockMultipartFile file) {
@@ -99,6 +102,7 @@ public class MockMultipartHttpServletRequestBuilder extends MockHttpServletReque
 
 	/**
 	 * Add {@link Part} components to the request.
+	 *
 	 * @param parts one or more parts to add
 	 * @since 5.0
 	 */
@@ -124,8 +128,7 @@ public class MockMultipartHttpServletRequestBuilder extends MockHttpServletReque
 						this.parts.putIfAbsent(name, parentBuilder.parts.get(name)));
 			}
 
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("Cannot merge with [" + parent.getClass().getName() + "]");
 		}
 		return this;

@@ -16,9 +16,6 @@
 
 package org.springframework.expression.spel.ast;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import org.springframework.asm.MethodVisitor;
 import org.springframework.expression.EvaluationException;
 import org.springframework.expression.Operation;
@@ -27,6 +24,9 @@ import org.springframework.expression.spel.CodeFlow;
 import org.springframework.expression.spel.ExpressionState;
 import org.springframework.util.Assert;
 import org.springframework.util.NumberUtils;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * Implements the {@code multiply} operator.
@@ -80,29 +80,23 @@ public class OpMultiply extends Operator {
 				BigDecimal leftBigDecimal = NumberUtils.convertNumberToTargetClass(leftNumber, BigDecimal.class);
 				BigDecimal rightBigDecimal = NumberUtils.convertNumberToTargetClass(rightNumber, BigDecimal.class);
 				return new TypedValue(leftBigDecimal.multiply(rightBigDecimal));
-			}
-			else if (leftNumber instanceof Double || rightNumber instanceof Double) {
+			} else if (leftNumber instanceof Double || rightNumber instanceof Double) {
 				this.exitTypeDescriptor = "D";
 				return new TypedValue(leftNumber.doubleValue() * rightNumber.doubleValue());
-			}
-			else if (leftNumber instanceof Float || rightNumber instanceof Float) {
+			} else if (leftNumber instanceof Float || rightNumber instanceof Float) {
 				this.exitTypeDescriptor = "F";
 				return new TypedValue(leftNumber.floatValue() * rightNumber.floatValue());
-			}
-			else if (leftNumber instanceof BigInteger || rightNumber instanceof BigInteger) {
+			} else if (leftNumber instanceof BigInteger || rightNumber instanceof BigInteger) {
 				BigInteger leftBigInteger = NumberUtils.convertNumberToTargetClass(leftNumber, BigInteger.class);
 				BigInteger rightBigInteger = NumberUtils.convertNumberToTargetClass(rightNumber, BigInteger.class);
 				return new TypedValue(leftBigInteger.multiply(rightBigInteger));
-			}
-			else if (leftNumber instanceof Long || rightNumber instanceof Long) {
+			} else if (leftNumber instanceof Long || rightNumber instanceof Long) {
 				this.exitTypeDescriptor = "J";
 				return new TypedValue(leftNumber.longValue() * rightNumber.longValue());
-			}
-			else if (CodeFlow.isIntegerForNumericOp(leftNumber) || CodeFlow.isIntegerForNumericOp(rightNumber)) {
+			} else if (CodeFlow.isIntegerForNumericOp(leftNumber) || CodeFlow.isIntegerForNumericOp(rightNumber)) {
 				this.exitTypeDescriptor = "I";
 				return new TypedValue(leftNumber.intValue() * rightNumber.intValue());
-			}
-			else {
+			} else {
 				// Unknown Number subtypes -> best guess is double multiplication
 				return new TypedValue(leftNumber.doubleValue() * rightNumber.doubleValue());
 			}

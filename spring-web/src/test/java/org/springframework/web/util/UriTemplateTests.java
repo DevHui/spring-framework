@@ -16,6 +16,8 @@
 
 package org.springframework.web.util;
 
+import org.junit.Test;
+
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,9 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Arjen Poutsma
@@ -53,7 +55,7 @@ public class UriTemplateTests {
 	@Test
 	public void expandVarArgsWithArrayValue() throws Exception {
 		UriTemplate template = new UriTemplate("/sum?numbers={numbers}");
-		URI result = template.expand(new int[] {1, 2, 3});
+		URI result = template.expand(new int[]{1, 2, 3});
 		assertEquals(new URI("/sum?numbers=1,2,3"), result);
 	}
 

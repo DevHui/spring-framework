@@ -16,6 +16,14 @@
 
 package org.springframework.web.servlet.support;
 
+import org.junit.Test;
+import org.springframework.mock.web.test.MockHttpServletRequest;
+import org.springframework.mock.web.test.MockHttpServletResponse;
+import org.springframework.web.servlet.FlashMap;
+import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,17 +31,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Test;
-
-import org.springframework.mock.web.test.MockHttpServletRequest;
-import org.springframework.mock.web.test.MockHttpServletResponse;
-import org.springframework.web.servlet.FlashMap;
-import org.springframework.web.util.WebUtils;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test fixture for testing {@link AbstractFlashMapManager} methods.
@@ -336,15 +338,13 @@ public class FlashMapManagerTests {
 
 		private List<FlashMap> flashMaps;
 
-
-		public void setFlashMaps(List<FlashMap> flashMaps) {
-			this.flashMaps = new CopyOnWriteArrayList<>(flashMaps);
-		}
-
 		public List<FlashMap> getFlashMaps() {
 			return this.flashMaps;
 		}
 
+		public void setFlashMaps(List<FlashMap> flashMaps) {
+			this.flashMaps = new CopyOnWriteArrayList<>(flashMaps);
+		}
 
 		@Override
 		protected List<FlashMap> retrieveFlashMaps(HttpServletRequest request) {

@@ -16,10 +16,6 @@
 
 package org.springframework.web.reactive.handler;
 
-import java.util.Map;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.core.Ordered;
@@ -35,6 +31,9 @@ import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebHandler;
 import org.springframework.web.util.pattern.PathPatternParser;
+import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 /**
  * Abstract base class for {@link org.springframework.web.reactive.HandlerMapping}
@@ -109,6 +108,7 @@ public abstract class AbstractHandlerMapping extends ApplicationObjectSupport
 	/**
 	 * Set the "global" CORS configurations based on URL patterns. By default the
 	 * first matching URL pattern is combined with handler-level CORS configuration if any.
+	 *
 	 * @see #setCorsConfigurationSource(CorsConfigurationSource)
 	 */
 	public void setCorsConfigurations(Map<String, CorsConfiguration> corsConfigurations) {
@@ -120,12 +120,20 @@ public abstract class AbstractHandlerMapping extends ApplicationObjectSupport
 	/**
 	 * Set the "global" CORS configuration source. By default the first matching URL
 	 * pattern is combined with the CORS configuration for the handler, if any.
-	 * @since 5.1
+	 *
 	 * @see #setCorsConfigurations(Map)
+	 * @since 5.1
 	 */
 	public void setCorsConfigurationSource(CorsConfigurationSource corsConfigurationSource) {
 		Assert.notNull(corsConfigurationSource, "corsConfigurationSource must not be null");
 		this.corsConfigurationSource = corsConfigurationSource;
+	}
+
+	/**
+	 * Return the configured {@link CorsProcessor}.
+	 */
+	public CorsProcessor getCorsProcessor() {
+		return this.corsProcessor;
 	}
 
 	/**
@@ -138,25 +146,19 @@ public abstract class AbstractHandlerMapping extends ApplicationObjectSupport
 		this.corsProcessor = corsProcessor;
 	}
 
-	/**
-	 * Return the configured {@link CorsProcessor}.
-	 */
-	public CorsProcessor getCorsProcessor() {
-		return this.corsProcessor;
+	@Override
+	public int getOrder() {
+		return this.order;
 	}
 
 	/**
 	 * Specify the order value for this HandlerMapping bean.
 	 * <p>The default value is {@code Ordered.LOWEST_PRECEDENCE}, meaning non-ordered.
+	 *
 	 * @see org.springframework.core.Ordered#getOrder()
 	 */
 	public void setOrder(int order) {
 		this.order = order;
-	}
-
-	@Override
-	public int getOrder() {
-		return this.order;
 	}
 
 	@Override
@@ -195,6 +197,7 @@ public abstract class AbstractHandlerMapping extends ApplicationObjectSupport
 	 * the pre-flight request but for the expected actual request based on the URL
 	 * path, the HTTP methods from the "Access-Control-Request-Method" header, and
 	 * the headers from the "Access-Control-Request-Headers" header.
+	 *
 	 * @param exchange current exchange
 	 * @return {@code Mono} for the matching handler, if any
 	 */
@@ -202,7 +205,8 @@ public abstract class AbstractHandlerMapping extends ApplicationObjectSupport
 
 	/**
 	 * Retrieve the CORS configuration for the given handler.
-	 * @param handler the handler to check (never {@code null})
+	 *
+	 * @param handler  the handler to check (never {@code null})
 	 * @param exchange the current exchange
 	 * @return the CORS configuration for the handler, or {@code null} if none
 	 */

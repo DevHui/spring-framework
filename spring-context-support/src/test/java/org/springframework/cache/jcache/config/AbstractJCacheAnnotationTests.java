@@ -16,20 +16,26 @@
 
 package org.springframework.cache.jcache.config;
 
-import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.ApplicationContext;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Stephane Nicoll
@@ -95,8 +101,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.cacheWithException(keyItem, true);
 			fail("Should have thrown an exception");
-		}
-		catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException e) {
 			// This is what we expect
 		}
 
@@ -116,8 +121,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.cacheWithException(keyItem, false);
 			fail("Should have thrown an exception");
-		}
-		catch (NullPointerException e) {
+		} catch (NullPointerException e) {
 			// This is what we expect
 		}
 		assertNull(cache.get(key));
@@ -134,8 +138,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.cacheWithCheckedException(keyItem, true);
 			fail("Should have thrown an exception");
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			// This is what we expect
 		}
 
@@ -155,8 +158,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.cacheWithException(keyItem, true);
 			fail("Should have thrown an exception");
-		}
-		catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException e) {
 			first = e;
 		}
 		// Sanity check, this particular call has called the service
@@ -242,8 +244,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.putWithException(keyItem, value, true);
 			fail("Should have thrown an exception");
-		}
-		catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException e) {
 			// This is what we expect
 		}
 
@@ -264,8 +265,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.putWithException(keyItem, value, false);
 			fail("Should have thrown an exception");
-		}
-		catch (NullPointerException e) {
+		} catch (NullPointerException e) {
 			// This is what we expect
 		}
 		assertNull(cache.get(key));
@@ -299,8 +299,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.earlyPutWithException(keyItem, value, true);
 			fail("Should have thrown an exception");
-		}
-		catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException e) {
 			// This is what we expect
 		}
 
@@ -321,8 +320,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.earlyPutWithException(keyItem, value, false);
 			fail("Should have thrown an exception");
-		}
-		catch (NullPointerException e) {
+		} catch (NullPointerException e) {
 			// This is what we expect
 		}
 		// This will be cached anyway as the earlyPut has updated the cache before
@@ -357,8 +355,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.removeWithException(keyItem, true);
 			fail("Should have thrown an exception");
-		}
-		catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException e) {
 			// This is what we expect
 		}
 
@@ -377,8 +374,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.removeWithException(keyItem, false);
 			fail("Should have thrown an exception");
-		}
-		catch (NullPointerException e) {
+		} catch (NullPointerException e) {
 			// This is what we expect
 		}
 		Cache.ValueWrapper wrapper = cache.get(key);
@@ -412,8 +408,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.earlyRemoveWithException(keyItem, true);
 			fail("Should have thrown an exception");
-		}
-		catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException e) {
 			// This is what we expect
 		}
 		assertNull(cache.get(key));
@@ -431,8 +426,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.earlyRemoveWithException(keyItem, false);
 			fail("Should have thrown an exception");
-		}
-		catch (NullPointerException e) {
+		} catch (NullPointerException e) {
 			// This is what we expect
 		}
 		// This will be remove anyway as the earlyRemove has removed the cache before
@@ -461,8 +455,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.removeAllWithException(true);
 			fail("Should have thrown an exception");
-		}
-		catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException e) {
 			// This is what we expect
 		}
 
@@ -479,8 +472,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.removeAllWithException(false);
 			fail("Should have thrown an exception");
-		}
-		catch (NullPointerException e) {
+		} catch (NullPointerException e) {
 			// This is what we expect
 		}
 		assertNotNull(cache.get(key));
@@ -508,8 +500,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.earlyRemoveAllWithException(true);
 			fail("Should have thrown an exception");
-		}
-		catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException e) {
 			// This is what we expect
 		}
 		assertTrue(isEmpty(cache));
@@ -525,8 +516,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.earlyRemoveAllWithException(false);
 			fail("Should have thrown an exception");
-		}
-		catch (NullPointerException e) {
+		} catch (NullPointerException e) {
 			// This is what we expect
 		}
 		// This will be remove anyway as the earlyRemove has removed the cache before
@@ -557,8 +547,7 @@ public abstract class AbstractJCacheAnnotationTests {
 		try {
 			service.cacheWithException(keyItem, true);
 			throw new IllegalStateException("Should have thrown an exception");
-		}
-		catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException e) {
 			return e;
 		}
 	}

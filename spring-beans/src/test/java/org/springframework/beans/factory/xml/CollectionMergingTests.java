@@ -16,21 +16,22 @@
 
 package org.springframework.beans.factory.xml;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.support.BeanDefinitionReader;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.tests.sample.beans.TestBean;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.beans.factory.support.BeanDefinitionReader;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.tests.sample.beans.TestBean;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit and integration tests for the collection merging support.
@@ -120,7 +121,7 @@ public class CollectionMergingTests {
 		Properties props = bean.getSomeProperties();
 		assertEquals("Incorrect size", 3, props.size());
 		assertEquals("Sally", props.getProperty("Rob"));
-		assertEquals("Kerry",props.getProperty("Rod"));
+		assertEquals("Kerry", props.getProperty("Rod"));
 		assertEquals("Eva", props.getProperty("Juergen"));
 	}
 

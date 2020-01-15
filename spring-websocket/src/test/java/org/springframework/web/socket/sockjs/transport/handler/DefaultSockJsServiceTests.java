@@ -16,16 +16,10 @@
 
 package org.springframework.web.socket.sockjs.transport.handler;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.socket.AbstractHttpRequestTests;
@@ -40,8 +34,21 @@ import org.springframework.web.socket.sockjs.transport.TransportType;
 import org.springframework.web.socket.sockjs.transport.session.StubSockJsServiceConfig;
 import org.springframework.web.socket.sockjs.transport.session.TestSockJsSession;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.reset;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Test fixture for {@link DefaultSockJsService}.
@@ -59,15 +66,20 @@ public class DefaultSockJsServiceTests extends AbstractHttpRequestTests {
 	private static final String sessionUrlPrefix = "/server1/" + sessionId + "/";
 
 
-	@Mock private SessionCreatingTransportHandler xhrHandler;
+	@Mock
+	private SessionCreatingTransportHandler xhrHandler;
 
-	@Mock private TransportHandler xhrSendHandler;
+	@Mock
+	private TransportHandler xhrSendHandler;
 
-	@Mock private HandshakeTransportHandler wsTransportHandler;
+	@Mock
+	private HandshakeTransportHandler wsTransportHandler;
 
-	@Mock private WebSocketHandler wsHandler;
+	@Mock
+	private WebSocketHandler wsHandler;
 
-	@Mock private TaskScheduler taskScheduler;
+	@Mock
+	private TaskScheduler taskScheduler;
 
 	private TestSockJsSession session;
 

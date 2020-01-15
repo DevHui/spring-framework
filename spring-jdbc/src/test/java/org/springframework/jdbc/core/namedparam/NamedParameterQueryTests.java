@@ -16,6 +16,12 @@
 
 package org.springframework.jdbc.core.namedparam;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.jdbc.core.RowMapper;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,16 +35,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.jdbc.core.RowMapper;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Thomas Risberg
@@ -177,11 +179,11 @@ public class NamedParameterQueryTests {
 		params.addValue("id", 3);
 		Object o = template.queryForObject("SELECT AGE FROM CUSTMR WHERE ID = :id",
 				params, new RowMapper<Object>() {
-			@Override
-			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return rs.getInt(1);
-			}
-		});
+					@Override
+					public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+						return rs.getInt(1);
+					}
+				});
 
 		assertTrue("Correct result type", o instanceof Integer);
 		verify(connection).prepareStatement("SELECT AGE FROM CUSTMR WHERE ID = ?");
@@ -245,8 +247,8 @@ public class NamedParameterQueryTests {
 
 		MapSqlParameterSource params = new MapSqlParameterSource();
 		List<Object[]> l1 = new ArrayList<>();
-		l1.add(new Object[] {3, "Rod"});
-		l1.add(new Object[] {4, "Juergen"});
+		l1.add(new Object[]{3, "Rod"});
+		l1.add(new Object[]{4, "Juergen"});
 		params.addValue("multiExpressionList", l1);
 		Object o = template.queryForObject(
 				"SELECT AGE FROM CUSTMR WHERE (ID, NAME) IN (:multiExpressionList)",

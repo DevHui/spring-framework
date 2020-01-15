@@ -16,14 +16,6 @@
 
 package org.springframework.http.converter;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +27,14 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StreamUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 
 /**
  * Implementation of {@link HttpMessageConverter} that can write a single {@link ResourceRegion},
@@ -50,6 +50,14 @@ public class ResourceRegionHttpMessageConverter extends AbstractGenericHttpMessa
 		super(MediaType.ALL);
 	}
 
+	private static void println(OutputStream os) throws IOException {
+		os.write('\r');
+		os.write('\n');
+	}
+
+	private static void print(OutputStream os, String buf) throws IOException {
+		os.write(buf.getBytes(StandardCharsets.US_ASCII));
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -57,8 +65,7 @@ public class ResourceRegionHttpMessageConverter extends AbstractGenericHttpMessa
 		Resource resource = null;
 		if (object instanceof ResourceRegion) {
 			resource = ((ResourceRegion) object).getResource();
-		}
-		else {
+		} else {
 			Collection<ResourceRegion> regions = (Collection<ResourceRegion>) object;
 			if (!regions.isEmpty()) {
 				resource = regions.iterator().next().getResource();
@@ -129,18 +136,15 @@ public class ResourceRegionHttpMessageConverter extends AbstractGenericHttpMessa
 
 		if (object instanceof ResourceRegion) {
 			writeResourceRegion((ResourceRegion) object, outputMessage);
-		}
-		else {
+		} else {
 			Collection<ResourceRegion> regions = (Collection<ResourceRegion>) object;
 			if (regions.size() == 1) {
 				writeResourceRegion(regions.iterator().next(), outputMessage);
-			}
-			else {
+			} else {
 				writeResourceRegionCollection((Collection<ResourceRegion>) object, outputMessage);
 			}
 		}
 	}
-
 
 	protected void writeResourceRegion(ResourceRegion region, HttpOutputMessage outputMessage) throws IOException {
 		Assert.notNull(region, "ResourceRegion must not be null");
@@ -157,19 +161,17 @@ public class ResourceRegionHttpMessageConverter extends AbstractGenericHttpMessa
 		InputStream in = region.getResource().getInputStream();
 		try {
 			StreamUtils.copyRange(in, outputMessage.getBody(), start, end);
-		}
-		finally {
+		} finally {
 			try {
 				in.close();
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				// ignore
 			}
 		}
 	}
 
 	private void writeResourceRegionCollection(Collection<ResourceRegion> resourceRegions,
-			HttpOutputMessage outputMessage) throws IOException {
+											   HttpOutputMessage outputMessage) throws IOException {
 
 		Assert.notNull(resourceRegions, "Collection of ResourceRegion should not be null");
 		HttpHeaders responseHeaders = outputMessage.getHeaders();
@@ -199,12 +201,10 @@ public class ResourceRegionHttpMessageConverter extends AbstractGenericHttpMessa
 				println(out);
 				// Printing content
 				StreamUtils.copyRange(in, out, start, end);
-			}
-			finally {
+			} finally {
 				try {
 					in.close();
-				}
-				catch (IOException ex) {
+				} catch (IOException ex) {
 					// ignore
 				}
 			}
@@ -212,15 +212,6 @@ public class ResourceRegionHttpMessageConverter extends AbstractGenericHttpMessa
 
 		println(out);
 		print(out, "--" + boundaryString + "--");
-	}
-
-	private static void println(OutputStream os) throws IOException {
-		os.write('\r');
-		os.write('\n');
-	}
-
-	private static void print(OutputStream os, String buf) throws IOException {
-		os.write(buf.getBytes(StandardCharsets.US_ASCII));
 	}
 
 }

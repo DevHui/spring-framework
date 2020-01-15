@@ -16,14 +16,7 @@
 
 package org.springframework.messaging.converter;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
@@ -33,7 +26,18 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 
-import static org.junit.Assert.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for
@@ -158,14 +162,14 @@ public class MessageConverterTests {
 
 		@Override
 		protected Object convertFromInternal(Message<?> message, Class<?> targetClass,
-				@Nullable Object conversionHint) {
+											 @Nullable Object conversionHint) {
 
 			return "success-from";
 		}
 
 		@Override
 		protected Object convertToInternal(Object payload, @Nullable MessageHeaders headers,
-				@Nullable Object conversionHint) {
+										   @Nullable Object conversionHint) {
 
 			return "success-to";
 		}

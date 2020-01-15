@@ -16,8 +16,6 @@
 
 package org.springframework.cache.jcache.config;
 
-import java.util.function.Supplier;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.cache.annotation.AbstractCachingConfiguration;
 import org.springframework.cache.annotation.CachingConfigurer;
@@ -29,14 +27,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.lang.Nullable;
 
+import java.util.function.Supplier;
+
 /**
  * Abstract JSR-107 specific {@code @Configuration} class providing common
  * structure for enabling JSR-107 annotation-driven cache management capability.
  *
  * @author Stephane Nicoll
  * @author Juergen Hoeller
- * @since 4.1
  * @see JCacheConfigurer
+ * @since 4.1
  */
 @Configuration
 public class AbstractJCacheConfiguration extends AbstractCachingConfiguration {

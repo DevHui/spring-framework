@@ -16,18 +16,12 @@
 
 package org.springframework.messaging.simp.broker;
 
-import java.security.Principal;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHeaders;
@@ -38,8 +32,26 @@ import org.springframework.messaging.simp.TestPrincipal;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.TaskScheduler;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.security.Principal;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link SimpleBrokerMessageHandler}.
@@ -50,23 +62,17 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings("unchecked")
 public class SimpleBrokerMessageHandlerTests {
 
-	private SimpleBrokerMessageHandler messageHandler;
-
-	@Mock
-	private SubscribableChannel clientInChannel;
-
-	@Mock
-	private MessageChannel clientOutChannel;
-
-	@Mock
-	private SubscribableChannel brokerChannel;
-
-	@Mock
-	private TaskScheduler taskScheduler;
-
 	@Captor
 	ArgumentCaptor<Message<?>> messageCaptor;
-
+	private SimpleBrokerMessageHandler messageHandler;
+	@Mock
+	private SubscribableChannel clientInChannel;
+	@Mock
+	private MessageChannel clientOutChannel;
+	@Mock
+	private SubscribableChannel brokerChannel;
+	@Mock
+	private TaskScheduler taskScheduler;
 
 	@Before
 	public void setup() {
@@ -150,7 +156,7 @@ public class SimpleBrokerMessageHandlerTests {
 		assertEquals(connectMessage, connectAckHeaders.getHeader(SimpMessageHeaderAccessor.CONNECT_MESSAGE_HEADER));
 		assertEquals(id, connectAckHeaders.getSessionId());
 		assertEquals("joe", connectAckHeaders.getUser().getName());
-		assertArrayEquals(new long[] {10000, 10000},
+		assertArrayEquals(new long[]{10000, 10000},
 				SimpMessageHeaderAccessor.getHeartbeat(connectAckHeaders.getMessageHeaders()));
 	}
 
@@ -160,12 +166,12 @@ public class SimpleBrokerMessageHandlerTests {
 		this.messageHandler.setTaskScheduler(this.taskScheduler);
 
 		assertNotNull(this.messageHandler.getHeartbeatValue());
-		assertArrayEquals(new long[] {10000, 10000}, this.messageHandler.getHeartbeatValue());
+		assertArrayEquals(new long[]{10000, 10000}, this.messageHandler.getHeartbeatValue());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void startWithHeartbeatValueWithoutTaskScheduler() {
-		this.messageHandler.setHeartbeatValue(new long[] {10000, 10000});
+		this.messageHandler.setHeartbeatValue(new long[]{10000, 10000});
 		this.messageHandler.start();
 	}
 
@@ -176,7 +182,7 @@ public class SimpleBrokerMessageHandlerTests {
 		when(this.taskScheduler.scheduleWithFixedDelay(any(Runnable.class), eq(15000L))).thenReturn(future);
 
 		this.messageHandler.setTaskScheduler(this.taskScheduler);
-		this.messageHandler.setHeartbeatValue(new long[] {15000, 16000});
+		this.messageHandler.setHeartbeatValue(new long[]{15000, 16000});
 		this.messageHandler.start();
 
 		verify(this.taskScheduler).scheduleWithFixedDelay(any(Runnable.class), eq(15000L));
@@ -192,7 +198,7 @@ public class SimpleBrokerMessageHandlerTests {
 	@Test
 	public void startWithOneZeroHeartbeatValue() {
 		this.messageHandler.setTaskScheduler(this.taskScheduler);
-		this.messageHandler.setHeartbeatValue(new long[] {0, 10000});
+		this.messageHandler.setHeartbeatValue(new long[]{0, 10000});
 		this.messageHandler.start();
 
 		verify(this.taskScheduler).scheduleWithFixedDelay(any(Runnable.class), eq(10000L));
@@ -200,7 +206,7 @@ public class SimpleBrokerMessageHandlerTests {
 
 	@Test
 	public void readInactivity() throws Exception {
-		this.messageHandler.setHeartbeatValue(new long[] {0, 1});
+		this.messageHandler.setHeartbeatValue(new long[]{0, 1});
 		this.messageHandler.setTaskScheduler(this.taskScheduler);
 		this.messageHandler.start();
 
@@ -211,7 +217,7 @@ public class SimpleBrokerMessageHandlerTests {
 
 		String id = "sess1";
 		TestPrincipal user = new TestPrincipal("joe");
-		Message<String> connectMessage = createConnectMessage(id, user, new long[] {1, 0});
+		Message<String> connectMessage = createConnectMessage(id, user, new long[]{1, 0});
 		this.messageHandler.handleMessage(connectMessage);
 
 		Thread.sleep(10);
@@ -231,7 +237,7 @@ public class SimpleBrokerMessageHandlerTests {
 
 	@Test
 	public void writeInactivity() throws Exception {
-		this.messageHandler.setHeartbeatValue(new long[] {1, 0});
+		this.messageHandler.setHeartbeatValue(new long[]{1, 0});
 		this.messageHandler.setTaskScheduler(this.taskScheduler);
 		this.messageHandler.start();
 
@@ -242,7 +248,7 @@ public class SimpleBrokerMessageHandlerTests {
 
 		String id = "sess1";
 		TestPrincipal user = new TestPrincipal("joe");
-		Message<String> connectMessage = createConnectMessage(id, user, new long[] {0, 1});
+		Message<String> connectMessage = createConnectMessage(id, user, new long[]{0, 1});
 		this.messageHandler.handleMessage(connectMessage);
 
 		Thread.sleep(10);
@@ -262,7 +268,7 @@ public class SimpleBrokerMessageHandlerTests {
 
 	@Test
 	public void readWriteIntervalCalculation() throws Exception {
-		this.messageHandler.setHeartbeatValue(new long[] {1, 1});
+		this.messageHandler.setHeartbeatValue(new long[]{1, 1});
 		this.messageHandler.setTaskScheduler(this.taskScheduler);
 		this.messageHandler.start();
 
@@ -273,7 +279,7 @@ public class SimpleBrokerMessageHandlerTests {
 
 		String id = "sess1";
 		TestPrincipal user = new TestPrincipal("joe");
-		Message<String> connectMessage = createConnectMessage(id, user, new long[] {10000, 10000});
+		Message<String> connectMessage = createConnectMessage(id, user, new long[]{10000, 10000});
 		this.messageHandler.handleMessage(connectMessage);
 
 		Thread.sleep(10);

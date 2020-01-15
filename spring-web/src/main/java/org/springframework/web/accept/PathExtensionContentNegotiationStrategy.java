@@ -16,11 +16,6 @@
 
 package org.springframework.web.accept;
 
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
@@ -30,6 +25,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.UrlPathHelper;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * A {@code ContentNegotiationStrategy} that resolves the file extension in the
@@ -69,6 +68,7 @@ public class PathExtensionContentNegotiationStrategy extends AbstractMappingCont
 	/**
 	 * Configure a {@code UrlPathHelper} to use in {@link #getMediaTypeKey}
 	 * in order to derive the lookup path for a target request URL path.
+	 *
 	 * @since 4.2.8
 	 */
 	public void setUrlPathHelper(UrlPathHelper urlPathHelper) {
@@ -78,6 +78,7 @@ public class PathExtensionContentNegotiationStrategy extends AbstractMappingCont
 	/**
 	 * Indicate whether to use the Java Activation Framework as a fallback option
 	 * to map from file extensions to media types.
+	 *
 	 * @deprecated as of 5.0, in favor of {@link #setUseRegisteredExtensionsOnly(boolean)}.
 	 */
 	@Deprecated
@@ -102,6 +103,7 @@ public class PathExtensionContentNegotiationStrategy extends AbstractMappingCont
 	 * resolve file extensions to a {@link MediaType} in this case for a given
 	 * {@link Resource}. The method first looks up any explicitly registered
 	 * file extensions first and then falls back on {@link MediaTypeFactory} if available.
+	 *
 	 * @param resource the resource to look up
 	 * @return the MediaType for the extension, or {@code null} if none found
 	 * @since 4.3

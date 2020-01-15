@@ -16,13 +16,14 @@
 
 package org.springframework.beans.propertyeditors;
 
-import java.io.InputStream;
-
 import org.junit.Test;
-
 import org.springframework.util.ClassUtils;
 
-import static org.junit.Assert.*;
+import java.io.InputStream;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for the {@link InputStreamEditor} class.
@@ -50,8 +51,7 @@ public class InputStreamEditorTests {
 			assertTrue(value instanceof InputStream);
 			stream = (InputStream) value;
 			assertTrue(stream.available() > 0);
-		}
-		finally {
+		} finally {
 			if (stream != null) {
 				stream.close();
 			}

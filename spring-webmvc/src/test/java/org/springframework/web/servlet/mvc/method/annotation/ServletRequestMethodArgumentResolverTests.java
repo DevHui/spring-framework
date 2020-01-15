@@ -16,22 +16,9 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.lang.reflect.Method;
-import java.security.Principal;
-import java.time.ZoneId;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.PushBuilder;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -44,7 +31,22 @@ import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 
-import static org.junit.Assert.*;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.PushBuilder;
+import java.io.InputStream;
+import java.io.Reader;
+import java.lang.reflect.Method;
+import java.security.Principal;
+import java.time.ZoneId;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Arjen Poutsma

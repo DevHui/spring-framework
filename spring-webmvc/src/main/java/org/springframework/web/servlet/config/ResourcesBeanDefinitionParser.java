@@ -16,11 +16,6 @@
 
 package org.springframework.web.servlet.config;
 
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.w3c.dom.Element;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
@@ -54,6 +49,10 @@ import org.springframework.web.servlet.resource.ResourceUrlProvider;
 import org.springframework.web.servlet.resource.ResourceUrlProviderExposingInterceptor;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.resource.WebJarsResourceResolver;
+import org.w3c.dom.Element;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * {@link org.springframework.beans.factory.xml.BeanDefinitionParser} that parses a
@@ -156,7 +155,7 @@ class ResourcesBeanDefinitionParser implements BeanDefinitionParser {
 
 	@Nullable
 	private String registerResourceHandler(ParserContext context, Element element,
-			RuntimeBeanReference pathHelperRef, @Nullable Object source) {
+										   RuntimeBeanReference pathHelperRef, @Nullable Object source) {
 
 		String locationAttr = element.getAttribute("location");
 		if (!StringUtils.hasText(locationAttr)) {
@@ -204,14 +203,11 @@ class ResourcesBeanDefinitionParser implements BeanDefinitionParser {
 		CacheControl cacheControl;
 		if ("true".equals(element.getAttribute("no-cache"))) {
 			cacheControl = CacheControl.noCache();
-		}
-		else if ("true".equals(element.getAttribute("no-store"))) {
+		} else if ("true".equals(element.getAttribute("no-store"))) {
 			cacheControl = CacheControl.noStore();
-		}
-		else if (element.hasAttribute("max-age")) {
+		} else if (element.hasAttribute("max-age")) {
 			cacheControl = CacheControl.maxAge(Long.parseLong(element.getAttribute("max-age")), TimeUnit.SECONDS);
-		}
-		else {
+		} else {
 			cacheControl = CacheControl.empty();
 		}
 
@@ -268,7 +264,7 @@ class ResourcesBeanDefinitionParser implements BeanDefinitionParser {
 	}
 
 	private void parseResourceCache(ManagedList<Object> resourceResolvers,
-			ManagedList<Object> resourceTransformers, Element element, @Nullable Object source) {
+									ManagedList<Object> resourceTransformers, Element element, @Nullable Object source) {
 
 		String resourceCache = element.getAttribute("resource-cache");
 		if ("true".equals(resourceCache)) {
@@ -290,8 +286,7 @@ class ResourcesBeanDefinitionParser implements BeanDefinitionParser {
 				RuntimeBeanReference cacheManagerRef = new RuntimeBeanReference(cacheManagerName);
 				cargs.addIndexedArgumentValue(0, cacheManagerRef);
 				cargs.addIndexedArgumentValue(1, cacheName);
-			}
-			else {
+			} else {
 				ConstructorArgumentValues cacheCavs = new ConstructorArgumentValues();
 				cacheCavs.addIndexedArgumentValue(0, RESOURCE_CHAIN_CACHE);
 				RootBeanDefinition cacheDef = new RootBeanDefinition(ConcurrentMapCache.class);
@@ -306,8 +301,8 @@ class ResourcesBeanDefinitionParser implements BeanDefinitionParser {
 	}
 
 	private void parseResourceResolversTransformers(boolean isAutoRegistration,
-			ManagedList<Object> resourceResolvers, ManagedList<Object> resourceTransformers,
-			ParserContext context, Element element, @Nullable Object source) {
+													ManagedList<Object> resourceResolvers, ManagedList<Object> resourceTransformers,
+													ParserContext context, Element element, @Nullable Object source) {
 
 		Element resolversElement = DomUtils.getChildElementByTagName(element, "resolvers");
 		if (resolversElement != null) {
@@ -322,8 +317,7 @@ class ResourcesBeanDefinitionParser implements BeanDefinitionParser {
 						cssLinkTransformerDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 						resourceTransformers.add(cssLinkTransformerDef);
 					}
-				}
-				else {
+				} else {
 					Object object = context.getDelegate().parsePropertySubElement(beanElement, null);
 					resourceResolvers.add(object);
 				}
@@ -371,14 +365,12 @@ class ResourcesBeanDefinitionParser implements BeanDefinitionParser {
 				strategyDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 				strategyDef.setConstructorArgumentValues(cargs);
 				strategy = strategyDef;
-			}
-			else if (CONTENT_VERSION_STRATEGY_ELEMENT.equals(beanElement.getLocalName())) {
+			} else if (CONTENT_VERSION_STRATEGY_ELEMENT.equals(beanElement.getLocalName())) {
 				RootBeanDefinition strategyDef = new RootBeanDefinition(ContentVersionStrategy.class);
 				strategyDef.setSource(source);
 				strategyDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 				strategy = strategyDef;
-			}
-			else if (VERSION_STRATEGY_ELEMENT.equals(beanElement.getLocalName())) {
+			} else if (VERSION_STRATEGY_ELEMENT.equals(beanElement.getLocalName())) {
 				Element childElement = DomUtils.getChildElementsByTagName(beanElement, "bean", "ref").get(0);
 				strategy = context.getDelegate().parsePropertySubElement(childElement, null);
 			}

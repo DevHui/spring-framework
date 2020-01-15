@@ -16,15 +16,6 @@
 
 package org.springframework.beans.factory.annotation;
 
-import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -40,6 +31,15 @@ import org.springframework.core.PriorityOrdered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation
@@ -68,9 +68,9 @@ import org.springframework.util.Assert;
  *
  * @author Rob Harrop
  * @author Juergen Hoeller
- * @since 2.0
  * @see #setRequiredAnnotationType
  * @see Required
+ * @since 2.0
  * @deprecated as of 5.1, in favor of using constructor injection for required settings
  * (or a custom {@link org.springframework.beans.factory.InitializingBean} implementation)
  */
@@ -81,24 +81,26 @@ public class RequiredAnnotationBeanPostProcessor extends InstantiationAwareBeanP
 	/**
 	 * Bean definition attribute that may indicate whether a given bean is supposed
 	 * to be skipped when performing this post-processor's required property check.
+	 *
 	 * @see #shouldSkip
 	 */
 	public static final String SKIP_REQUIRED_CHECK_ATTRIBUTE =
 			Conventions.getQualifiedAttributeName(RequiredAnnotationBeanPostProcessor.class, "skipRequiredCheck");
-
-
-	private Class<? extends Annotation> requiredAnnotationType = Required.class;
-
-	private int order = Ordered.LOWEST_PRECEDENCE - 1;
-
-	@Nullable
-	private ConfigurableListableBeanFactory beanFactory;
-
 	/**
 	 * Cache for validated bean names, skipping re-validation for the same bean.
 	 */
 	private final Set<String> validatedBeanNames = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+	private Class<? extends Annotation> requiredAnnotationType = Required.class;
+	private int order = Ordered.LOWEST_PRECEDENCE - 1;
+	@Nullable
+	private ConfigurableListableBeanFactory beanFactory;
 
+	/**
+	 * Return the 'required' annotation type.
+	 */
+	protected Class<? extends Annotation> getRequiredAnnotationType() {
+		return this.requiredAnnotationType;
+	}
 
 	/**
 	 * Set the 'required' annotation type, to be used on bean property
@@ -114,13 +116,6 @@ public class RequiredAnnotationBeanPostProcessor extends InstantiationAwareBeanP
 		this.requiredAnnotationType = requiredAnnotationType;
 	}
 
-	/**
-	 * Return the 'required' annotation type.
-	 */
-	protected Class<? extends Annotation> getRequiredAnnotationType() {
-		return this.requiredAnnotationType;
-	}
-
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
 		if (beanFactory instanceof ConfigurableListableBeanFactory) {
@@ -128,15 +123,14 @@ public class RequiredAnnotationBeanPostProcessor extends InstantiationAwareBeanP
 		}
 	}
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
 	@Override
 	public int getOrder() {
 		return this.order;
 	}
 
+	public void setOrder(int order) {
+		this.order = order;
+	}
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
@@ -170,8 +164,9 @@ public class RequiredAnnotationBeanPostProcessor extends InstantiationAwareBeanP
 	 * {@link #SKIP_REQUIRED_CHECK_ATTRIBUTE} attribute in the bean definition, if any.
 	 * It also suggests skipping in case of a bean definition with a "factory-bean"
 	 * reference set, assuming that instance-based factories pre-populate the bean.
+	 *
 	 * @param beanFactory the BeanFactory to check against
-	 * @param beanName the name of the bean to check against
+	 * @param beanName    the name of the bean to check against
 	 * @return {@code true} to skip the bean; {@code false} to process it
 	 */
 	protected boolean shouldSkip(@Nullable ConfigurableListableBeanFactory beanFactory, String beanName) {
@@ -191,6 +186,7 @@ public class RequiredAnnotationBeanPostProcessor extends InstantiationAwareBeanP
 	 * <p>This implementation looks for the existence of a
 	 * {@link #setRequiredAnnotationType "required" annotation}
 	 * on the supplied {@link PropertyDescriptor property}.
+	 *
 	 * @param propertyDescriptor the target PropertyDescriptor (never {@code null})
 	 * @return {@code true} if the supplied property has been marked as being required;
 	 * {@code false} if not, or if the supplied property does not have a setter method
@@ -202,8 +198,9 @@ public class RequiredAnnotationBeanPostProcessor extends InstantiationAwareBeanP
 
 	/**
 	 * Build an exception message for the given list of invalid properties.
+	 *
 	 * @param invalidProperties the list of names of invalid properties
-	 * @param beanName the name of the bean
+	 * @param beanName          the name of the bean
 	 * @return the exception message
 	 */
 	private String buildExceptionMessage(List<String> invalidProperties, String beanName) {
@@ -215,8 +212,7 @@ public class RequiredAnnotationBeanPostProcessor extends InstantiationAwareBeanP
 			if (i > 0) {
 				if (i == (size - 1)) {
 					sb.append(" and");
-				}
-				else {
+				} else {
 					sb.append(",");
 				}
 			}

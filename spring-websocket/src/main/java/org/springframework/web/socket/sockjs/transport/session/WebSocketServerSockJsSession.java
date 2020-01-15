@@ -16,15 +16,6 @@
 
 package org.springframework.web.socket.sockjs.transport.session;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.security.Principal;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingDeque;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -39,6 +30,15 @@ import org.springframework.web.socket.sockjs.SockJsTransportFailureException;
 import org.springframework.web.socket.sockjs.frame.SockJsFrame;
 import org.springframework.web.socket.sockjs.transport.SockJsServiceConfig;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
+
 /**
  * A SockJS session for use with the WebSocket transport.
  *
@@ -48,22 +48,17 @@ import org.springframework.web.socket.sockjs.transport.SockJsServiceConfig;
  */
 public class WebSocketServerSockJsSession extends AbstractSockJsSession implements NativeWebSocketSession {
 
+	private final Queue<String> initSessionCache = new LinkedBlockingDeque<>();
+	private final Object initSessionLock = new Object();
+	private final Object disconnectLock = new Object();
 	@Nullable
 	private WebSocketSession webSocketSession;
-
 	private volatile boolean openFrameSent;
-
-	private final Queue<String> initSessionCache = new LinkedBlockingDeque<>();
-
-	private final Object initSessionLock = new Object();
-
-	private final Object disconnectLock = new Object();
-
 	private volatile boolean disconnected;
 
 
 	public WebSocketServerSockJsSession(String id, SockJsServiceConfig config,
-			WebSocketHandler handler, @Nullable Map<String, Object> attributes) {
+										WebSocketHandler handler, @Nullable Map<String, Object> attributes) {
 
 		super(id, config, handler, attributes);
 	}
@@ -107,27 +102,27 @@ public class WebSocketServerSockJsSession extends AbstractSockJsSession implemen
 	}
 
 	@Override
-	public void setTextMessageSizeLimit(int messageSizeLimit) {
-		Assert.state(this.webSocketSession != null, "WebSocketSession not yet initialized");
-		this.webSocketSession.setTextMessageSizeLimit(messageSizeLimit);
-	}
-
-	@Override
 	public int getTextMessageSizeLimit() {
 		Assert.state(this.webSocketSession != null, "WebSocketSession not yet initialized");
 		return this.webSocketSession.getTextMessageSizeLimit();
 	}
 
 	@Override
-	public void setBinaryMessageSizeLimit(int messageSizeLimit) {
+	public void setTextMessageSizeLimit(int messageSizeLimit) {
 		Assert.state(this.webSocketSession != null, "WebSocketSession not yet initialized");
-		this.webSocketSession.setBinaryMessageSizeLimit(messageSizeLimit);
+		this.webSocketSession.setTextMessageSizeLimit(messageSizeLimit);
 	}
 
 	@Override
 	public int getBinaryMessageSizeLimit() {
 		Assert.state(this.webSocketSession != null, "WebSocketSession not yet initialized");
 		return this.webSocketSession.getBinaryMessageSizeLimit();
+	}
+
+	@Override
+	public void setBinaryMessageSizeLimit(int messageSizeLimit) {
+		Assert.state(this.webSocketSession != null, "WebSocketSession not yet initialized");
+		this.webSocketSession.setBinaryMessageSizeLimit(messageSizeLimit);
 	}
 
 	@Override
@@ -165,8 +160,7 @@ public class WebSocketServerSockJsSession extends AbstractSockJsSession implemen
 				}
 				scheduleHeartbeat();
 				this.openFrameSent = true;
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				tryCloseWithSockJsTransportError(ex, CloseStatus.SERVER_ERROR);
 			}
 		}
@@ -185,8 +179,7 @@ public class WebSocketServerSockJsSession extends AbstractSockJsSession implemen
 		String[] messages;
 		try {
 			messages = getSockJsServiceConfig().getMessageCodec().decode(payload);
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			logger.error("Broken data received. Terminating WebSocket connection abruptly", ex);
 			tryCloseWithSockJsTransportError(ex, CloseStatus.BAD_DATA);
 			return;

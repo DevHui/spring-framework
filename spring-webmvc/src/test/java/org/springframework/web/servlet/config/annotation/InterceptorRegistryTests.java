@@ -16,15 +16,9 @@
 
 package org.springframework.web.servlet.config.annotation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.core.Ordered;
 import org.springframework.lang.Nullable;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -40,6 +34,11 @@ import org.springframework.web.servlet.handler.WebRequestHandlerInterceptorAdapt
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.theme.ThemeChangeInterceptor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -54,20 +53,13 @@ import static org.junit.Assert.fail;
  */
 public class InterceptorRegistryTests {
 
-	private InterceptorRegistry registry;
-
 	private final HandlerInterceptor interceptor1 = new LocaleChangeInterceptor();
-
 	private final HandlerInterceptor interceptor2 = new ThemeChangeInterceptor();
-
-	private TestWebRequestInterceptor webInterceptor1;
-
-	private TestWebRequestInterceptor webInterceptor2;
-
 	private final MockHttpServletRequest request = new MockHttpServletRequest();
-
 	private final MockHttpServletResponse response = new MockHttpServletResponse();
-
+	private InterceptorRegistry registry;
+	private TestWebRequestInterceptor webInterceptor1;
+	private TestWebRequestInterceptor webInterceptor2;
 
 	@Before
 	public void setUp() {
@@ -188,11 +180,9 @@ public class InterceptorRegistryTests {
 				if (mappedInterceptor.matches(lookupPath, pathMatcher)) {
 					result.add(mappedInterceptor.getInterceptor());
 				}
-			}
-			else if (interceptor instanceof HandlerInterceptor) {
+			} else if (interceptor instanceof HandlerInterceptor) {
 				result.add((HandlerInterceptor) interceptor);
-			}
-			else {
+			} else {
 				fail("Unexpected interceptor type: " + interceptor.getClass().getName());
 			}
 		}
@@ -200,7 +190,7 @@ public class InterceptorRegistryTests {
 	}
 
 	private void verifyWebInterceptor(HandlerInterceptor interceptor,
-			TestWebRequestInterceptor webInterceptor) throws Exception {
+									  TestWebRequestInterceptor webInterceptor) throws Exception {
 
 		assertTrue(interceptor instanceof WebRequestHandlerInterceptorAdapter);
 		interceptor.preHandle(this.request, this.response, null);

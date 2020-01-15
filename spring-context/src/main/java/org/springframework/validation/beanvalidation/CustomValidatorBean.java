@@ -16,15 +16,15 @@
 
 package org.springframework.validation.beanvalidation;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.lang.Nullable;
+
 import javax.validation.MessageInterpolator;
 import javax.validation.TraversableResolver;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorContext;
 import javax.validation.ValidatorFactory;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.lang.Nullable;
 
 /**
  * Configurable bean class that exposes a specific JSR-303 Validator

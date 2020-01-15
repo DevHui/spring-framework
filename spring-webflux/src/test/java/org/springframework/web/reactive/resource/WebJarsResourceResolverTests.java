@@ -16,18 +16,17 @@
 
 package org.springframework.web.reactive.resource;
 
-import java.time.Duration;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.time.Duration;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;

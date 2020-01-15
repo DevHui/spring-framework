@@ -20,8 +20,12 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Rob Harrop
@@ -69,8 +73,7 @@ public class PerformanceMonitorInterceptorTests {
 		try {
 			interceptor.invokeUnderTrace(mi, log);
 			fail("Must have propagated the IllegalArgumentException.");
-		}
-		catch (IllegalArgumentException expected) {
+		} catch (IllegalArgumentException expected) {
 		}
 
 		verify(log).trace(anyString());

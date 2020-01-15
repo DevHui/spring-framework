@@ -16,11 +16,7 @@
 
 package org.springframework.test.web.reactive.server.samples;
 
-import java.net.URI;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -30,8 +26,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 
-import static org.hamcrest.Matchers.*;
+import java.net.URI;
+
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * Samples of tests using {@link WebTestClient} with serialized JSON content.

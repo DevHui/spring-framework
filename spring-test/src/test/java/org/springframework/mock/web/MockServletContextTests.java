@@ -16,20 +16,18 @@
 
 package org.springframework.mock.web;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Map;
-import java.util.Set;
+import org.junit.Test;
+import org.junit.jupiter.api.condition.OS;
+import org.springframework.core.io.FileSystemResourceLoader;
+import org.springframework.http.MediaType;
 
 import javax.servlet.FilterRegistration;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRegistration;
-
-import org.junit.Test;
-import org.junit.jupiter.api.condition.OS;
-
-import org.springframework.core.io.FileSystemResourceLoader;
-import org.springframework.http.MediaType;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -205,7 +203,7 @@ public class MockServletContextTests {
 	 */
 	@Test
 	public void getResourcePathsWithRelativePathToWindowsCDrive() {
-		MockServletContext servletContext = new MockServletContext( "org/springframework/mock", new FileSystemResourceLoader());
+		MockServletContext servletContext = new MockServletContext("org/springframework/mock", new FileSystemResourceLoader());
 		Set<String> paths = servletContext.getResourcePaths("C:\\temp");
 		assertNull(paths);
 	}
@@ -215,7 +213,7 @@ public class MockServletContextTests {
 	 */
 	@Test
 	public void getResourceWithRelativePathToWindowsCDrive() throws Exception {
-		MockServletContext servletContext = new MockServletContext( "org/springframework/mock", new FileSystemResourceLoader());
+		MockServletContext servletContext = new MockServletContext("org/springframework/mock", new FileSystemResourceLoader());
 		URL resource = servletContext.getResource("C:\\temp");
 		assertNull(resource);
 	}
@@ -225,7 +223,7 @@ public class MockServletContextTests {
 	 */
 	@Test
 	public void getResourceAsStreamWithRelativePathToWindowsCDrive() {
-		MockServletContext servletContext = new MockServletContext( "org/springframework/mock", new FileSystemResourceLoader());
+		MockServletContext servletContext = new MockServletContext("org/springframework/mock", new FileSystemResourceLoader());
 		InputStream inputStream = servletContext.getResourceAsStream("C:\\temp");
 		assertNull(inputStream);
 	}
@@ -235,13 +233,12 @@ public class MockServletContextTests {
 	 */
 	@Test
 	public void getRealPathWithRelativePathToWindowsCDrive() {
-		MockServletContext servletContext = new MockServletContext( "org/springframework/mock", new FileSystemResourceLoader());
+		MockServletContext servletContext = new MockServletContext("org/springframework/mock", new FileSystemResourceLoader());
 		String realPath = servletContext.getRealPath("C:\\temp");
 
 		if (OS.WINDOWS.isCurrentOs()) {
 			assertNull(realPath);
-		}
-		else {
+		} else {
 			assertNotNull(realPath);
 		}
 	}

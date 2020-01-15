@@ -16,14 +16,8 @@
 
 package org.springframework.test.web.client.samples.matchers;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -31,8 +25,13 @@ import org.springframework.test.web.Person;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
@@ -75,8 +74,7 @@ public class ContentRequestMatchersIntegrationTests {
 		this.mockServer.expect(content().contentType("application/json;charset=UTF-8")).andRespond(withSuccess());
 		try {
 			executeAndVerify("foo");
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			String message = error.getMessage();
 			assertTrue(message, message.startsWith("Content type expected:<application/json;charset=UTF-8>"));
 		}

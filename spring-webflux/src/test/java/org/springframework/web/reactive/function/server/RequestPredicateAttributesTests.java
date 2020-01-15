@@ -16,17 +16,17 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.http.codec.DecoderHttpMessageReader;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 
-import static org.junit.Assert.*;
+import java.util.Collections;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Arjen Poutsma
@@ -184,11 +184,9 @@ public class RequestPredicateAttributesTests {
 
 	private static class AddAttributePredicate implements RequestPredicate {
 
-		private boolean result;
-
 		private final String key;
-
 		private final String value;
+		private boolean result;
 
 		private AddAttributePredicate(boolean result, String key, String value) {
 			this.result = result;

@@ -16,10 +16,6 @@
 
 package org.springframework.test.web.reactive.server;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -37,6 +33,10 @@ import org.springframework.web.reactive.config.ViewResolverRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Default implementation of {@link WebTestClient.ControllerSpec}.

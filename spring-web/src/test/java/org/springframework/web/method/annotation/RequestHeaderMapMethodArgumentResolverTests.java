@@ -16,13 +16,8 @@
 
 package org.springframework.web.method.annotation;
 
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.SynthesizingMethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +29,13 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Text fixture with {@link RequestHeaderMapMethodArgumentResolver}.
@@ -135,8 +136,8 @@ public class RequestHeaderMapMethodArgumentResolverTests {
 
 
 	public void params(@RequestHeader Map<?, ?> param1,
-			@RequestHeader MultiValueMap<?, ?> param2, @RequestHeader HttpHeaders param3,
-			Map<?, ?> unsupported) {
+					   @RequestHeader MultiValueMap<?, ?> param2, @RequestHeader HttpHeaders param3,
+					   Map<?, ?> unsupported) {
 	}
 
 }

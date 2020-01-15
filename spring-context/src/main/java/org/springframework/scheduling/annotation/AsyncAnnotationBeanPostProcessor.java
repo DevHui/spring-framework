@@ -16,13 +16,8 @@
 
 package org.springframework.scheduling.annotation;
 
-import java.lang.annotation.Annotation;
-import java.util.concurrent.Executor;
-import java.util.function.Supplier;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.aop.framework.autoproxy.AbstractBeanFactoryAwareAdvisingPostProcessor;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.BeanFactory;
@@ -30,6 +25,10 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.function.SingletonSupplier;
+
+import java.lang.annotation.Annotation;
+import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 
 /**
  * Bean post-processor that automatically applies asynchronous invocation
@@ -55,11 +54,11 @@ import org.springframework.util.function.SingletonSupplier;
  * @author Mark Fisher
  * @author Juergen Hoeller
  * @author Stephane Nicoll
- * @since 3.0
  * @see Async
  * @see AsyncAnnotationAdvisor
  * @see #setBeforeExistingAdvisors
  * @see ScheduledAnnotationBeanPostProcessor
+ * @since 3.0
  */
 @SuppressWarnings("serial")
 public class AsyncAnnotationBeanPostProcessor extends AbstractBeanFactoryAwareAdvisingPostProcessor {
@@ -68,8 +67,9 @@ public class AsyncAnnotationBeanPostProcessor extends AbstractBeanFactoryAwareAd
 	 * The default name of the {@link TaskExecutor} bean to pick up: "taskExecutor".
 	 * <p>Note that the initial lookup happens by type; this is just the fallback
 	 * in case of multiple executor beans found in the context.
-	 * @since 4.2
+	 *
 	 * @see AnnotationAsyncExecutionInterceptor#DEFAULT_TASK_EXECUTOR_BEAN_NAME
+	 * @since 4.2
 	 */
 	public static final String DEFAULT_TASK_EXECUTOR_BEAN_NAME =
 			AnnotationAsyncExecutionInterceptor.DEFAULT_TASK_EXECUTOR_BEAN_NAME;
@@ -87,7 +87,6 @@ public class AsyncAnnotationBeanPostProcessor extends AbstractBeanFactoryAwareAd
 	private Class<? extends Annotation> asyncAnnotationType;
 
 
-
 	public AsyncAnnotationBeanPostProcessor() {
 		setBeforeExistingAdvisors(true);
 	}
@@ -96,6 +95,7 @@ public class AsyncAnnotationBeanPostProcessor extends AbstractBeanFactoryAwareAd
 	/**
 	 * Configure this post-processor with the given executor and exception handler suppliers,
 	 * applying the corresponding default if a supplier is not resolvable.
+	 *
 	 * @since 5.1
 	 */
 	public void configure(
@@ -111,6 +111,7 @@ public class AsyncAnnotationBeanPostProcessor extends AbstractBeanFactoryAwareAd
 	 * unique {@link TaskExecutor} bean in the context, or for an {@link Executor}
 	 * bean named "taskExecutor" otherwise. If neither of the two is resolvable,
 	 * a local default executor will be created within the interceptor.
+	 *
 	 * @see AnnotationAsyncExecutionInterceptor#getDefaultExecutor(BeanFactory)
 	 * @see #DEFAULT_TASK_EXECUTOR_BEAN_NAME
 	 */
@@ -121,6 +122,7 @@ public class AsyncAnnotationBeanPostProcessor extends AbstractBeanFactoryAwareAd
 	/**
 	 * Set the {@link AsyncUncaughtExceptionHandler} to use to handle uncaught
 	 * exceptions thrown by asynchronous method executions.
+	 *
 	 * @since 4.1
 	 */
 	public void setExceptionHandler(AsyncUncaughtExceptionHandler exceptionHandler) {
@@ -134,6 +136,7 @@ public class AsyncAnnotationBeanPostProcessor extends AbstractBeanFactoryAwareAd
 	 * <p>This setter property exists so that developers can provide their own
 	 * (non-Spring-specific) annotation type to indicate that a method (or all
 	 * methods of a given class) should be invoked asynchronously.
+	 *
 	 * @param asyncAnnotationType the desired annotation type
 	 */
 	public void setAsyncAnnotationType(Class<? extends Annotation> asyncAnnotationType) {

@@ -16,19 +16,19 @@
 
 package org.springframework.web.server.adapter;
 
-import java.net.URI;
-
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 
-import static org.junit.Assert.*;
+import java.net.URI;
+
+import static org.junit.Assert.assertFalse;
 
 /**
  * Unit tests for {@link ForwardedHeaderTransformer}.
+ *
  * @author Rossen Stoyanchev
  */
 public class ForwardedHeaderTransformerTests {

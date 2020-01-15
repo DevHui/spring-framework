@@ -16,16 +16,15 @@
 
 package org.springframework.jdbc.datasource;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * JDBC {@link javax.sql.DataSource} implementation that delegates all calls
@@ -36,8 +35,8 @@ import org.springframework.util.Assert;
  * delegate to the target DataSource.
  *
  * @author Juergen Hoeller
- * @since 1.1
  * @see #getConnection
+ * @since 1.1
  */
 public class DelegatingDataSource implements DataSource, InitializingBean {
 
@@ -47,6 +46,7 @@ public class DelegatingDataSource implements DataSource, InitializingBean {
 
 	/**
 	 * Create a new DelegatingDataSource.
+	 *
 	 * @see #setTargetDataSource
 	 */
 	public DelegatingDataSource() {
@@ -54,18 +54,11 @@ public class DelegatingDataSource implements DataSource, InitializingBean {
 
 	/**
 	 * Create a new DelegatingDataSource.
+	 *
 	 * @param targetDataSource the target DataSource
 	 */
 	public DelegatingDataSource(DataSource targetDataSource) {
 		setTargetDataSource(targetDataSource);
-	}
-
-
-	/**
-	 * Set the target DataSource that this DataSource should delegate to.
-	 */
-	public void setTargetDataSource(@Nullable DataSource targetDataSource) {
-		this.targetDataSource = targetDataSource;
 	}
 
 	/**
@@ -77,7 +70,15 @@ public class DelegatingDataSource implements DataSource, InitializingBean {
 	}
 
 	/**
+	 * Set the target DataSource that this DataSource should delegate to.
+	 */
+	public void setTargetDataSource(@Nullable DataSource targetDataSource) {
+		this.targetDataSource = targetDataSource;
+	}
+
+	/**
 	 * Obtain the target {@code DataSource} for actual use (never {@code null}).
+	 *
 	 * @since 5.0
 	 */
 	protected DataSource obtainTargetDataSource() {

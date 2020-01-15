@@ -16,14 +16,13 @@
 
 package org.springframework.web.reactive.resource;
 
-import java.util.List;
-
-import org.webjars.WebJarAssetLocator;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 import org.springframework.web.server.ServerWebExchange;
+import org.webjars.WebJarAssetLocator;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * A {@code ResourceResolver} that delegates to the chain to locate a resource and then
@@ -41,8 +40,8 @@ import org.springframework.web.server.ServerWebExchange;
  *
  * @author Rossen Stoyanchev
  * @author Brian Clozel
- * @since 5.0
  * @see <a href="https://www.webjars.org">webjars.org</a>
+ * @since 5.0
  */
 public class WebJarsResourceResolver extends AbstractResourceResolver {
 
@@ -72,15 +71,14 @@ public class WebJarsResourceResolver extends AbstractResourceResolver {
 
 	@Override
 	protected Mono<Resource> resolveResourceInternal(@Nullable ServerWebExchange exchange,
-			String requestPath, List<? extends Resource> locations, ResourceResolverChain chain) {
+													 String requestPath, List<? extends Resource> locations, ResourceResolverChain chain) {
 
 		return chain.resolveResource(exchange, requestPath, locations)
 				.switchIfEmpty(Mono.defer(() -> {
 					String webJarsResourcePath = findWebJarResourcePath(requestPath);
 					if (webJarsResourcePath != null) {
 						return chain.resolveResource(exchange, webJarsResourcePath, locations);
-					}
-					else {
+					} else {
 						return Mono.empty();
 					}
 				}));
@@ -88,15 +86,14 @@ public class WebJarsResourceResolver extends AbstractResourceResolver {
 
 	@Override
 	protected Mono<String> resolveUrlPathInternal(String resourceUrlPath,
-			List<? extends Resource> locations, ResourceResolverChain chain) {
+												  List<? extends Resource> locations, ResourceResolverChain chain) {
 
 		return chain.resolveUrlPath(resourceUrlPath, locations)
 				.switchIfEmpty(Mono.defer(() -> {
 					String webJarResourcePath = findWebJarResourcePath(resourceUrlPath);
 					if (webJarResourcePath != null) {
 						return chain.resolveUrlPath(webJarResourcePath, locations);
-					}
-					else {
+					} else {
 						return Mono.empty();
 					}
 				}));

@@ -16,22 +16,6 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalLong;
-import java.util.function.Function;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.codec.DecodingException;
 import org.springframework.core.codec.Hints;
@@ -54,6 +38,21 @@ import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 import org.springframework.web.server.WebSession;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalLong;
+import java.util.function.Function;
 
 /**
  * {@code ServerRequest} implementation based on a {@link ServerWebExchange}.
@@ -145,10 +144,12 @@ class DefaultServerRequest implements ServerRequest {
 					public List<HttpMessageReader<?>> messageReaders() {
 						return messageReaders;
 					}
+
 					@Override
 					public Optional<ServerHttpResponse> serverResponse() {
 						return Optional.of(exchange().getResponse());
 					}
+
 					@Override
 					public Map<String, Object> hints() {
 						return hints;

@@ -16,6 +16,13 @@
 
 package org.springframework.jdbc.core.simple;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.jdbc.core.SqlParameterValue;
+import org.springframework.jdbc.core.metadata.TableMetaDataContext;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -24,24 +31,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.jdbc.core.SqlParameterValue;
-import org.springframework.jdbc.core.metadata.TableMetaDataContext;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.atLeastOnce;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Mock object based tests for TableMetaDataContext.
  *
  * @author Thomas Risberg
  */
-public class TableMetaDataContextTests  {
+public class TableMetaDataContextTests {
 
 	private Connection connection;
 
@@ -99,7 +101,7 @@ public class TableMetaDataContextTests  {
 		map.registerSqlType("version", Types.NUMERIC);
 
 		context.setTableName(TABLE);
-		context.processMetaData(dataSource, new ArrayList<>(), new String[] {});
+		context.processMetaData(dataSource, new ArrayList<>(), new String[]{});
 
 		List<Object> values = context.matchInParameterValuesWithInsertColumns(map);
 
@@ -141,7 +143,7 @@ public class TableMetaDataContextTests  {
 		given(databaseMetaData.getColumns(null, USER, TABLE, null)).willReturn(columnsResultSet);
 
 		MapSqlParameterSource map = new MapSqlParameterSource();
-		String[] keyCols = new String[] { "id" };
+		String[] keyCols = new String[]{"id"};
 		context.setTableName(TABLE);
 		context.processMetaData(dataSource, new ArrayList<>(), keyCols);
 		List<Object> values = context.matchInParameterValuesWithInsertColumns(map);

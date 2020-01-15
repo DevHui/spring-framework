@@ -16,6 +16,14 @@
 
 package org.springframework.context.index;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.core.SpringProperties;
+import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ConcurrentReferenceHashMap;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,15 +31,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.core.SpringProperties;
-import org.springframework.core.io.UrlResource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.lang.Nullable;
-import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * Candidate components index loading mechanism for internal use within the framework.
@@ -75,10 +74,11 @@ public final class CandidateComponentsIndexLoader {
 	 * Load and instantiate the {@link CandidateComponentsIndex} from
 	 * {@value #COMPONENTS_RESOURCE_LOCATION}, using the given class loader. If no
 	 * index is available, return {@code null}.
+	 *
 	 * @param classLoader the ClassLoader to use for loading (can be {@code null} to use the default)
 	 * @return the index to use or {@code null} if no index was found
 	 * @throws IllegalArgumentException if any module index cannot
-	 * be loaded or if an error occurs while creating {@link CandidateComponentsIndex}
+	 *                                  be loaded or if an error occurs while creating {@link CandidateComponentsIndex}
 	 */
 	@Nullable
 	public static CandidateComponentsIndex loadIndex(@Nullable ClassLoader classLoader) {
@@ -111,8 +111,7 @@ public final class CandidateComponentsIndexLoader {
 			}
 			int totalCount = result.stream().mapToInt(Properties::size).sum();
 			return (totalCount > 0 ? new CandidateComponentsIndex(result) : null);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new IllegalStateException("Unable to load indexes from location [" +
 					COMPONENTS_RESOURCE_LOCATION + "]", ex);
 		}

@@ -16,14 +16,8 @@
 
 package org.springframework.messaging.core;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.converter.CompositeMessageConverter;
@@ -36,7 +30,14 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 
-import static org.junit.Assert.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Unit tests for {@link AbstractMessageSendingTemplate}.

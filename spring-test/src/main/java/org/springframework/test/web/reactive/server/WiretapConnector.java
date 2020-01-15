@@ -16,18 +16,7 @@
 
 package org.springframework.test.web.reactive.server;
 
-import java.net.URI;
-import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoProcessor;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -39,6 +28,16 @@ import org.springframework.http.client.reactive.ClientHttpResponse;
 import org.springframework.http.client.reactive.ClientHttpResponseDecorator;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoProcessor;
+
+import java.net.URI;
+import java.time.Duration;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * Decorate another {@link ClientHttpConnector} with the purpose of
@@ -46,8 +45,8 @@ import org.springframework.util.Assert;
  * transmitted to and received from the server.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see HttpHandlerConnector
+ * @since 5.0
  */
 class WiretapConnector implements ClientHttpConnector {
 
@@ -63,7 +62,7 @@ class WiretapConnector implements ClientHttpConnector {
 
 	@Override
 	public Mono<ClientHttpResponse> connect(HttpMethod method, URI uri,
-			Function<? super ClientHttpRequest, Mono<Void>> requestCallback) {
+											Function<? super ClientHttpRequest, Mono<Void>> requestCallback) {
 
 		AtomicReference<WiretapClientHttpRequest> requestRef = new AtomicReference<>();
 
@@ -73,7 +72,7 @@ class WiretapConnector implements ClientHttpConnector {
 					requestRef.set(wrapped);
 					return requestCallback.apply(wrapped);
 				})
-				.map(response ->  {
+				.map(response -> {
 					WiretapClientHttpRequest wrappedRequest = requestRef.get();
 					String header = WebTestClient.WEBTESTCLIENT_REQUEST_ID;
 					String requestId = wrappedRequest.getHeaders().getFirst(header);
@@ -95,30 +94,6 @@ class WiretapConnector implements ClientHttpConnector {
 		});
 		return info;
 	}
-
-
-	/**
-	 * Holder for {@link WiretapClientHttpRequest} and {@link WiretapClientHttpResponse}.
-	 */
-	class Info {
-
-		private final WiretapClientHttpRequest request;
-
-		private final WiretapClientHttpResponse response;
-
-
-		public Info(WiretapClientHttpRequest request, WiretapClientHttpResponse response) {
-			this.request = request;
-			this.response = response;
-		}
-
-
-		public ExchangeResult createExchangeResult(Duration timeout, @Nullable String uriTemplate) {
-			return new ExchangeResult(this.request, this.response, this.request.getRecorder().getContent(),
-					this.response.getRecorder().getContent(), timeout, uriTemplate);
-		}
-	}
-
 
 	/**
 	 * Tap into a Publisher of data buffers to save the content.
@@ -142,7 +117,7 @@ class WiretapConnector implements ClientHttpConnector {
 
 
 		public WiretapRecorder(@Nullable Publisher<? extends DataBuffer> publisher,
-				@Nullable Publisher<? extends Publisher<? extends DataBuffer>> publisherNested) {
+							   @Nullable Publisher<? extends Publisher<? extends DataBuffer>> publisherNested) {
 
 			if (publisher != null && publisherNested != null) {
 				throw new IllegalArgumentException("At most one publisher expected");
@@ -216,7 +191,6 @@ class WiretapConnector implements ClientHttpConnector {
 		}
 	}
 
-
 	/**
 	 * ClientHttpRequestDecorator that intercepts and saves the request body.
 	 */
@@ -254,7 +228,6 @@ class WiretapConnector implements ClientHttpConnector {
 		}
 	}
 
-
 	/**
 	 * ClientHttpResponseDecorator that intercepts and saves the response body.
 	 */
@@ -277,6 +250,28 @@ class WiretapConnector implements ClientHttpConnector {
 		@SuppressWarnings("ConstantConditions")
 		public Flux<DataBuffer> getBody() {
 			return Flux.from(this.recorder.getPublisherToUse());
+		}
+	}
+
+	/**
+	 * Holder for {@link WiretapClientHttpRequest} and {@link WiretapClientHttpResponse}.
+	 */
+	class Info {
+
+		private final WiretapClientHttpRequest request;
+
+		private final WiretapClientHttpResponse response;
+
+
+		public Info(WiretapClientHttpRequest request, WiretapClientHttpResponse response) {
+			this.request = request;
+			this.response = response;
+		}
+
+
+		public ExchangeResult createExchangeResult(Duration timeout, @Nullable String uriTemplate) {
+			return new ExchangeResult(this.request, this.response, this.request.getRecorder().getContent(),
+					this.response.getRecorder().getContent(), timeout, uriTemplate);
 		}
 	}
 

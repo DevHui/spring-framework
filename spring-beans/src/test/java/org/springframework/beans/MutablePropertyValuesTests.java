@@ -16,12 +16,17 @@
 
 package org.springframework.beans;
 
-import java.util.Iterator;
-
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.util.Iterator;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link MutablePropertyValues}.
@@ -121,8 +126,7 @@ public class MutablePropertyValuesTests extends AbstractPropertyValuesTests {
 		try {
 			it.remove();
 			fail("Should have thrown UnsupportedOperationException");
-		}
-		catch (UnsupportedOperationException ex) {
+		} catch (UnsupportedOperationException ex) {
 			// expected
 		}
 		assertFalse(it.hasNext());

@@ -16,10 +16,6 @@
 
 package org.springframework.expression.spel.ast;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.asm.MethodVisitor;
 import org.springframework.expression.EvaluationException;
 import org.springframework.expression.TypedValue;
@@ -28,6 +24,10 @@ import org.springframework.expression.spel.ExpressionState;
 import org.springframework.expression.spel.SpelNode;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Represent a list in an expression, e.g. '{1,2,3}'
@@ -63,8 +63,7 @@ public class InlineList extends SpelNodeImpl {
 					if (!inlineList.isConstant()) {
 						isConstant = false;
 					}
-				}
-				else {
+				} else {
 					isConstant = false;
 				}
 			}
@@ -76,8 +75,7 @@ public class InlineList extends SpelNodeImpl {
 				SpelNode child = getChild(c);
 				if ((child instanceof Literal)) {
 					constantList.add(((Literal) child).getLiteralValue().getValue());
-				}
-				else if (child instanceof InlineList) {
+				} else if (child instanceof InlineList) {
 					constantList.add(((InlineList) child).getConstantValue());
 				}
 			}
@@ -89,8 +87,7 @@ public class InlineList extends SpelNodeImpl {
 	public TypedValue getValueInternal(ExpressionState expressionState) throws EvaluationException {
 		if (this.constant != null) {
 			return this.constant;
-		}
-		else {
+		} else {
 			List<Object> returnValue = new ArrayList<>();
 			int childCount = getChildCount();
 			for (int c = 0; c < childCount; c++) {
@@ -160,17 +157,15 @@ public class InlineList extends SpelNodeImpl {
 		for (int c = 0; c < childCount; c++) {
 			if (!nested) {
 				mv.visitFieldInsn(GETSTATIC, clazzname, constantFieldName, "Ljava/util/List;");
-			}
-			else {
+			} else {
 				mv.visitInsn(DUP);
 			}
 			// The children might be further lists if they are not constants. In this
 			// situation do not call back into generateCode() because it will register another clinit adder.
 			// Instead, directly build the list here:
 			if (this.children[c] instanceof InlineList) {
-				((InlineList)this.children[c]).generateClinitCode(clazzname, constantFieldName, mv, codeflow, true);
-			}
-			else {
+				((InlineList) this.children[c]).generateClinitCode(clazzname, constantFieldName, mv, codeflow, true);
+			} else {
 				this.children[c].generateCode(mv, codeflow);
 				String lastDesc = codeflow.lastDescriptor();
 				if (CodeFlow.isPrimitive(lastDesc)) {

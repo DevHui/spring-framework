@@ -16,21 +16,7 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.Test;
-
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -49,8 +35,26 @@ import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.method.HandlerTypePredicate;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link RequestMappingHandlerMapping}.
@@ -63,6 +67,7 @@ public class RequestMappingHandlerMappingTests {
 	private final StaticWebApplicationContext wac = new StaticWebApplicationContext();
 
 	private final RequestMappingHandlerMapping handlerMapping = new RequestMappingHandlerMapping();
+
 	{
 		this.handlerMapping.setApplicationContext(wac);
 	}
@@ -135,10 +140,10 @@ public class RequestMappingHandlerMappingTests {
 				value -> "/${pattern}/bar".equals(value) ? "/foo/bar" : value
 		);
 
-		String[] patterns = new String[] { "/foo", "/${pattern}/bar" };
+		String[] patterns = new String[]{"/foo", "/${pattern}/bar"};
 		String[] result = this.handlerMapping.resolveEmbeddedValuesInPatterns(patterns);
 
-		assertArrayEquals(new String[] { "/foo", "/foo/bar" }, result);
+		assertArrayEquals(new String[]{"/foo", "/foo/bar"}, result);
 	}
 
 	@Test
@@ -177,9 +182,9 @@ public class RequestMappingHandlerMappingTests {
 		RequestMappingInfo info = assertComposedAnnotationMapping("postJson", "/postJson", RequestMethod.POST);
 
 		assertEquals(MediaType.APPLICATION_JSON_VALUE,
-			info.getConsumesCondition().getConsumableMediaTypes().iterator().next().toString());
+				info.getConsumesCondition().getConsumableMediaTypes().iterator().next().toString());
 		assertEquals(MediaType.APPLICATION_JSON_VALUE,
-			info.getProducesCondition().getProducibleMediaTypes().iterator().next().toString());
+				info.getProducesCondition().getProducibleMediaTypes().iterator().next().toString());
 	}
 
 	@Test // SPR-14988
@@ -223,7 +228,7 @@ public class RequestMappingHandlerMappingTests {
 	}
 
 	private RequestMappingInfo assertComposedAnnotationMapping(String methodName, String path,
-			RequestMethod requestMethod) throws Exception {
+															   RequestMethod requestMethod) throws Exception {
 
 		Class<?> clazz = ComposedAnnotationController.class;
 		Method method = clazz.getMethod(methodName);
@@ -242,6 +247,17 @@ public class RequestMappingHandlerMappingTests {
 		return info;
 	}
 
+
+	@RequestMapping(method = RequestMethod.POST,
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface PostJson {
+
+		@AliasFor(annotation = RequestMapping.class, attribute = "path")
+		String[] value() default {};
+	}
 
 	@Controller
 	@RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -276,19 +292,6 @@ public class RequestMappingHandlerMappingTests {
 		}
 
 	}
-
-
-	@RequestMapping(method = RequestMethod.POST,
-			produces = MediaType.APPLICATION_JSON_VALUE,
-			consumes = MediaType.APPLICATION_JSON_VALUE)
-	@Target(ElementType.METHOD)
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface PostJson {
-
-		@AliasFor(annotation = RequestMapping.class, attribute = "path")
-		String[] value() default {};
-	}
-
 
 	@RestController
 	@RequestMapping("/user")

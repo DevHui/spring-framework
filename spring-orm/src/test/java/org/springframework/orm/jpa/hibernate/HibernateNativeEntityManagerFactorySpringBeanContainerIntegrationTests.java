@@ -16,8 +16,6 @@
 
 package org.springframework.orm.jpa.hibernate;
 
-import javax.persistence.AttributeConverter;
-
 import org.hibernate.SessionFactory;
 import org.hibernate.resource.beans.container.spi.BeanContainer;
 import org.hibernate.resource.beans.container.spi.ContainedBean;
@@ -25,7 +23,6 @@ import org.hibernate.resource.beans.spi.BeanInstanceProducer;
 import org.hibernate.resource.beans.spi.ManagedBeanRegistry;
 import org.hibernate.service.ServiceRegistry;
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -35,7 +32,13 @@ import org.springframework.orm.jpa.hibernate.beans.MultiplePrototypesInSpringCon
 import org.springframework.orm.jpa.hibernate.beans.NoDefinitionInSpringContextTestBean;
 import org.springframework.orm.jpa.hibernate.beans.SinglePrototypeInSpringContextTestBean;
 
-import static org.junit.Assert.*;
+import javax.persistence.AttributeConverter;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Hibernate-specific SpringBeanContainer integration tests.
@@ -51,7 +54,7 @@ public class HibernateNativeEntityManagerFactorySpringBeanContainerIntegrationTe
 
 	@Override
 	protected String[] getConfigLocations() {
-		return new String[] {"/org/springframework/orm/jpa/hibernate/hibernate-manager-native.xml",
+		return new String[]{"/org/springframework/orm/jpa/hibernate/hibernate-manager-native.xml",
 				"/org/springframework/orm/jpa/memdb.xml", "/org/springframework/orm/jpa/inject.xml",
 				"/org/springframework/orm/jpa/hibernate/inject-hibernate-spring-bean-container-tests.xml"};
 	}
@@ -342,10 +345,9 @@ public class HibernateNativeEntityManagerFactorySpringBeanContainerIntegrationTe
 				 * A real-world implementation would obviously be different.
 				 */
 				NoDefinitionInSpringContextTestBean instance = new NoDefinitionInSpringContextTestBean(null, BeanSource.FALLBACK);
-				return beanType.cast( instance );
-			}
-			catch (RuntimeException e) {
-				throw new AssertionError( "Unexpected error instantiating a bean by type using reflection", e );
+				return beanType.cast(instance);
+			} catch (RuntimeException e) {
+				throw new AssertionError("Unexpected error instantiating a bean by type using reflection", e);
 			}
 		}
 
@@ -358,10 +360,9 @@ public class HibernateNativeEntityManagerFactorySpringBeanContainerIntegrationTe
 				 * A real-world implementation would obviously be different.
 				 */
 				NoDefinitionInSpringContextTestBean instance = new NoDefinitionInSpringContextTestBean(name, BeanSource.FALLBACK);
-				return beanType.cast( instance );
-			}
-			catch (RuntimeException e) {
-				throw new AssertionError( "Unexpected error instantiating a bean by name using reflection", e );
+				return beanType.cast(instance);
+			} catch (RuntimeException e) {
+				throw new AssertionError("Unexpected error instantiating a bean by name using reflection", e);
 			}
 		}
 

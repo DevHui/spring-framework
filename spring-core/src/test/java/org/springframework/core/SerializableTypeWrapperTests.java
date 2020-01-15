@@ -16,6 +16,8 @@
 
 package org.springframework.core;
 
+import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -29,10 +31,8 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.List;
 
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link SerializableTypeWrapper}.
@@ -119,6 +119,11 @@ public class SerializableTypeWrapperTests {
 	}
 
 
+	interface Methods {
+
+		<T> List<T> method(Class<T> p1, T p2);
+	}
+
 	static class Fields<T> {
 
 		public String classType;
@@ -131,13 +136,6 @@ public class SerializableTypeWrapperTests {
 
 		public List<? extends CharSequence> wildcardType;
 	}
-
-
-	interface Methods {
-
-		<T> List<T> method(Class<T> p1, T p2);
-	}
-
 
 	static class Constructors {
 

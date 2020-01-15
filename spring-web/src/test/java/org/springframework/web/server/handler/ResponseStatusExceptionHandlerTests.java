@@ -16,14 +16,8 @@
 
 package org.springframework.web.server.handler;
 
-import java.time.Duration;
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,9 +27,13 @@ import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.server.MethodNotAllowedException;
 import org.springframework.web.server.NotAcceptableStatusException;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.time.Duration;
+import java.util.Arrays;
 
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 

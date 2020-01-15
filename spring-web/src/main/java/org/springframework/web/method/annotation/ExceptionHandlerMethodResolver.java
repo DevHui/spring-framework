@@ -16,13 +16,6 @@
 
 package org.springframework.web.method.annotation;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.core.ExceptionDepthComparator;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -31,6 +24,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.ReflectionUtils.MethodFilter;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Discovers {@linkplain ExceptionHandler @ExceptionHandler} methods in a given class,
@@ -57,6 +57,7 @@ public class ExceptionHandlerMethodResolver {
 
 	/**
 	 * A constructor that finds {@link ExceptionHandler} methods in the given type.
+	 *
 	 * @param handlerType the type to introspect
 	 */
 	public ExceptionHandlerMethodResolver(Class<?> handlerType) {
@@ -113,6 +114,7 @@ public class ExceptionHandlerMethodResolver {
 	/**
 	 * Find a {@link Method} to handle the given exception.
 	 * Use {@link ExceptionDepthComparator} if more than one match is found.
+	 *
 	 * @param exception the exception
 	 * @return a Method to handle the exception, or {@code null} if none found
 	 */
@@ -124,6 +126,7 @@ public class ExceptionHandlerMethodResolver {
 	/**
 	 * Find a {@link Method} to handle the given Throwable.
 	 * Use {@link ExceptionDepthComparator} if more than one match is found.
+	 *
 	 * @param exception the exception
 	 * @return a Method to handle the exception, or {@code null} if none found
 	 * @since 5.0
@@ -143,6 +146,7 @@ public class ExceptionHandlerMethodResolver {
 	/**
 	 * Find a {@link Method} to handle the given exception type. This can be
 	 * useful if an {@link Exception} instance is not available (e.g. for tools).
+	 *
 	 * @param exceptionType the exception type
 	 * @return a Method to handle the exception, or {@code null} if none found
 	 */
@@ -170,8 +174,7 @@ public class ExceptionHandlerMethodResolver {
 		if (!matches.isEmpty()) {
 			matches.sort(new ExceptionDepthComparator(exceptionType));
 			return this.mappedMethods.get(matches.get(0));
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

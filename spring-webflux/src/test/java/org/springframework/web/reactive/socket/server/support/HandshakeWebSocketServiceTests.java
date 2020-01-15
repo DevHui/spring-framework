@@ -16,14 +16,8 @@
 
 package org.springframework.web.reactive.socket.server.support;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.function.Supplier;
-
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.lang.Nullable;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
@@ -32,9 +26,16 @@ import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.server.RequestUpgradeStrategy;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Supplier;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link HandshakeWebSocketService}.
@@ -73,11 +74,11 @@ public class HandshakeWebSocketServiceTests {
 
 	private MockServerHttpRequest initHandshakeRequest() {
 		return MockServerHttpRequest.get("/")
-					.header("upgrade", "websocket")
-					.header("connection", "upgrade")
-					.header("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==")
-					.header("Sec-WebSocket-Version", "13")
-					.build();
+				.header("upgrade", "websocket")
+				.header("connection", "upgrade")
+				.header("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==")
+				.header("Sec-WebSocket-Version", "13")
+				.build();
 	}
 
 
@@ -87,7 +88,7 @@ public class HandshakeWebSocketServiceTests {
 
 		@Override
 		public Mono<Void> upgrade(ServerWebExchange exchange, WebSocketHandler webSocketHandler,
-				@Nullable  String subProtocol, Supplier<HandshakeInfo> handshakeInfoFactory) {
+								  @Nullable String subProtocol, Supplier<HandshakeInfo> handshakeInfoFactory) {
 
 			this.handshakeInfo = handshakeInfoFactory.get();
 			return Mono.empty();

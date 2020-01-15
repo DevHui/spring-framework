@@ -16,16 +16,15 @@
 
 package org.springframework.web.reactive.socket.server;
 
-import java.util.function.Supplier;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.util.function.Supplier;
 
 /**
  * A strategy for upgrading an HTTP request to a WebSocket session depending
@@ -43,9 +42,10 @@ public interface RequestUpgradeStrategy {
 
 	/**
 	 * Upgrade to a WebSocket session and handle it with the given handler.
-	 * @param exchange the current exchange
+	 *
+	 * @param exchange         the current exchange
 	 * @param webSocketHandler handler for the WebSocket session
-	 * @param subProtocol the selected sub-protocol got the handler
+	 * @param subProtocol      the selected sub-protocol got the handler
 	 * @return completion {@code Mono<Void>} to indicate the outcome of the
 	 * WebSocket session handling.
 	 * @deprecated as of 5.1 in favor of
@@ -53,16 +53,17 @@ public interface RequestUpgradeStrategy {
 	 */
 	@Deprecated
 	default Mono<Void> upgrade(ServerWebExchange exchange, WebSocketHandler webSocketHandler,
-			@Nullable String subProtocol) {
+							   @Nullable String subProtocol) {
 
 		return Mono.error(new UnsupportedOperationException());
 	}
 
 	/**
 	 * Upgrade to a WebSocket session and handle it with the given handler.
-	 * @param exchange the current exchange
-	 * @param webSocketHandler handler for the WebSocket session
-	 * @param subProtocol the selected sub-protocol got the handler
+	 *
+	 * @param exchange             the current exchange
+	 * @param webSocketHandler     handler for the WebSocket session
+	 * @param subProtocol          the selected sub-protocol got the handler
 	 * @param handshakeInfoFactory factory to create HandshakeInfo for the WebSocket session
 	 * @return completion {@code Mono<Void>} to indicate the outcome of the
 	 * WebSocket session handling.
@@ -70,7 +71,7 @@ public interface RequestUpgradeStrategy {
 	 */
 	@SuppressWarnings("deprecation")
 	default Mono<Void> upgrade(ServerWebExchange exchange, WebSocketHandler webSocketHandler,
-			@Nullable String subProtocol, Supplier<HandshakeInfo> handshakeInfoFactory) {
+							   @Nullable String subProtocol, Supplier<HandshakeInfo> handshakeInfoFactory) {
 
 		return upgrade(exchange, webSocketHandler, subProtocol);
 	}

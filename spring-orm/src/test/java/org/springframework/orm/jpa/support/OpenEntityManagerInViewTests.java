@@ -16,23 +16,9 @@
 
 package org.springframework.orm.jpa.support;
 
-import java.io.IOException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.mock.web.test.MockAsyncContext;
 import org.springframework.mock.web.test.MockFilterConfig;
@@ -49,8 +35,28 @@ import org.springframework.web.context.request.async.WebAsyncManager;
 import org.springframework.web.context.request.async.WebAsyncUtils;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.reset;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Costin Leau
@@ -311,7 +317,7 @@ public class OpenEntityManagerInViewTests {
 		final FilterChain filterChain2 = new FilterChain() {
 			@Override
 			public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse)
-				throws IOException, ServletException {
+					throws IOException, ServletException {
 				assertTrue(TransactionSynchronizationManager.hasResource(factory2));
 				filter.doFilter(servletRequest, servletResponse, filterChain);
 			}
@@ -375,7 +381,7 @@ public class OpenEntityManagerInViewTests {
 		final FilterChain filterChain2 = new FilterChain() {
 			@Override
 			public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse)
-				throws IOException, ServletException {
+					throws IOException, ServletException {
 				assertTrue(TransactionSynchronizationManager.hasResource(factory2));
 				filter.doFilter(servletRequest, servletResponse, filterChain);
 				count2.incrementAndGet();

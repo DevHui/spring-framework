@@ -16,21 +16,19 @@
 
 package org.springframework.web.method.annotation;
 
+import org.junit.Test;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.ClassUtils;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.SocketException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Test;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.util.ClassUtils;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test fixture for {@link ExceptionHandlerMethodResolver} tests.
@@ -98,7 +96,8 @@ public class ExceptionHandlerMethodResolverTests {
 	@Controller
 	static class ExceptionController {
 
-		public void handle() {}
+		public void handle() {
+		}
 
 		@ExceptionHandler(IOException.class)
 		public void handleIOException() {
@@ -118,7 +117,7 @@ public class ExceptionHandlerMethodResolverTests {
 	static class InheritedController extends ExceptionController {
 
 		@Override
-		public void handleIOException()	{
+		public void handleIOException() {
 		}
 	}
 
@@ -126,7 +125,8 @@ public class ExceptionHandlerMethodResolverTests {
 	@Controller
 	static class AmbiguousController {
 
-		public void handle() {}
+		public void handle() {
+		}
 
 		@ExceptionHandler({BindException.class, IllegalArgumentException.class})
 		public String handle1(Exception ex, HttpServletRequest request, HttpServletResponse response)

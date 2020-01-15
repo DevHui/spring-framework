@@ -16,27 +16,10 @@
 
 package org.springframework.web.reactive.function;
 
-import java.io.IOException;
-import java.net.URI;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.codec.ByteBufferEncoder;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.io.ClassPathResource;
@@ -66,11 +49,28 @@ import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpResponse;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static java.nio.charset.StandardCharsets.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.http.codec.json.Jackson2CodecSupport.*;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertThat;
+import static org.springframework.http.codec.json.Jackson2CodecSupport.JSON_VIEW_HINT;
 
 /**
  * @author Arjen Poutsma
@@ -102,10 +102,12 @@ public class BodyInsertersTests {
 			public List<HttpMessageWriter<?>> messageWriters() {
 				return messageWriters;
 			}
+
 			@Override
 			public Optional<ServerHttpRequest> serverRequest() {
 				return Optional.empty();
 			}
+
 			@Override
 			public Map<String, Object> hints() {
 				return hints;
@@ -375,7 +377,8 @@ public class BodyInsertersTests {
 	}
 
 
-	interface SafeToSerialize {}
+	interface SafeToSerialize {
+	}
 
 
 	@SuppressWarnings("unused")

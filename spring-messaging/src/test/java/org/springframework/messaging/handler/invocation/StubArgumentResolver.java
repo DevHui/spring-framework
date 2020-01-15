@@ -16,12 +16,12 @@
 
 package org.springframework.messaging.handler.invocation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Stub resolver for a fixed value type and/or value.

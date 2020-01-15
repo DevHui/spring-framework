@@ -16,21 +16,20 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.net.URI;
-import java.util.List;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import java.net.URI;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 import static org.springframework.web.reactive.function.BodyExtractors.*;
 import static org.springframework.web.reactive.function.BodyInserters.*;
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
@@ -64,7 +63,8 @@ public class PublisherHandlerFunctionIntegrationTests extends AbstractRouterFunc
 
 	@Test
 	public void flux() {
-		ParameterizedTypeReference<List<Person>> reference = new ParameterizedTypeReference<List<Person>>() {};
+		ParameterizedTypeReference<List<Person>> reference = new ParameterizedTypeReference<List<Person>>() {
+		};
 		ResponseEntity<List<Person>> result =
 				restTemplate.exchange("http://localhost:" + port + "/flux", HttpMethod.GET, null, reference);
 

@@ -16,17 +16,8 @@
 
 package org.springframework.web.socket.config;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-
 import org.hamcrest.Matchers;
 import org.junit.Test;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
@@ -90,8 +81,24 @@ import org.springframework.web.socket.sockjs.transport.TransportType;
 import org.springframework.web.socket.sockjs.transport.handler.DefaultSockJsService;
 import org.springframework.web.socket.sockjs.transport.handler.WebSocketTransportHandler;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Test fixture for {@link MessageBrokerBeanDefinitionParser}.
@@ -207,11 +214,11 @@ public class MessageBrokerBeanDefinitionParserTests {
 		DefaultSubscriptionRegistry registry = (DefaultSubscriptionRegistry) brokerMessageHandler.getSubscriptionRegistry();
 		assertEquals("my-selector", registry.getSelectorHeaderName());
 		assertNotNull(brokerMessageHandler.getTaskScheduler());
-		assertArrayEquals(new long[] {15000, 15000}, brokerMessageHandler.getHeartbeatValue());
+		assertArrayEquals(new long[]{15000, 15000}, brokerMessageHandler.getHeartbeatValue());
 		assertTrue(brokerMessageHandler.isPreservePublishOrder());
 
 		List<Class<? extends MessageHandler>> subscriberTypes = Arrays.asList(SimpAnnotationMethodMessageHandler.class,
-						UserDestinationMessageHandler.class, SimpleBrokerMessageHandler.class);
+				UserDestinationMessageHandler.class, SimpleBrokerMessageHandler.class);
 		testChannel("clientInboundChannel", subscriberTypes, 2);
 		testExecutor("clientInboundChannel", Runtime.getRuntime().availableProcessors() * 2, Integer.MAX_VALUE, 60);
 
@@ -224,8 +231,7 @@ public class MessageBrokerBeanDefinitionParserTests {
 		try {
 			this.appContext.getBean("brokerChannelExecutor", ThreadPoolTaskExecutor.class);
 			fail("expected exception");
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			// expected
 		}
 
@@ -276,7 +282,7 @@ public class MessageBrokerBeanDefinitionParserTests {
 		assertEquals("spring.io", messageBroker.getVirtualHost());
 		assertEquals(5000, messageBroker.getSystemHeartbeatReceiveInterval());
 		assertEquals(5000, messageBroker.getSystemHeartbeatSendInterval());
-		assertThat(messageBroker.getDestinationPrefixes(), Matchers.containsInAnyOrder("/topic","/queue"));
+		assertThat(messageBroker.getDestinationPrefixes(), Matchers.containsInAnyOrder("/topic", "/queue"));
 		assertTrue(messageBroker.isPreservePublishOrder());
 
 		List<Class<? extends MessageHandler>> subscriberTypes = Arrays.asList(SimpAnnotationMethodMessageHandler.class,
@@ -293,8 +299,7 @@ public class MessageBrokerBeanDefinitionParserTests {
 		try {
 			this.appContext.getBean("brokerChannelExecutor", ThreadPoolTaskExecutor.class);
 			fail("expected exception");
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			// expected
 		}
 
@@ -446,17 +451,17 @@ public class MessageBrokerBeanDefinitionParserTests {
 
 
 	private void testChannel(
-			String channelName, List<Class<? extends  MessageHandler>> subscriberTypes, int interceptorCount) {
+			String channelName, List<Class<? extends MessageHandler>> subscriberTypes, int interceptorCount) {
 
 		AbstractSubscribableChannel channel = this.appContext.getBean(channelName, AbstractSubscribableChannel.class);
-		for (Class<? extends  MessageHandler> subscriberType : subscriberTypes) {
+		for (Class<? extends MessageHandler> subscriberType : subscriberTypes) {
 			MessageHandler subscriber = this.appContext.getBean(subscriberType);
 			assertNotNull("No subscription for " + subscriberType, subscriber);
 			assertTrue(channel.hasSubscription(subscriber));
 		}
 		List<ChannelInterceptor> interceptors = channel.getInterceptors();
 		assertEquals(interceptorCount, interceptors.size());
-		assertEquals(ImmutableMessageChannelInterceptor.class, interceptors.get(interceptors.size()-1).getClass());
+		assertEquals(ImmutableMessageChannelInterceptor.class, interceptors.get(interceptors.size() - 1).getClass());
 	}
 
 	private void testExecutor(String channelName, int corePoolSize, int maxPoolSize, int keepAliveSeconds) {

@@ -16,16 +16,9 @@
 
 package org.springframework.jms.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -47,9 +40,18 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Stephane Nicoll
@@ -106,8 +108,7 @@ public class JmsListenerAnnotationBeanPostProcessorTests {
 			assertEquals(MetaAnnotationTestBean.class.getMethod("handleIt", String.class),
 					methodEndpoint.getMostSpecificMethod());
 			assertEquals("metaTestQueue", ((AbstractJmsListenerEndpoint) endpoint).getDestination());
-		}
-		finally {
+		} finally {
 			context.close();
 		}
 	}
@@ -134,8 +135,7 @@ public class JmsListenerAnnotationBeanPostProcessorTests {
 			ReflectionUtils.makeAccessible(method);
 			Object destination = ReflectionUtils.invokeMethod(method, endpoint);
 			assertEquals("SendTo annotation not found on proxy", "foobar", destination);
-		}
-		finally {
+		} finally {
 			context.close();
 		}
 	}
@@ -162,8 +162,7 @@ public class JmsListenerAnnotationBeanPostProcessorTests {
 			ReflectionUtils.makeAccessible(method);
 			Object destination = ReflectionUtils.invokeMethod(method, endpoint);
 			assertEquals("SendTo annotation not found on proxy", "foobar", destination);
-		}
-		finally {
+		} finally {
 			context.close();
 		}
 	}
@@ -178,6 +177,18 @@ public class JmsListenerAnnotationBeanPostProcessorTests {
 	}
 
 
+	@JmsListener(destination = "metaTestQueue")
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface FooListener {
+	}
+
+
+	interface SimpleService {
+
+		void handleIt(String value, String body);
+	}
+
 	@Component
 	static class SimpleMessageListenerTestBean {
 
@@ -186,7 +197,6 @@ public class JmsListenerAnnotationBeanPostProcessorTests {
 		}
 	}
 
-
 	@Component
 	static class MetaAnnotationTestBean {
 
@@ -194,14 +204,6 @@ public class JmsListenerAnnotationBeanPostProcessorTests {
 		public void handleIt(String body) {
 		}
 	}
-
-
-	@JmsListener(destination = "metaTestQueue")
-	@Target(ElementType.METHOD)
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface FooListener {
-	}
-
 
 	@Configuration
 	static class Config {
@@ -225,7 +227,6 @@ public class JmsListenerAnnotationBeanPostProcessorTests {
 		}
 	}
 
-
 	@Configuration
 	@EnableTransactionManagement
 	static class ProxyConfig {
@@ -235,13 +236,6 @@ public class JmsListenerAnnotationBeanPostProcessorTests {
 			return mock(PlatformTransactionManager.class);
 		}
 	}
-
-
-	interface SimpleService {
-
-		void handleIt(String value, String body);
-	}
-
 
 	@Component
 	static class InterfaceProxyTestBean implements SimpleService {

@@ -16,17 +16,16 @@
 
 package org.springframework.http.client.reactive;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import reactor.netty.http.HttpResources;
-import reactor.netty.resources.ConnectionProvider;
-import reactor.netty.resources.LoopResources;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import reactor.netty.http.HttpResources;
+import reactor.netty.resources.ConnectionProvider;
+import reactor.netty.resources.LoopResources;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Factory to manage Reactor Netty resources, i.e. {@link LoopResources} for
@@ -60,20 +59,6 @@ public class ReactorResourceFactory implements InitializingBean, DisposableBean 
 
 	private boolean manageLoopResources = false;
 
-
-	/**
-	 * Whether to use global Reactor Netty resources via {@link HttpResources}.
-	 * <p>Default is "true" in which case this factory initializes and stops the
-	 * global Reactor Netty resources within Spring's {@code ApplicationContext}
-	 * lifecycle. If set to "false" the factory manages its resources independent
-	 * of the global ones.
-	 * @param useGlobalResources whether to expose and manage the global resources
-	 * @see #addGlobalResourcesConsumer(Consumer)
-	 */
-	public void setUseGlobalResources(boolean useGlobalResources) {
-		this.useGlobalResources = useGlobalResources;
-	}
-
 	/**
 	 * Whether this factory exposes the global
 	 * {@link reactor.netty.http.HttpResources HttpResources} holder.
@@ -83,9 +68,24 @@ public class ReactorResourceFactory implements InitializingBean, DisposableBean 
 	}
 
 	/**
+	 * Whether to use global Reactor Netty resources via {@link HttpResources}.
+	 * <p>Default is "true" in which case this factory initializes and stops the
+	 * global Reactor Netty resources within Spring's {@code ApplicationContext}
+	 * lifecycle. If set to "false" the factory manages its resources independent
+	 * of the global ones.
+	 *
+	 * @param useGlobalResources whether to expose and manage the global resources
+	 * @see #addGlobalResourcesConsumer(Consumer)
+	 */
+	public void setUseGlobalResources(boolean useGlobalResources) {
+		this.useGlobalResources = useGlobalResources;
+	}
+
+	/**
 	 * Add a Consumer for configuring the global Reactor Netty resources on
 	 * startup. When this option is used, {@link #setUseGlobalResources} is also
 	 * enabled.
+	 *
 	 * @param consumer the consumer to apply
 	 * @see #setUseGlobalResources(boolean)
 	 */
@@ -101,6 +101,7 @@ public class ReactorResourceFactory implements InitializingBean, DisposableBean 
 	 * <p>By default, {@code ConnectionProvider.elastic("http")} is used.
 	 * <p>Note that this option is ignored if {@code userGlobalResources=false} or
 	 * {@link #setConnectionProvider(ConnectionProvider)} is set.
+	 *
 	 * @param supplier the supplier to use
 	 */
 	public void setConnectionProviderSupplier(Supplier<ConnectionProvider> supplier) {
@@ -113,19 +114,11 @@ public class ReactorResourceFactory implements InitializingBean, DisposableBean 
 	 * <p>By default, {@code LoopResources.create("reactor-http")} is used.
 	 * <p>Note that this option is ignored if {@code userGlobalResources=false} or
 	 * {@link #setLoopResources(LoopResources)} is set.
+	 *
 	 * @param supplier the supplier to use
 	 */
 	public void setLoopResourcesSupplier(Supplier<LoopResources> supplier) {
 		this.loopResourcesSupplier = supplier;
-	}
-
-	/**
-	 * Use this option when you want to provide an externally managed
-	 * {@link ConnectionProvider} instance.
-	 * @param connectionProvider the connection provider to use as is
-	 */
-	public void setConnectionProvider(ConnectionProvider connectionProvider) {
-		this.connectionProvider = connectionProvider;
 	}
 
 	/**
@@ -138,11 +131,12 @@ public class ReactorResourceFactory implements InitializingBean, DisposableBean 
 
 	/**
 	 * Use this option when you want to provide an externally managed
-	 * {@link LoopResources} instance.
-	 * @param loopResources the loop resources to use as is
+	 * {@link ConnectionProvider} instance.
+	 *
+	 * @param connectionProvider the connection provider to use as is
 	 */
-	public void setLoopResources(LoopResources loopResources) {
-		this.loopResources = loopResources;
+	public void setConnectionProvider(ConnectionProvider connectionProvider) {
+		this.connectionProvider = connectionProvider;
 	}
 
 	/**
@@ -153,6 +147,15 @@ public class ReactorResourceFactory implements InitializingBean, DisposableBean 
 		return this.loopResources;
 	}
 
+	/**
+	 * Use this option when you want to provide an externally managed
+	 * {@link LoopResources} instance.
+	 *
+	 * @param loopResources the loop resources to use as is
+	 */
+	public void setLoopResources(LoopResources loopResources) {
+		this.loopResources = loopResources;
+	}
 
 	@Override
 	public void afterPropertiesSet() {
@@ -165,8 +168,7 @@ public class ReactorResourceFactory implements InitializingBean, DisposableBean 
 			}
 			this.connectionProvider = httpResources;
 			this.loopResources = httpResources;
-		}
-		else {
+		} else {
 			if (this.loopResources == null) {
 				this.manageLoopResources = true;
 				this.loopResources = this.loopResourcesSupplier.get();
@@ -182,15 +184,13 @@ public class ReactorResourceFactory implements InitializingBean, DisposableBean 
 	public void destroy() {
 		if (this.useGlobalResources) {
 			HttpResources.disposeLoopsAndConnectionsLater().block();
-		}
-		else {
+		} else {
 			try {
 				ConnectionProvider provider = this.connectionProvider;
 				if (provider != null && this.manageConnectionProvider) {
 					provider.disposeLater().block();
 				}
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				// ignore
 			}
 
@@ -199,8 +199,7 @@ public class ReactorResourceFactory implements InitializingBean, DisposableBean 
 				if (resources != null && this.manageLoopResources) {
 					resources.disposeLater().block();
 				}
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				// ignore
 			}
 		}

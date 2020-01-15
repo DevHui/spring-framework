@@ -16,13 +16,12 @@
 
 package org.springframework.web.server.handler;
 
-import java.util.List;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebHandler;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * {@link WebHandlerDecorator} that invokes a chain of {@link WebFilter WebFilters}
@@ -38,6 +37,7 @@ public class FilteringWebHandler extends WebHandlerDecorator {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param filters the chain of filters
 	 */
 	public FilteringWebHandler(WebHandler handler, List<WebFilter> filters) {

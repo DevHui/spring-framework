@@ -16,23 +16,22 @@
 
 package org.springframework.core;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import org.reactivestreams.Publisher;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import rx.RxReactiveStreams;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import rx.RxReactiveStreams;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * A registry of adapters to adapt Reactive Streams {@link Publisher} to/from
@@ -59,6 +58,7 @@ public class ReactiveAdapterRegistry {
 
 	/**
 	 * Create a registry and auto-register default adapters.
+	 *
 	 * @see #getSharedInstance()
 	 */
 	public ReactiveAdapterRegistry() {
@@ -91,6 +91,30 @@ public class ReactiveAdapterRegistry {
 		// We can fall back on "reactive-streams-flow-bridge" (once released)
 	}
 
+	/**
+	 * Return a shared default {@code ReactiveAdapterRegistry} instance,
+	 * lazily building it once needed.
+	 * <p><b>NOTE:</b> We highly recommend passing a long-lived, pre-configured
+	 * {@code ReactiveAdapterRegistry} instance for customization purposes.
+	 * This accessor is only meant as a fallback for code paths that want to
+	 * fall back on a default instance if one isn't provided.
+	 *
+	 * @return the shared {@code ReactiveAdapterRegistry} instance
+	 * @since 5.0.2
+	 */
+	public static ReactiveAdapterRegistry getSharedInstance() {
+		ReactiveAdapterRegistry registry = sharedInstance;
+		if (registry == null) {
+			synchronized (ReactiveAdapterRegistry.class) {
+				registry = sharedInstance;
+				if (registry == null) {
+					registry = new ReactiveAdapterRegistry();
+					sharedInstance = registry;
+				}
+			}
+		}
+		return registry;
+	}
 
 	/**
 	 * Whether the registry has any adapters which would be the case if any of
@@ -107,18 +131,18 @@ public class ReactiveAdapterRegistry {
 	 * their input is neither {@code null} nor {@link Optional}.
 	 */
 	public void registerReactiveType(ReactiveTypeDescriptor descriptor,
-			Function<Object, Publisher<?>> toAdapter, Function<Publisher<?>, Object> fromAdapter) {
+									 Function<Object, Publisher<?>> toAdapter, Function<Publisher<?>, Object> fromAdapter) {
 
 		if (this.reactorPresent) {
 			this.adapters.add(new ReactorAdapter(descriptor, toAdapter, fromAdapter));
-		}
-		else {
+		} else {
 			this.adapters.add(new ReactiveAdapter(descriptor, toAdapter, fromAdapter));
 		}
 	}
 
 	/**
 	 * Get the adapter for the given reactive type.
+	 *
 	 * @return the corresponding adapter, or {@code null} if none available
 	 */
 	@Nullable
@@ -129,10 +153,11 @@ public class ReactiveAdapterRegistry {
 	/**
 	 * Get the adapter for the given reactive type. Or if a "source" object is
 	 * provided, its actual type is used instead.
+	 *
 	 * @param reactiveType the reactive type
-	 * (may be {@code null} if a concrete source object is given)
-	 * @param source an instance of the reactive type
-	 * (i.e. to adapt from; may be {@code null} if the reactive type is specified)
+	 *                     (may be {@code null} if a concrete source object is given)
+	 * @param source       an instance of the reactive type
+	 *                     (i.e. to adapt from; may be {@code null} if the reactive type is specified)
 	 * @return the corresponding adapter, or {@code null} if none available
 	 */
 	@Nullable
@@ -158,32 +183,6 @@ public class ReactiveAdapterRegistry {
 		}
 		return null;
 	}
-
-
-	/**
-	 * Return a shared default {@code ReactiveAdapterRegistry} instance,
-	 * lazily building it once needed.
-	 * <p><b>NOTE:</b> We highly recommend passing a long-lived, pre-configured
-	 * {@code ReactiveAdapterRegistry} instance for customization purposes.
-	 * This accessor is only meant as a fallback for code paths that want to
-	 * fall back on a default instance if one isn't provided.
-	 * @return the shared {@code ReactiveAdapterRegistry} instance
-	 * @since 5.0.2
-	 */
-	public static ReactiveAdapterRegistry getSharedInstance() {
-		ReactiveAdapterRegistry registry = sharedInstance;
-		if (registry == null) {
-			synchronized (ReactiveAdapterRegistry.class) {
-				registry = sharedInstance;
-				if (registry == null) {
-					registry = new ReactiveAdapterRegistry();
-					sharedInstance = registry;
-				}
-			}
-		}
-		return registry;
-	}
-
 
 	private static class ReactorRegistrar {
 
@@ -283,7 +282,7 @@ public class ReactiveAdapterRegistry {
 				Class<?> publisherClass = ClassUtils.forName(publisherName, getClass().getClassLoader());
 
 				String adapterName = "reactor.adapter.JdkFlowAdapter";
-				Class<?> flowAdapterClass = ClassUtils.forName(adapterName,  getClass().getClassLoader());
+				Class<?> flowAdapterClass = ClassUtils.forName(adapterName, getClass().getClassLoader());
 
 				Method toFluxMethod = flowAdapterClass.getMethod("flowPublisherToFlux", publisherClass);
 				Method toFlowMethod = flowAdapterClass.getMethod("publisherToFlowPublisher", Publisher.class);
@@ -294,8 +293,7 @@ public class ReactiveAdapterRegistry {
 						source -> (Publisher<?>) ReflectionUtils.invokeMethod(toFluxMethod, null, source),
 						publisher -> ReflectionUtils.invokeMethod(toFlowMethod, null, publisher)
 				);
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				// Ignore
 			}
 		}
@@ -311,8 +309,8 @@ public class ReactiveAdapterRegistry {
 	private static class ReactorAdapter extends ReactiveAdapter {
 
 		ReactorAdapter(ReactiveTypeDescriptor descriptor,
-				Function<Object, Publisher<?>> toPublisherFunction,
-				Function<Publisher<?>, Object> fromPublisherFunction) {
+					   Function<Object, Publisher<?>> toPublisherFunction,
+					   Function<Publisher<?>, Object> fromPublisherFunction) {
 
 			super(descriptor, toPublisherFunction, fromPublisherFunction);
 		}

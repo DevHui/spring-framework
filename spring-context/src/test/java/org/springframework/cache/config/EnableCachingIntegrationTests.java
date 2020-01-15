@@ -16,11 +16,8 @@
 
 package org.springframework.cache.config;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -37,8 +34,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.junit.Assert.*;
-import static org.springframework.cache.CacheTestUtils.*;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static org.junit.Assert.assertEquals;
+import static org.springframework.cache.CacheTestUtils.assertCacheHit;
+import static org.springframework.cache.CacheTestUtils.assertCacheMiss;
 
 /**
  * Tests that represent real use cases with advanced configuration.
@@ -122,6 +122,13 @@ public class EnableCachingIntegrationTests {
 	}
 
 
+	interface FooService {
+
+		Object getSimple(Object key);
+
+		Object getWithCondition(Object key);
+	}
+
 	@Configuration
 	static class SharedConfig extends CachingConfigurerSupport {
 
@@ -131,7 +138,6 @@ public class EnableCachingIntegrationTests {
 			return CacheTestUtils.createSimpleCacheManager("testCache");
 		}
 	}
-
 
 	@Configuration
 	@Import(SharedConfig.class)
@@ -144,7 +150,6 @@ public class EnableCachingIntegrationTests {
 		}
 	}
 
-
 	@Configuration
 	@Import(SharedConfig.class)
 	@EnableCaching(proxyTargetClass = true)
@@ -155,15 +160,6 @@ public class EnableCachingIntegrationTests {
 			return new FooServiceImpl();
 		}
 	}
-
-
-	interface FooService {
-
-		Object getSimple(Object key);
-
-		Object getWithCondition(Object key);
-	}
-
 
 	@CacheConfig(cacheNames = "testCache")
 	static class FooServiceImpl implements FooService {
@@ -200,9 +196,8 @@ public class EnableCachingIntegrationTests {
 
 		static class Bar {
 
-			public int count;
-
 			private final boolean enabled;
+			public int count;
 
 			public Bar(boolean enabled) {
 				this.enabled = enabled;

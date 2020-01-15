@@ -16,6 +16,13 @@
 
 package org.springframework.jdbc.core;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
+import org.springframework.tests.sample.beans.TestBean;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,16 +31,12 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
-import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
-import org.springframework.tests.sample.beans.TestBean;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.BDDMockito.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Juergen Hoeller
@@ -111,7 +114,7 @@ public class RowMapperTests {
 
 	@Test
 	public void queryWithArgsAndRowMapper() throws SQLException {
-		result = template.query("some SQL", new Object[] { "test1", "test2" }, testRowMapper);
+		result = template.query("some SQL", new Object[]{"test1", "test2"}, testRowMapper);
 		preparedStatement.setString(1, "test1");
 		preparedStatement.setString(2, "test2");
 		preparedStatement.close();
@@ -120,8 +123,8 @@ public class RowMapperTests {
 	@Test
 	public void queryWithArgsAndTypesAndRowMapper() throws SQLException {
 		result = template.query("some SQL",
-				new Object[] { "test1", "test2" },
-				new int[] { Types.VARCHAR, Types.VARCHAR },
+				new Object[]{"test1", "test2"},
+				new int[]{Types.VARCHAR, Types.VARCHAR},
 				testRowMapper);
 		verify(preparedStatement).setString(1, "test1");
 		verify(preparedStatement).setString(2, "test2");

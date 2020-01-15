@@ -16,11 +16,11 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.nio.charset.Charset;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.lang.Nullable;
+
+import java.nio.charset.Charset;
 
 /**
  * Exception thrown when an unknown (or custom) HTTP status code is received.
@@ -47,6 +47,7 @@ public class UnknownHttpStatusCodeException extends WebClientResponseException {
 	/**
 	 * Create a new instance of the {@code UnknownHttpStatusCodeException} with the given
 	 * parameters.
+	 *
 	 * @since 5.1.4
 	 */
 	public UnknownHttpStatusCodeException(

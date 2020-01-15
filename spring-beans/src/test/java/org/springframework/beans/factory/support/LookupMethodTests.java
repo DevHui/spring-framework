@@ -18,12 +18,14 @@ package org.springframework.beans.factory.support;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Karl Pietrzak
@@ -85,8 +87,7 @@ public class LookupMethodTests {
 		try {
 			bean.getThreeArguments("name", 1, 2);
 			fail("TestBean does not have a three arg constructor so this should not have worked");
-		}
-		catch (AbstractMethodError ex) {
+		} catch (AbstractMethodError ex) {
 		}
 	}
 

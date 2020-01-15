@@ -16,17 +16,16 @@
 
 package org.springframework.mock.web.test.server;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Map;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.server.WebSession;
 import org.springframework.web.server.session.InMemoryWebSessionStore;
+import reactor.core.publisher.Mono;
+
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Map;
 
 /**
  * Implementation of {@code WebSession} that delegates to a session instance
@@ -111,13 +110,13 @@ public class MockWebSession implements WebSession {
 	}
 
 	@Override
-	public void setMaxIdleTime(Duration maxIdleTime) {
-		this.delegate.setMaxIdleTime(maxIdleTime);
+	public Duration getMaxIdleTime() {
+		return this.delegate.getMaxIdleTime();
 	}
 
 	@Override
-	public Duration getMaxIdleTime() {
-		return this.delegate.getMaxIdleTime();
+	public void setMaxIdleTime(Duration maxIdleTime) {
+		this.delegate.setMaxIdleTime(maxIdleTime);
 	}
 
 }

@@ -16,17 +16,10 @@
 
 package org.springframework.web.servlet.config.annotation;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.joda.time.DateTime;
 import org.junit.Test;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
@@ -87,9 +80,18 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.ViewResolverComposite;
 import org.springframework.web.util.UrlPathHelper;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.*;
-import static com.fasterxml.jackson.databind.MapperFeature.*;
-import static org.junit.Assert.*;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.fasterxml.jackson.databind.MapperFeature.DEFAULT_VIEW_INCLUSION;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for {@link WebMvcConfigurationSupport} (imported via
@@ -232,8 +234,7 @@ public class WebMvcConfigurationSupportTests {
 			MockHttpServletResponse response = new MockHttpServletResponse();
 			rser.resolveException(request, response, context.getBean(TestController.class), new UserAlreadyExistsException());
 			assertEquals("User already exists!", response.getErrorMessage());
-		}
-		finally {
+		} finally {
 			LocaleContextHolder.resetLocaleContext();
 		}
 	}
@@ -381,7 +382,7 @@ public class WebMvcConfigurationSupportTests {
 
 		@RequestMapping("/foo/{id}/bar/{date}")
 		public HttpEntity<Void> methodWithTwoPathVariables(@PathVariable Integer id,
-				@DateTimeFormat(iso = ISO.DATE) @PathVariable DateTime date) {
+														   @DateTimeFormat(iso = ISO.DATE) @PathVariable DateTime date) {
 			return null;
 		}
 	}
@@ -421,7 +422,7 @@ public class WebMvcConfigurationSupportTests {
 
 		@Override
 		public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer container,
-				NativeWebRequest request, WebDataBinderFactory factory) {
+									  NativeWebRequest request, WebDataBinderFactory factory) {
 			return null;
 		}
 	}
@@ -435,7 +436,7 @@ public class WebMvcConfigurationSupportTests {
 
 		@Override
 		public void handleReturnValue(Object value, MethodParameter parameter,
-				ModelAndViewContainer container, NativeWebRequest request) {
+									  ModelAndViewContainer container, NativeWebRequest request) {
 		}
 	}
 

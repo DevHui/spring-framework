@@ -16,15 +16,14 @@
 
 package org.springframework.http.server.reactive;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.reactivestreams.Processor;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
+import reactor.core.publisher.Mono;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Abstract base class for listener-based server responses, e.g. Servlet 3.1

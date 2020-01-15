@@ -16,16 +16,17 @@
 
 package org.springframework.test.web.servlet.setup;
 
-import javax.servlet.http.HttpSession;
-
 import org.junit.Test;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import static org.junit.Assert.*;
+import javax.servlet.http.HttpSession;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.*;

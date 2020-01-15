@@ -16,13 +16,10 @@
 
 package org.springframework.messaging.simp.user;
 
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.StubMessageChannel;
 import org.springframework.messaging.SubscribableChannel;
@@ -33,9 +30,16 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.MessageBuilder;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
-import static org.springframework.messaging.simp.SimpMessageHeaderAccessor.*;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verifyNoMoreInteractions;
+import static org.mockito.BDDMockito.when;
+import static org.springframework.messaging.simp.SimpMessageHeaderAccessor.ORIGINAL_DESTINATION;
 
 /**
  * Unit tests for

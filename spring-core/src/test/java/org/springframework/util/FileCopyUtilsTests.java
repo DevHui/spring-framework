@@ -16,6 +16,8 @@
 
 package org.springframework.util;
 
+import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,9 +25,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Arrays;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for the FileCopyUtils class.

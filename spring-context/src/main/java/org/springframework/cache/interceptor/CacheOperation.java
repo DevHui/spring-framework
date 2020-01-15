@@ -16,11 +16,11 @@
 
 package org.springframework.cache.interceptor;
 
+import org.springframework.util.Assert;
+
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import org.springframework.util.Assert;
 
 /**
  * Base class for cache operations.
@@ -51,6 +51,7 @@ public abstract class CacheOperation implements BasicOperation {
 
 	/**
 	 * Create a new {@link CacheOperation} instance from the given builder.
+	 *
 	 * @since 4.3
 	 */
 	protected CacheOperation(Builder b) {
@@ -97,6 +98,7 @@ public abstract class CacheOperation implements BasicOperation {
 
 	/**
 	 * This implementation compares the {@code toString()} results.
+	 *
 	 * @see #toString()
 	 */
 	@Override
@@ -106,6 +108,7 @@ public abstract class CacheOperation implements BasicOperation {
 
 	/**
 	 * This implementation returns {@code toString()}'s hash code.
+	 *
 	 * @see #toString()
 	 */
 	@Override
@@ -118,6 +121,7 @@ public abstract class CacheOperation implements BasicOperation {
 	 * <p>Returned value is produced by calling {@link Builder#getOperationDescription()}
 	 * during object construction. This method is used in {@link #hashCode} and
 	 * {@link #equals}.
+	 *
 	 * @see Builder#getOperationDescription()
 	 */
 	@Override
@@ -128,6 +132,7 @@ public abstract class CacheOperation implements BasicOperation {
 
 	/**
 	 * Base class for builders that can be used to create a {@link CacheOperation}.
+	 *
 	 * @since 4.3
 	 */
 	public abstract static class Builder {
@@ -156,6 +161,10 @@ public abstract class CacheOperation implements BasicOperation {
 			this.cacheNames = Collections.singleton(cacheName);
 		}
 
+		public Set<String> getCacheNames() {
+			return this.cacheNames;
+		}
+
 		public void setCacheNames(String... cacheNames) {
 			this.cacheNames = new LinkedHashSet<>(cacheNames.length);
 			for (String cacheName : cacheNames) {
@@ -164,8 +173,8 @@ public abstract class CacheOperation implements BasicOperation {
 			}
 		}
 
-		public Set<String> getCacheNames() {
-			return this.cacheNames;
+		public String getKey() {
+			return this.key;
 		}
 
 		public void setKey(String key) {
@@ -173,20 +182,8 @@ public abstract class CacheOperation implements BasicOperation {
 			this.key = key;
 		}
 
-		public String getKey() {
-			return this.key;
-		}
-
 		public String getKeyGenerator() {
 			return this.keyGenerator;
-		}
-
-		public String getCacheManager() {
-			return this.cacheManager;
-		}
-
-		public String getCacheResolver() {
-			return this.cacheResolver;
 		}
 
 		public void setKeyGenerator(String keyGenerator) {
@@ -194,9 +191,17 @@ public abstract class CacheOperation implements BasicOperation {
 			this.keyGenerator = keyGenerator;
 		}
 
+		public String getCacheManager() {
+			return this.cacheManager;
+		}
+
 		public void setCacheManager(String cacheManager) {
 			Assert.notNull(cacheManager, "CacheManager name must not be null");
 			this.cacheManager = cacheManager;
+		}
+
+		public String getCacheResolver() {
+			return this.cacheResolver;
 		}
 
 		public void setCacheResolver(String cacheResolver) {

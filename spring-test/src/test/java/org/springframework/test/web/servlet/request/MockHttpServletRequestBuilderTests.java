@@ -16,24 +16,8 @@
 
 package org.springframework.test.web.servlet.request;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.Cookie;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -47,7 +31,24 @@ import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.support.SessionFlashMapManager;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static org.junit.Assert.*;
+import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Unit tests for building a {@link MockHttpServletRequest} with
@@ -62,12 +63,14 @@ public class MockHttpServletRequestBuilderTests {
 
 	private MockHttpServletRequestBuilder builder;
 
+	private static RequestAttributePostProcessor requestAttr(String attrName) {
+		return new RequestAttributePostProcessor().attr(attrName);
+	}
 
 	@Before
 	public void setUp() {
 		this.builder = new MockHttpServletRequestBuilder(HttpMethod.GET, "/foo/bar");
 	}
-
 
 	@Test
 	public void method() {
@@ -189,8 +192,7 @@ public class MockHttpServletRequestBuilderTests {
 			this.builder.contextPath(contextPath);
 			this.builder.servletPath(servletPath);
 			this.builder.buildRequest(this.servletContext);
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			assertEquals(message, ex.getMessage());
 		}
 	}
@@ -210,7 +212,7 @@ public class MockHttpServletRequestBuilderTests {
 		MockHttpServletRequest request = this.builder.buildRequest(this.servletContext);
 		Map<String, String[]> parameterMap = request.getParameterMap();
 
-		assertArrayEquals(new String[] {"bar", "baz"}, parameterMap.get("foo"));
+		assertArrayEquals(new String[]{"bar", "baz"}, parameterMap.get("foo"));
 	}
 
 	@Test
@@ -220,7 +222,7 @@ public class MockHttpServletRequestBuilderTests {
 		MockHttpServletRequest request = this.builder.buildRequest(this.servletContext);
 		Map<String, String[]> parameterMap = request.getParameterMap();
 
-		assertArrayEquals(new String[] {"bar", "baz"}, parameterMap.get("foo"));
+		assertArrayEquals(new String[]{"bar", "baz"}, parameterMap.get("foo"));
 		assertEquals("foo=bar&foo=baz", request.getQueryString());
 	}
 
@@ -252,7 +254,7 @@ public class MockHttpServletRequestBuilderTests {
 		MockHttpServletRequest request = this.builder.buildRequest(this.servletContext);
 		Map<String, String[]> parameterMap = request.getParameterMap();
 
-		assertArrayEquals(new String[] {null}, parameterMap.get("foo"));
+		assertArrayEquals(new String[]{null}, parameterMap.get("foo"));
 		assertEquals("foo", request.getQueryString());
 	}
 
@@ -266,7 +268,7 @@ public class MockHttpServletRequestBuilderTests {
 
 		MockHttpServletRequest request = this.builder.buildRequest(this.servletContext);
 
-		assertArrayEquals(new String[] {"bar", "baz"}, request.getParameterMap().get("foo"));
+		assertArrayEquals(new String[]{"bar", "baz"}, request.getParameterMap().get("foo"));
 	}
 
 	@Test
@@ -278,9 +280,9 @@ public class MockHttpServletRequestBuilderTests {
 				.contentType(contentType).content(body.getBytes(StandardCharsets.UTF_8))
 				.buildRequest(this.servletContext);
 
-		assertArrayEquals(new String[] {"value 1"}, request.getParameterMap().get("name 1"));
-		assertArrayEquals(new String[] {"value A", "value B"}, request.getParameterMap().get("name 2"));
-		assertArrayEquals(new String[] {null}, request.getParameterMap().get("name 3"));
+		assertArrayEquals(new String[]{"value 1"}, request.getParameterMap().get("name 1"));
+		assertArrayEquals(new String[]{"value A", "value B"}, request.getParameterMap().get("name 2"));
+		assertArrayEquals(new String[]{null}, request.getParameterMap().get("name 3"));
 	}
 
 	@Test
@@ -509,21 +511,6 @@ public class MockHttpServletRequestBuilderTests {
 		assertEquals("/foo/42", request.getPathInfo());
 	}
 
-
-	private static RequestAttributePostProcessor requestAttr(String attrName) {
-		return new RequestAttributePostProcessor().attr(attrName);
-	}
-
-
-	private final class User implements Principal {
-
-		@Override
-		public String getName() {
-			return "Foo";
-		}
-	}
-
-
 	private static class RequestAttributePostProcessor implements RequestPostProcessor {
 
 		String attr;
@@ -543,6 +530,14 @@ public class MockHttpServletRequestBuilderTests {
 		public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
 			request.setAttribute(attr, value);
 			return request;
+		}
+	}
+
+	private final class User implements Principal {
+
+		@Override
+		public String getName() {
+			return "Foo";
 		}
 	}
 

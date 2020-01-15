@@ -16,16 +16,8 @@
 
 package org.springframework.web.reactive.resource;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -37,6 +29,13 @@ import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
+import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A central component to use to obtain the public URL path that clients should
@@ -58,6 +57,13 @@ public class ResourceUrlProvider implements ApplicationListener<ContextRefreshed
 
 	private final Map<PathPattern, ResourceWebHandler> handlerMap = new LinkedHashMap<>();
 
+	private static String prependLeadingSlash(String pattern) {
+		if (StringUtils.hasLength(pattern) && !pattern.startsWith("/")) {
+			return "/" + pattern;
+		} else {
+			return pattern;
+		}
+	}
 
 	/**
 	 * Return a read-only view of the resource handler mappings either manually
@@ -66,7 +72,6 @@ public class ResourceUrlProvider implements ApplicationListener<ContextRefreshed
 	public Map<PathPattern, ResourceWebHandler> getHandlerMap() {
 		return Collections.unmodifiableMap(this.handlerMap);
 	}
-
 
 	/**
 	 * Manually configure resource handler mappings.
@@ -96,25 +101,25 @@ public class ResourceUrlProvider implements ApplicationListener<ContextRefreshed
 		AnnotationAwareOrderComparator.sort(mappings);
 
 		mappings.forEach(mapping ->
-			mapping.getHandlerMap().forEach((pattern, handler) -> {
-				if (handler instanceof ResourceWebHandler) {
-					ResourceWebHandler resourceHandler = (ResourceWebHandler) handler;
-					this.handlerMap.put(pattern, resourceHandler);
-				}
-			}));
+				mapping.getHandlerMap().forEach((pattern, handler) -> {
+					if (handler instanceof ResourceWebHandler) {
+						ResourceWebHandler resourceHandler = (ResourceWebHandler) handler;
+						this.handlerMap.put(pattern, resourceHandler);
+					}
+				}));
 
 		if (this.handlerMap.isEmpty()) {
 			logger.trace("No resource handling mappings found");
 		}
 	}
 
-
 	/**
 	 * Get the public resource URL for the given URI string.
 	 * <p>The URI string is expected to be a path and if it contains a query or
 	 * fragment those will be preserved in the resulting public resource URL.
+	 *
 	 * @param uriString the URI string to transform
-	 * @param exchange the current exchange
+	 * @param exchange  the current exchange
 	 * @return the resolved public resource URL path, or empty if unresolved
 	 */
 	public final Mono<String> getForUriString(String uriString, ServerWebExchange exchange) {
@@ -156,22 +161,12 @@ public class ResourceUrlProvider implements ApplicationListener<ContextRefreshed
 					return chain.resolveUrlPath(path.value(), handler.getLocations())
 							.map(resolvedPath -> mapping.value() + resolvedPath);
 				})
-				.orElseGet(() ->{
+				.orElseGet(() -> {
 					if (logger.isTraceEnabled()) {
 						logger.trace(exchange.getLogPrefix() + "No match for \"" + lookupPath + "\"");
 					}
 					return Mono.empty();
 				});
-	}
-
-
-	private static String prependLeadingSlash(String pattern) {
-		if (StringUtils.hasLength(pattern) && !pattern.startsWith("/")) {
-			return "/" + pattern;
-		}
-		else {
-			return pattern;
-		}
 	}
 
 }

@@ -15,20 +15,11 @@
  */
 package org.springframework.http.codec;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Supplier;
-
 import com.google.protobuf.Message;
 import org.junit.After;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscription;
-import reactor.core.publisher.BaseSubscriber;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -46,9 +37,18 @@ import org.springframework.http.codec.xml.Jaxb2XmlEncoder;
 import org.springframework.protobuf.Msg;
 import org.springframework.protobuf.SecondMsg;
 import org.springframework.util.MimeType;
+import reactor.core.publisher.BaseSubscriber;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Test scenarios for data buffer leaks.
+ *
  * @author Rossen Stoyanchev
  */
 public class CancelWithoutDemandCodecTests {
@@ -154,7 +154,6 @@ public class CancelWithoutDemandCodecTests {
 		writer.write(Mono.just(event), ResolvableType.forClass(ServerSentEvent.class), MediaType.TEXT_EVENT_STREAM,
 				outputMessage, Collections.emptyMap()).block(Duration.ofSeconds(5));
 	}
-
 
 
 	private static class CancellingOutputMessage implements ReactiveHttpOutputMessage {

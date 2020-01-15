@@ -16,18 +16,7 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Queue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingDeque;
-
 import org.junit.Test;
-
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -56,7 +45,21 @@ import org.springframework.web.socket.sockjs.frame.Jackson2SockJsMessageCodec;
 import org.springframework.web.socket.sockjs.frame.SockJsFrame;
 import org.springframework.web.socket.sockjs.transport.TransportType;
 
-import static org.mockito.BDDMockito.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Queue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingDeque;
+
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Unit tests for {@link RestTemplateXhrTransport}.
@@ -130,6 +133,7 @@ public class RestTemplateXhrTransportTests {
 					@Override
 					public void onSuccess(WebSocketSession result) {
 					}
+
 					@Override
 					public void onFailure(Throwable ex) {
 						if (ex == expected) {
@@ -196,7 +200,6 @@ public class RestTemplateXhrTransportTests {
 	}
 
 
-
 	private static class TestRestTemplate extends RestTemplate {
 
 		private Queue<ClientHttpResponse> responses = new LinkedBlockingDeque<>();
@@ -208,12 +211,11 @@ public class RestTemplateXhrTransportTests {
 
 		@Override
 		public <T> T execute(URI url, HttpMethod method, @Nullable RequestCallback callback,
-				@Nullable ResponseExtractor<T> extractor) throws RestClientException {
+							 @Nullable ResponseExtractor<T> extractor) throws RestClientException {
 
 			try {
 				extractor.extractData(this.responses.remove());
-			}
-			catch (Throwable t) {
+			} catch (Throwable t) {
 				throw new RestClientException("Failed to invoke extractor", t);
 			}
 			return null;

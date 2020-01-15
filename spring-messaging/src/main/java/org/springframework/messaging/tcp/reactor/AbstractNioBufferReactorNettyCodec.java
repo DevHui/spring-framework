@@ -16,21 +16,20 @@
 
 package org.springframework.messaging.tcp.reactor;
 
+import io.netty.buffer.ByteBuf;
+import org.springframework.messaging.Message;
+
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.List;
-
-import io.netty.buffer.ByteBuf;
-
-import org.springframework.messaging.Message;
 
 /**
  * Convenient base class for {@link ReactorNettyCodec} implementations that need
  * to work with NIO {@link ByteBuffer ByteBuffers}.
  *
+ * @param <P> the message payload type
  * @author Rossen Stoyanchev
  * @since 5.0
- * @param <P> the message payload type
  */
 public abstract class AbstractNioBufferReactorNettyCodec<P> implements ReactorNettyCodec<P> {
 

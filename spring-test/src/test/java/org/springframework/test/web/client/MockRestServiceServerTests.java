@@ -16,15 +16,14 @@
 
 package org.springframework.test.web.client;
 
-import java.net.SocketException;
-
 import org.junit.Test;
-
 import org.springframework.test.web.client.MockRestServiceServer.MockRestServiceServerBuilder;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.*;
-import static org.springframework.http.HttpMethod.*;
+import java.net.SocketException;
+
+import static org.junit.Assert.fail;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
@@ -118,7 +117,9 @@ public class MockRestServiceServerTests {
 		MockRestServiceServer server = MockRestServiceServer.bindTo(this.restTemplate).build();
 
 		server.expect(requestTo("/some-service/some-endpoint"))
-				.andRespond(request -> { throw new SocketException("pseudo network error"); });
+				.andRespond(request -> {
+					throw new SocketException("pseudo network error");
+				});
 
 		server.expect(requestTo("/reporting-service/report-error"))
 				.andExpect(method(POST)).andRespond(withSuccess());
@@ -126,8 +127,7 @@ public class MockRestServiceServerTests {
 		try {
 			this.restTemplate.getForEntity("/some-service/some-endpoint", String.class);
 			fail("Expected exception");
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			this.restTemplate.postForEntity("/reporting-service/report-error", ex.toString(), String.class);
 		}
 

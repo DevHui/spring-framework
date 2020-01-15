@@ -16,22 +16,21 @@
 
 package org.springframework.web.servlet.view.json;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
-
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.View;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Spring MVC {@link View} that renders JSON content by serializing the model for the current request
@@ -81,6 +80,7 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	/**
 	 * Construct a new {@code MappingJackson2JsonView} using the provided
 	 * {@link ObjectMapper} and setting the content type to {@code application/json}.
+	 *
 	 * @since 4.2.1
 	 */
 	public MappingJackson2JsonView(ObjectMapper objectMapper) {
@@ -91,6 +91,7 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	/**
 	 * Specify a custom prefix to use for this view's JSON output.
 	 * Default is none.
+	 *
 	 * @see #setPrefixJson
 	 */
 	public void setJsonPrefix(String jsonPrefix) {
@@ -103,6 +104,7 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	 * <p>Prefixing the JSON string in this manner is used to help prevent JSON Hijacking.
 	 * The prefix renders the string syntactically invalid as a script so that it cannot be hijacked.
 	 * This prefix should be stripped before parsing the string as JSON.
+	 *
 	 * @see #setJsonPrefix
 	 */
 	public void setPrefixJson(boolean prefixJson) {
@@ -118,19 +120,19 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	}
 
 	/**
-	 * Set the attributes in the model that should be rendered by this view.
-	 * When set, all other model attributes will be ignored.
-	 */
-	public void setModelKeys(@Nullable Set<String> modelKeys) {
-		this.modelKeys = modelKeys;
-	}
-
-	/**
 	 * Return the attributes in the model that should be rendered by this view.
 	 */
 	@Nullable
 	public final Set<String> getModelKeys() {
 		return this.modelKeys;
+	}
+
+	/**
+	 * Set the attributes in the model that should be rendered by this view.
+	 * When set, all other model attributes will be ignored.
+	 */
+	public void setModelKeys(@Nullable Set<String> modelKeys) {
+		this.modelKeys = modelKeys;
 	}
 
 	/**
@@ -150,6 +152,7 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	 * The return value can be either another {@link Map} or a single value object.
 	 * <p>The default implementation removes {@link BindingResult} instances and entries
 	 * not included in the {@link #setModelKeys modelKeys} property.
+	 *
 	 * @param model the model, as passed on to {@link #renderMergedOutputModel}
 	 * @return the value to be rendered
 	 */

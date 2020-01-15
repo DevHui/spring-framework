@@ -16,6 +16,16 @@
 
 package org.springframework.core;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.ResolvableType.VariableResolver;
+import org.springframework.util.MultiValueMap;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -42,21 +52,21 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import org.springframework.core.ResolvableType.VariableResolver;
-import org.springframework.util.MultiValueMap;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.atLeastOnce;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Tests for {@link ResolvableType}.
@@ -74,7 +84,8 @@ public class ResolvableTypeTests {
 
 	@Captor
 	private ArgumentCaptor<TypeVariable<?>> typeVariableCaptor;
-
+	@SuppressWarnings("unused")
+	private HashMap<Integer, List<String>> myMap;
 
 	@Test
 	public void noneReturnValues() throws Exception {
@@ -278,12 +289,12 @@ public class ResolvableTypeTests {
 		Method method = Methods.class.getMethod("list1");
 		MethodParameter methodParameter = MethodParameter.forExecutable(method, -1);
 		ResolvableType type = ResolvableType.forMethodParameter(methodParameter);
-		assertThat(((MethodParameter)type.getSource()).getMethod(), equalTo(method));
+		assertThat(((MethodParameter) type.getSource()).getMethod(), equalTo(method));
 
 		method = Methods.class.getMethod("list2");
 		methodParameter = MethodParameter.forExecutable(method, -1);
 		type = ResolvableType.forMethodParameter(methodParameter);
-		assertThat(((MethodParameter)type.getSource()).getMethod(), equalTo(method));
+		assertThat(((MethodParameter) type.getSource()).getMethod(), equalTo(method));
 	}
 
 	@Test
@@ -444,7 +455,7 @@ public class ResolvableTypeTests {
 		}
 		assertThat(interfaces.toString(), equalTo(
 				"[java.io.Serializable, java.lang.Cloneable, " +
-				"java.util.List<java.lang.CharSequence>, java.util.RandomAccess]"));
+						"java.util.List<java.lang.CharSequence>, java.util.RandomAccess]"));
 	}
 
 	@Test
@@ -898,7 +909,8 @@ public class ResolvableTypeTests {
 	public void resolveTypeVariableFromDeclaredParameterizedTypeReference() throws Exception {
 		Type sourceType = Methods.class.getMethod("charSequenceReturn").getGenericReturnType();
 		ResolvableType reflectiveType = ResolvableType.forType(sourceType);
-		ResolvableType declaredType = ResolvableType.forType(new ParameterizedTypeReference<List<CharSequence>>() {});
+		ResolvableType declaredType = ResolvableType.forType(new ParameterizedTypeReference<List<CharSequence>>() {
+		});
 		assertEquals(reflectiveType, declaredType);
 	}
 
@@ -1334,7 +1346,6 @@ public class ResolvableTypeTests {
 		assertThat(type.resolveGeneric(), equalTo(Integer.class));
 	}
 
-
 	private ResolvableType testSerialization(ResolvableType type) throws Exception {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(bos);
@@ -1378,25 +1389,74 @@ public class ResolvableTypeTests {
 	}
 
 
-	@SuppressWarnings("unused")
-	private HashMap<Integer, List<String>> myMap;
-
-
 	private interface AssertAssignbleMatcher {
 
 		void equalTo(boolean... values);
 	}
 
 
+	interface Methods<T> {
+
+		List<CharSequence> charSequenceReturn();
+
+		void charSequenceParameter(List<CharSequence> cs);
+
+		<R extends CharSequence & Serializable> R boundedTypeVariableResult();
+
+		Map<String, ? extends List<? extends CharSequence>> boundedTypeVariableWildcardResult();
+
+		void nested(Map<Map<String, Integer>, Map<Byte, Long>> p);
+
+		void typedParameter(T p);
+
+		T typedReturn();
+
+		Set<?> wildcardSet();
+
+		List<String> list1();
+
+		List<String> list2();
+	}
+
+
+	interface TypedMethods extends Methods<String> {
+	}
+
+
+	public interface MyInterfaceType<T> {
+	}
+
+
+	interface Wildcard<T extends Number> extends List<T> {
+	}
+
+
+	interface RawExtendsWildcard extends Wildcard {
+	}
+
+
+	interface VariableNameSwitch<V, K> extends MultiValueMap<K, V> {
+	}
+
+
+	interface ListOfGenericArray extends List<List<String>[]> {
+	}
+
+
+	public interface IProvider<P> {
+	}
+
+
+	public interface IBase<BT extends IBase<BT>> {
+	}
+
 	@SuppressWarnings("serial")
 	static class ExtendsList extends ArrayList<CharSequence> {
 	}
 
-
 	@SuppressWarnings("serial")
 	static class ExtendsMap extends HashMap<String, Integer> {
 	}
-
 
 	static class Fields<T> {
 
@@ -1429,46 +1489,16 @@ public class ResolvableTypeTests {
 		public VariableNameSwitch<Integer, String> stringIntegerMultiValueMapSwitched;
 
 		public List<List> listOfListOfUnknown;
-
+		public Map<Map<String, Integer>, Map<Byte, Long>> nested;
+		public T[] variableTypeGenericArray;
 		@SuppressWarnings("unused")
 		private List<String> privateField;
-
 		@SuppressWarnings("unused")
 		private List<String> otherPrivateField;
-
-		public Map<Map<String, Integer>, Map<Byte, Long>> nested;
-
-		public T[] variableTypeGenericArray;
 	}
-
 
 	static class TypedFields extends Fields<String> {
 	}
-
-
-	interface Methods<T> {
-
-		List<CharSequence> charSequenceReturn();
-
-		void charSequenceParameter(List<CharSequence> cs);
-
-		<R extends CharSequence & Serializable> R boundedTypeVariableResult();
-
-		Map<String, ? extends List<? extends CharSequence>> boundedTypeVariableWildcardResult();
-
-		void nested(Map<Map<String, Integer>, Map<Byte, Long>> p);
-
-		void typedParameter(T p);
-
-		T typedReturn();
-
-		Set<?> wildcardSet();
-
-		List<String> list1();
-
-		List<String> list2();
-	}
-
 
 	static class AssignmentBase<O, C, S> {
 
@@ -1517,14 +1547,8 @@ public class ResolvableTypeTests {
 		public List<List<String>> complexWildcard4;
 	}
 
-
 	static class Assignment extends AssignmentBase<Object, CharSequence, String> {
 	}
-
-
-	interface TypedMethods extends Methods<String> {
-	}
-
 
 	static class Constructors<T> {
 
@@ -1534,7 +1558,6 @@ public class ResolvableTypeTests {
 		public Constructors(Map<T, Long> p) {
 		}
 	}
-
 
 	static class TypedConstructors extends Constructors<String> {
 
@@ -1547,8 +1570,21 @@ public class ResolvableTypeTests {
 		}
 	}
 
+	static class EnclosedInParameterizedType<T> {
 
-	public interface MyInterfaceType<T> {
+		static class InnerRaw {
+		}
+
+		class InnerTyped<Y> {
+
+			public T field;
+		}
+	}
+
+	static class TypedEnclosedInParameterizedType extends EnclosedInParameterizedType<Integer> {
+
+		class TypedInnerTyped extends InnerTyped<Long> {
+		}
 	}
 
 	public class MyGenericInterfaceType<T> implements MyInterfaceType<T>, ResolvableTypeProvider {
@@ -1568,7 +1604,6 @@ public class ResolvableTypeTests {
 		}
 	}
 
-
 	public class MySimpleInterfaceType implements MyInterfaceType<String> {
 	}
 
@@ -1578,62 +1613,16 @@ public class ResolvableTypeTests {
 	public abstract class ExtendsMySimpleInterfaceTypeWithImplementsRaw extends MySimpleInterfaceTypeWithImplementsRaw {
 	}
 
-
 	public class MyCollectionInterfaceType implements MyInterfaceType<Collection<String>> {
 	}
-
 
 	public abstract class MySuperclassType<T> {
 	}
 
-
 	public class MySimpleSuperclassType extends MySuperclassType<String> {
 	}
 
-
 	public class MyCollectionSuperclassType extends MySuperclassType<Collection<String>> {
-	}
-
-
-	interface Wildcard<T extends Number> extends List<T> {
-	}
-
-
-	interface RawExtendsWildcard extends Wildcard {
-	}
-
-
-	interface VariableNameSwitch<V, K> extends MultiValueMap<K, V> {
-	}
-
-
-	interface ListOfGenericArray extends List<List<String>[]> {
-	}
-
-
-	static class EnclosedInParameterizedType<T> {
-
-		static class InnerRaw {
-		}
-
-		class InnerTyped<Y> {
-
-			public T field;
-		}
-	}
-
-
-	static class TypedEnclosedInParameterizedType extends EnclosedInParameterizedType<Integer> {
-
-		class TypedInnerTyped extends InnerTyped<Long> {
-		}
-	}
-
-
-	public interface IProvider<P> {
-	}
-
-	public interface IBase<BT extends IBase<BT>> {
 	}
 
 	public abstract class AbstractBase<BT extends IBase<BT>> implements IBase<BT> {

@@ -16,26 +16,12 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
@@ -58,11 +44,39 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import static java.time.Instant.*;
-import static java.time.format.DateTimeFormatter.*;
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
-import static org.springframework.http.MediaType.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+
+import static java.time.Instant.ofEpochMilli;
+import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.anyCollection;
+import static org.mockito.BDDMockito.argThat;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.isA;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.never;
+import static org.mockito.BDDMockito.reset;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
+import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
+import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.web.servlet.HandlerMapping.*;
 
 /**
@@ -683,8 +697,7 @@ public class HttpEntityMethodProcessorMockTests {
 		assertTrue(mavContainer.isRequestHandled());
 		if (body != null) {
 			assertResponseBody(body);
-		}
-		else {
+		} else {
 			assertEquals(0, servletResponse.getContentAsByteArray().length);
 		}
 		if (etag != null) {
@@ -700,7 +713,7 @@ public class HttpEntityMethodProcessorMockTests {
 
 	@SuppressWarnings("unused")
 	public ResponseEntity<String> handle1(HttpEntity<String> httpEntity, ResponseEntity<String> entity,
-			int i, RequestEntity<String> requestEntity) {
+										  int i, RequestEntity<String> requestEntity) {
 
 		return entity;
 	}

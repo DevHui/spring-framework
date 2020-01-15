@@ -16,14 +16,22 @@
 
 package org.springframework.core.env;
 
-import java.util.Iterator;
-
 import org.junit.Test;
-
 import org.springframework.mock.env.MockPropertySource;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.util.Iterator;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Chris Beams
@@ -105,8 +113,7 @@ public class MutablePropertySourcesTests {
 		try {
 			sources.addAfter(bogusPS, new MockPropertySource("h"));
 			fail("expected non-existent PropertySource exception");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			assertTrue(ex.getMessage().contains("does not exist"));
 		}
 
@@ -127,24 +134,21 @@ public class MutablePropertySourcesTests {
 		try {
 			sources.replace(bogusPS, new MockPropertySource("bogus-replaced"));
 			fail("expected non-existent PropertySource exception");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			assertTrue(ex.getMessage().contains("does not exist"));
 		}
 
 		try {
 			sources.addBefore("b", new MockPropertySource("b"));
 			fail("expected exception");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			assertTrue(ex.getMessage().contains("cannot be added relative to itself"));
 		}
 
 		try {
 			sources.addAfter("b", new MockPropertySource("b"));
 			fail("expected exception");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			assertTrue(ex.getMessage().contains("cannot be added relative to itself"));
 		}
 	}
@@ -167,8 +171,7 @@ public class MutablePropertySourcesTests {
 		try {
 			it.remove();
 			fail("Should have thrown UnsupportedOperationException");
-		}
-		catch (UnsupportedOperationException ex) {
+		} catch (UnsupportedOperationException ex) {
 			// expected
 		}
 		assertFalse(it.hasNext());

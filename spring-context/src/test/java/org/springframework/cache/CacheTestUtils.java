@@ -16,13 +16,15 @@
 
 package org.springframework.cache;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.support.SimpleCacheManager;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * General cache-related test utilities.
@@ -33,6 +35,7 @@ public class CacheTestUtils {
 
 	/**
 	 * Create a {@link SimpleCacheManager} with the specified cache(s).
+	 *
 	 * @param cacheNames the names of the caches to create
 	 */
 	public static CacheManager createSimpleCacheManager(String... cacheNames) {

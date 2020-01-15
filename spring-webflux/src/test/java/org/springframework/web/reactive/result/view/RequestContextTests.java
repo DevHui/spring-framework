@@ -16,20 +16,18 @@
 
 package org.springframework.web.reactive.result.view;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 
-import static org.junit.Assert.assertEquals;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Unit tests for {@link RequestContext}.
+ *
  * @author Rossen Stoyanchev
  */
 public class RequestContextTests {

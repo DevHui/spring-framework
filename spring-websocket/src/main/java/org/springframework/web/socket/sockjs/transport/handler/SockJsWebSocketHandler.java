@@ -16,11 +16,6 @@
 
 package org.springframework.web.socket.sockjs.transport.handler;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.springframework.util.Assert;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.SubProtocolCapable;
@@ -31,6 +26,11 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
 import org.springframework.web.socket.sockjs.transport.SockJsServiceConfig;
 import org.springframework.web.socket.sockjs.transport.session.WebSocketServerSockJsSession;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * An implementation of {@link WebSocketHandler} that adds SockJS messages frames, sends
@@ -59,7 +59,7 @@ public class SockJsWebSocketHandler extends TextWebSocketHandler implements SubP
 
 
 	public SockJsWebSocketHandler(SockJsServiceConfig serviceConfig, WebSocketHandler webSocketHandler,
-			WebSocketServerSockJsSession sockJsSession) {
+								  WebSocketServerSockJsSession sockJsSession) {
 
 		Assert.notNull(serviceConfig, "serviceConfig must not be null");
 		Assert.notNull(webSocketHandler, "webSocketHandler must not be null");

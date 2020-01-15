@@ -15,22 +15,20 @@
  */
 package org.springframework.http.server.reactive;
 
-import java.nio.charset.StandardCharsets;
-
 import io.netty.buffer.PooledByteBufAllocator;
 import org.junit.After;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.LeakAwareDataBufferFactory;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpResponse;
+import reactor.core.publisher.Flux;
 
-import static org.junit.Assert.assertEquals;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Unit tests for {@link HttpHeadResponseDecorator}.
+ *
  * @author Rossen Stoyanchev
  */
 public class HttpHeadResponseDecoratorTests {

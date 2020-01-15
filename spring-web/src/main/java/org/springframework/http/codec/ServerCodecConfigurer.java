@@ -55,6 +55,13 @@ import org.springframework.core.codec.Encoder;
 public interface ServerCodecConfigurer extends CodecConfigurer {
 
 	/**
+	 * Static factory method for a {@code ServerCodecConfigurer}.
+	 */
+	static ServerCodecConfigurer create() {
+		return CodecConfigurerFactory.create(ServerCodecConfigurer.class);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 * <p>On the server side, built-in default also include customizations
 	 * related to the encoder for SSE.
@@ -67,14 +74,6 @@ public interface ServerCodecConfigurer extends CodecConfigurer {
 	 */
 	@Override
 	ServerCodecConfigurer clone();
-
-
-	/**
-	 * Static factory method for a {@code ServerCodecConfigurer}.
-	 */
-	static ServerCodecConfigurer create() {
-		return CodecConfigurerFactory.create(ServerCodecConfigurer.class);
-	}
 
 
 	/**
@@ -94,6 +93,7 @@ public interface ServerCodecConfigurer extends CodecConfigurer {
 		 * <p>Note that {@link #maxInMemorySize(int)} and/or
 		 * {@link #enableLoggingRequestDetails(boolean)}, if configured, will be
 		 * applied to the given reader, if applicable.
+		 *
 		 * @param reader the message reader to use for multipart requests.
 		 * @since 5.1.11
 		 */

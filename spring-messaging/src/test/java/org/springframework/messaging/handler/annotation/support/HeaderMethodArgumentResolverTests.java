@@ -16,14 +16,8 @@
 
 package org.springframework.messaging.handler.annotation.support;
 
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.GenericTypeResolver;
@@ -37,7 +31,14 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.NativeMessageHeaderAccessor;
 import org.springframework.util.ReflectionUtils;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test fixture for {@link HeaderMethodArgumentResolver} tests.
@@ -132,8 +133,7 @@ public class HeaderMethodArgumentResolverTests {
 			Message<byte[]> message = MessageBuilder.withPayload(new byte[0]).build();
 			Object result = resolver.resolveArgument(paramSystemPropertyDefaultValue, message);
 			assertEquals("sysbar", result);
-		}
-		finally {
+		} finally {
 			System.clearProperty("systemProperty");
 		}
 	}
@@ -145,8 +145,7 @@ public class HeaderMethodArgumentResolverTests {
 			Message<byte[]> message = MessageBuilder.withPayload(new byte[0]).setHeader("sysbar", "foo").build();
 			Object result = resolver.resolveArgument(paramSystemPropertyName, message);
 			assertEquals("foo", result);
-		}
-		finally {
+		} finally {
 			System.clearProperty("systemProperty");
 		}
 	}

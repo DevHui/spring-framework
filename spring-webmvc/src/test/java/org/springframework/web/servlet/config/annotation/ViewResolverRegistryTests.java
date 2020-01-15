@@ -16,11 +16,8 @@
 
 package org.springframework.web.servlet.config.annotation;
 
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.core.Ordered;
 import org.springframework.web.accept.ContentNegotiationManager;
@@ -40,7 +37,13 @@ import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
 import org.springframework.web.servlet.view.xml.MarshallingView;
 
-import static org.junit.Assert.*;
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test fixture with a {@link ViewResolverRegistry}.
@@ -214,8 +217,8 @@ public class ViewResolverRegistryTests {
 	}
 
 	private void checkPropertyValues(ViewResolver resolver, Object... nameValuePairs) {
-		DirectFieldAccessor accessor =  new DirectFieldAccessor(resolver);
-		for (int i = 0; i < nameValuePairs.length ; i++, i++) {
+		DirectFieldAccessor accessor = new DirectFieldAccessor(resolver);
+		for (int i = 0; i < nameValuePairs.length; i++, i++) {
 			Object expected = nameValuePairs[i + 1];
 			Object actual = accessor.getPropertyValue((String) nameValuePairs[i]);
 			assertEquals(expected, actual);

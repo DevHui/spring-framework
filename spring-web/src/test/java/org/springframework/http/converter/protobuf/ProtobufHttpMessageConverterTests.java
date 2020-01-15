@@ -16,23 +16,29 @@
 
 package org.springframework.http.converter.protobuf;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.MockHttpInputMessage;
 import org.springframework.http.MockHttpOutputMessage;
 import org.springframework.protobuf.Msg;
 import org.springframework.protobuf.SecondMsg;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.io.IOException;
+import java.nio.charset.Charset;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test suite for {@link ProtobufHttpMessageConverter}.
@@ -70,13 +76,13 @@ public class ProtobufHttpMessageConverterTests {
 
 	@Test
 	public void extensionRegistryInitializerNull() {
-		ProtobufHttpMessageConverter converter = new ProtobufHttpMessageConverter((ExtensionRegistryInitializer)null);
+		ProtobufHttpMessageConverter converter = new ProtobufHttpMessageConverter((ExtensionRegistryInitializer) null);
 		assertNotNull(converter.extensionRegistry);
 	}
 
 	@Test
 	public void extensionRegistryNull() {
-		ProtobufHttpMessageConverter converter = new ProtobufHttpMessageConverter((ExtensionRegistry)null);
+		ProtobufHttpMessageConverter converter = new ProtobufHttpMessageConverter((ExtensionRegistry) null);
 		assertNotNull(converter.extensionRegistry);
 	}
 

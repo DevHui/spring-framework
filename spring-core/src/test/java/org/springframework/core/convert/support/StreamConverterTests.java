@@ -16,23 +16,25 @@
 
 package org.springframework.core.convert.support;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 
-import static org.hamcrest.CoreMatchers.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link StreamConverter}.
@@ -136,7 +138,7 @@ public class StreamConverterTests {
 	@Test
 	@SuppressWarnings("resource")
 	public void convertFromArrayToStream() throws NoSuchFieldException {
-		Integer[] stream = new Integer[] {1, 0, 1};
+		Integer[] stream = new Integer[]{1, 0, 1};
 		this.conversionService.addConverter(new Converter<Integer, Boolean>() {
 			@Override
 			public Boolean convert(Integer source) {
@@ -184,7 +186,7 @@ public class StreamConverterTests {
 	}
 
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({"rawtypes"})
 	static class Types {
 
 		public List<String> listOfStrings;

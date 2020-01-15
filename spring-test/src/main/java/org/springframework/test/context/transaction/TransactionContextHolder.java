@@ -34,14 +34,13 @@ final class TransactionContextHolder {
 	private TransactionContextHolder() {
 	}
 
-
-	static void setCurrentTransactionContext(TransactionContext transactionContext) {
-		currentTransactionContext.set(transactionContext);
-	}
-
 	@Nullable
 	static TransactionContext getCurrentTransactionContext() {
 		return currentTransactionContext.get();
+	}
+
+	static void setCurrentTransactionContext(TransactionContext transactionContext) {
+		currentTransactionContext.set(transactionContext);
 	}
 
 	@Nullable

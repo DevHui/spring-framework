@@ -15,17 +15,20 @@
  */
 package org.springframework.util.concurrent;
 
+import org.junit.Test;
+import reactor.core.publisher.Mono;
+
 import java.time.Duration;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
-import reactor.core.publisher.Mono;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link MonoToListenableFutureAdapter}.
+ *
  * @author Rossen Stoyanchev
  */
 public class MonoToListenableFutureAdapterTests {

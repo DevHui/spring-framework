@@ -15,17 +15,16 @@
  */
 package org.springframework.test.web.servlet.samples.standalone;
 
-import java.time.Duration;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+
+import java.time.Duration;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -52,7 +51,6 @@ public class ReactiveReturnTypeTests {
 		mockMvc.perform(asyncDispatch(mvcResult))
 				.andExpect(content().string("data:event0\n\ndata:event1\n\ndata:event2\n\n"));
 	}
-
 
 
 	@RestController

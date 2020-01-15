@@ -18,12 +18,16 @@ package org.springframework.context.annotation;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Mark Fisher
@@ -121,8 +125,7 @@ public class ComponentScanParserBeanDefinitionDefaultsTests {
 		try {
 			context.refresh();
 			fail("expected exception due to multiple matches for byType autowiring");
-		}
-		catch (UnsatisfiedDependencyException ex) {
+		} catch (UnsatisfiedDependencyException ex) {
 			// expected
 		}
 	}
@@ -229,14 +232,6 @@ public class ComponentScanParserBeanDefinitionDefaultsTests {
 			return this.destroyed;
 		}
 
-		public void setPropertyDependency1(PropertyDependencyTestBean pdtb) {
-			this.propertyDependency1 = pdtb;
-		}
-
-		public void setPropertyDependency2(PropertyDependencyTestBean pdtb) {
-			this.propertyDependency2 = pdtb;
-		}
-
 		public ConstructorDependencyTestBean getConstructorDependency() {
 			return this.constructorDependency;
 		}
@@ -245,8 +240,16 @@ public class ComponentScanParserBeanDefinitionDefaultsTests {
 			return this.propertyDependency1;
 		}
 
+		public void setPropertyDependency1(PropertyDependencyTestBean pdtb) {
+			this.propertyDependency1 = pdtb;
+		}
+
 		public PropertyDependencyTestBean getPropertyDependency2() {
 			return this.propertyDependency2;
+		}
+
+		public void setPropertyDependency2(PropertyDependencyTestBean pdtb) {
+			this.propertyDependency2 = pdtb;
 		}
 	}
 

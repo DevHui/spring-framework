@@ -15,12 +15,6 @@
  */
 package org.springframework.web.servlet.view.groovy;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.Locale;
-
 import groovy.text.TemplateEngine;
 import groovy.text.markup.MarkupTemplateEngine;
 import groovy.text.markup.TemplateConfiguration;
@@ -28,11 +22,18 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.StaticApplicationContext;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.Locale;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for
@@ -43,11 +44,8 @@ import static org.junit.Assert.*;
 public class GroovyMarkupConfigurerTests {
 
 	private static final String RESOURCE_LOADER_PATH = "classpath:org/springframework/web/servlet/view/groovy/";
-
-	private StaticApplicationContext applicationContext;
-
 	private static final String TEMPLATE_PREFIX = "org/springframework/web/servlet/view/groovy/";
-
+	private StaticApplicationContext applicationContext;
 	private GroovyMarkupConfigurer configurer;
 
 
@@ -124,13 +122,6 @@ public class GroovyMarkupConfigurerTests {
 				Matchers.endsWith("org/springframework/web/servlet/view/"));
 	}
 
-	private class TestTemplateEngine extends MarkupTemplateEngine {
-
-		public TestTemplateEngine() {
-			super(new TemplateConfiguration());
-		}
-	}
-
 	@Test
 	public void resolveSampleTemplate() throws Exception {
 		URL url = this.configurer.resolveTemplate(getClass().getClassLoader(), TEMPLATE_PREFIX + "test.tpl");
@@ -166,5 +157,12 @@ public class GroovyMarkupConfigurerTests {
 		LocaleContextHolder.setLocale(Locale.US);
 		this.configurer.resolveTemplate(getClass().getClassLoader(), TEMPLATE_PREFIX + "missing.tpl");
 		Assert.fail();
+	}
+
+	private class TestTemplateEngine extends MarkupTemplateEngine {
+
+		public TestTemplateEngine() {
+			super(new TemplateConfiguration());
+		}
 	}
 }

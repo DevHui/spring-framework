@@ -16,13 +16,7 @@
 
 package org.springframework.web.reactive;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.function.Supplier;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.Ordered;
@@ -32,13 +26,20 @@ import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.method.ResolvableMethod;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.function.Supplier;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * Unit tests for {@link DispatcherHandler}.
+ *
  * @author Rossen Stoyanchev
  */
 public class DispatcherHandlerTests {
@@ -72,7 +73,8 @@ public class DispatcherHandlerTests {
 
 
 	@SuppressWarnings("unused")
-	private void handle() {}
+	private void handle() {
+	}
 
 
 	private static class SupplierHandlerAdapter implements HandlerAdapter {

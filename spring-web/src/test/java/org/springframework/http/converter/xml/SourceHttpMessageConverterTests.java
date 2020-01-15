@@ -16,10 +16,23 @@
 
 package org.springframework.http.converter.xml;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.http.MockHttpInputMessage;
+import org.springframework.http.MockHttpOutputMessage;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.util.FileCopyUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLStreamException;
@@ -29,28 +42,16 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stax.StAXSource;
 import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.http.MockHttpInputMessage;
-import org.springframework.http.MockHttpOutputMessage;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.util.FileCopyUtils;
-
-import static org.junit.Assert.*;
-import static org.xmlunit.matchers.CompareMatcher.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 /**
  * @author Arjen Poutsma
@@ -59,14 +60,10 @@ import static org.xmlunit.matchers.CompareMatcher.*;
 public class SourceHttpMessageConverterTests {
 
 	private static final String BODY = "<root>Hello World</root>";
-
-	private SourceHttpMessageConverter<Source> converter;
-
-	private String bodyExternal;
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-
+	private SourceHttpMessageConverter<Source> converter;
+	private String bodyExternal;
 
 	@Before
 	public void setup() throws IOException {
@@ -228,8 +225,7 @@ public class SourceHttpMessageConverterTests {
 		try {
 			s = streamReader.getElementText();
 			assertNotEquals("Foo Bar", s);
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			// Some parsers raise a parse exception
 		}
 		streamReader.close();

@@ -16,20 +16,9 @@
 
 package org.springframework.jms.config;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import javax.jms.ConnectionFactory;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.parsing.ComponentDefinition;
@@ -49,8 +38,22 @@ import org.springframework.util.ErrorHandler;
 import org.springframework.util.backoff.BackOff;
 import org.springframework.util.backoff.FixedBackOff;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.jms.ConnectionFactory;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Mark Fisher
@@ -103,8 +106,7 @@ public class JmsNamespaceHandlerTests {
 		for (DefaultMessageListenerContainer container : containers.values()) {
 			if (container.getConnectionFactory().equals(defaultConnectionFactory)) {
 				defaultConnectionFactoryCount++;
-			}
-			else if (container.getConnectionFactory().equals(explicitConnectionFactory)) {
+			} else if (container.getConnectionFactory().equals(explicitConnectionFactory)) {
 				explicitConnectionFactoryCount++;
 			}
 		}
@@ -173,7 +175,7 @@ public class JmsNamespaceHandlerTests {
 		JmsMessageEndpointManager container =
 				factory.createListenerContainer(createDummyEndpoint());
 		assertEquals("explicit resource adapter not set",
-				context.getBean("testResourceAdapter"),container.getResourceAdapter());
+				context.getBean("testResourceAdapter"), container.getResourceAdapter());
 		assertEquals("explicit message converter not set",
 				context.getBean("testMessageConverter"), container.getActivationSpecConfig().getMessageConverter());
 		assertEquals("Wrong pub/sub", true, container.isPubSubDomain());
@@ -310,10 +312,10 @@ public class JmsNamespaceHandlerTests {
 		assertTrue("Parser should have registered a component named 'listener3'",
 				context.containsComponentDefinition("listener3"));
 		assertTrue("Parser should have registered a component named '"
-				+ DefaultMessageListenerContainer.class.getName() + "#0'",
+						+ DefaultMessageListenerContainer.class.getName() + "#0'",
 				context.containsComponentDefinition(DefaultMessageListenerContainer.class.getName() + "#0"));
 		assertTrue("Parser should have registered a component named '"
-				+ JmsMessageEndpointManager.class.getName() + "#0'",
+						+ JmsMessageEndpointManager.class.getName() + "#0'",
 				context.containsComponentDefinition(JmsMessageEndpointManager.class.getName() + "#0"));
 		assertTrue("Parser should have registered a component named 'testJmsFactory",
 				context.containsComponentDefinition("testJmsFactory"));
@@ -359,7 +361,7 @@ public class JmsNamespaceHandlerTests {
 	private long getRecoveryInterval(String containerBeanName) {
 		BackOff backOff = getBackOff(containerBeanName);
 		assertEquals(FixedBackOff.class, backOff.getClass());
-		return ((FixedBackOff)backOff).getInterval();
+		return ((FixedBackOff) backOff).getInterval();
 	}
 
 	private int getPhase(String containerBeanName) {
@@ -417,8 +419,7 @@ public class JmsNamespaceHandlerTests {
 							return true;
 						}
 					}
-				}
-				else {
+				} else {
 					if (cd.getName().equals(name)) {
 						return true;
 					}

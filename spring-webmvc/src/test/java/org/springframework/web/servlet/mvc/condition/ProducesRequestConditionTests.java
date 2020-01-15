@@ -16,11 +16,7 @@
 
 package org.springframework.web.servlet.mvc.condition;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.junit.Test;
-
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.web.accept.ContentNegotiationManager;
@@ -28,7 +24,14 @@ import org.springframework.web.accept.FixedContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 import org.springframework.web.servlet.mvc.condition.ProducesRequestCondition.ProduceMediaTypeExpression;
 
-import static org.junit.Assert.*;
+import java.util.Collection;
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for {@link ProducesRequestCondition}.
@@ -125,7 +128,7 @@ public class ProducesRequestConditionTests {
 
 	@Test
 	public void matchByRequestParameter() {
-		ProducesRequestCondition condition = new ProducesRequestCondition(new String[] {"text/plain"}, new String[] {});
+		ProducesRequestCondition condition = new ProducesRequestCondition(new String[]{"text/plain"}, new String[]{});
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo.txt");
 
@@ -150,7 +153,7 @@ public class ProducesRequestConditionTests {
 				new FixedContentNegotiationStrategy(MediaType.TEXT_HTML));
 
 		ProducesRequestCondition none = new ProducesRequestCondition(new String[0], null, manager);
-		ProducesRequestCondition html = new ProducesRequestCondition(new String[] {"text/html"}, null, manager);
+		ProducesRequestCondition html = new ProducesRequestCondition(new String[]{"text/html"}, null, manager);
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader("Accept", "*/*");
@@ -337,7 +340,7 @@ public class ProducesRequestConditionTests {
 
 	@Test
 	public void instantiateWithProducesAndHeaderConditions() {
-		String[] produces = new String[] {"text/plain"};
+		String[] produces = new String[]{"text/plain"};
 		String[] headers = new String[]{"foo=bar", "accept=application/xml,application/pdf"};
 		ProducesRequestCondition condition = new ProducesRequestCondition(produces, headers);
 

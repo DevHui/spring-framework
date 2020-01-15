@@ -16,17 +16,8 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -37,6 +28,13 @@ import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.util.UrlPathHelper;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A central component to use to obtain the public URL path that clients should
@@ -52,15 +50,19 @@ import org.springframework.web.util.UrlPathHelper;
 public class ResourceUrlProvider implements ApplicationListener<ContextRefreshedEvent> {
 
 	protected final Log logger = LogFactory.getLog(getClass());
-
-	private UrlPathHelper urlPathHelper = new UrlPathHelper();
-
-	private PathMatcher pathMatcher = new AntPathMatcher();
-
 	private final Map<String, ResourceHttpRequestHandler> handlerMap = new LinkedHashMap<>();
-
+	private UrlPathHelper urlPathHelper = new UrlPathHelper();
+	private PathMatcher pathMatcher = new AntPathMatcher();
 	private boolean autodetect = true;
 
+	/**
+	 * Return the configured {@code UrlPathHelper}.
+	 *
+	 * @since 4.2.8
+	 */
+	public UrlPathHelper getUrlPathHelper() {
+		return this.urlPathHelper;
+	}
 
 	/**
 	 * Configure a {@code UrlPathHelper} to use in
@@ -72,11 +74,10 @@ public class ResourceUrlProvider implements ApplicationListener<ContextRefreshed
 	}
 
 	/**
-	 * Return the configured {@code UrlPathHelper}.
-	 * @since 4.2.8
+	 * Return the configured {@code PathMatcher}.
 	 */
-	public UrlPathHelper getUrlPathHelper() {
-		return this.urlPathHelper;
+	public PathMatcher getPathMatcher() {
+		return this.pathMatcher;
 	}
 
 	/**
@@ -88,10 +89,11 @@ public class ResourceUrlProvider implements ApplicationListener<ContextRefreshed
 	}
 
 	/**
-	 * Return the configured {@code PathMatcher}.
+	 * Return the resource mappings, either manually configured or auto-detected
+	 * when the Spring {@code ApplicationContext} is refreshed.
 	 */
-	public PathMatcher getPathMatcher() {
-		return this.pathMatcher;
+	public Map<String, ResourceHttpRequestHandler> getHandlerMap() {
+		return this.handlerMap;
 	}
 
 	/**
@@ -106,14 +108,6 @@ public class ResourceUrlProvider implements ApplicationListener<ContextRefreshed
 			this.handlerMap.putAll(handlerMap);
 			this.autodetect = false;
 		}
-	}
-
-	/**
-	 * Return the resource mappings, either manually configured or auto-detected
-	 * when the Spring {@code ApplicationContext} is refreshed.
-	 */
-	public Map<String, ResourceHttpRequestHandler> getHandlerMap() {
-		return this.handlerMap;
 	}
 
 	/**
@@ -160,7 +154,8 @@ public class ResourceUrlProvider implements ApplicationListener<ContextRefreshed
 	 * A variation on {@link #getForLookupPath(String)} that accepts a full request
 	 * URL path (i.e. including context and servlet path) and returns the full request
 	 * URL path to expose for public use.
-	 * @param request the current request
+	 *
+	 * @param request    the current request
 	 * @param requestUrl the request URL path to resolve
 	 * @return the resolved public URL path, or {@code null} if unresolved
 	 */
@@ -207,6 +202,7 @@ public class ResourceUrlProvider implements ApplicationListener<ContextRefreshed
 	 * request mapping purposes, i.e. excluding context and servlet path portions.
 	 * <p>If several handler mappings match, the handler used will be the one
 	 * configured with the most specific pattern.
+	 *
 	 * @param lookupPath the lookup path to check
 	 * @return the resolved public URL path, or {@code null} if unresolved
 	 */

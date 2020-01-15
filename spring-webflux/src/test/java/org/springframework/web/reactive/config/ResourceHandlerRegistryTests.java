@@ -16,17 +16,10 @@
 
 package org.springframework.web.reactive.config;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import reactor.test.StepVerifier;
-
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.buffer.support.DataBufferTestUtils;
@@ -48,6 +41,12 @@ import org.springframework.web.reactive.resource.ResourceUrlProvider;
 import org.springframework.web.reactive.resource.ResourceWebHandler;
 import org.springframework.web.reactive.resource.VersionResourceResolver;
 import org.springframework.web.reactive.resource.WebJarsResourceResolver;
+import reactor.test.StepVerifier;
+
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -108,7 +107,7 @@ public class ResourceHandlerRegistryTests {
 
 	@Test
 	public void order() {
-		assertEquals(Integer.MAX_VALUE -1, this.registry.getHandlerMapping().getOrder());
+		assertEquals(Integer.MAX_VALUE - 1, this.registry.getHandlerMapping().getOrder());
 
 		this.registry.setOrder(0);
 		assertEquals(0, this.registry.getHandlerMapping().getOrder());
@@ -126,7 +125,7 @@ public class ResourceHandlerRegistryTests {
 		this.registry.setResourceUrlProvider(resourceUrlProvider);
 		ResourceResolver mockResolver = Mockito.mock(ResourceResolver.class);
 		ResourceTransformerSupport mockTransformer = Mockito.mock(ResourceTransformerSupport.class);
-		
+
 		this.registration.resourceChain(true).addResolver(mockResolver).addTransformer(mockTransformer);
 
 		ResourceWebHandler handler = getHandler("/resources/**");
@@ -196,13 +195,13 @@ public class ResourceHandlerRegistryTests {
 
 		this.registration.setCacheControl(CacheControl.maxAge(3600, TimeUnit.MILLISECONDS))
 				.resourceChain(false)
-					.addResolver(cachingResolver)
-					.addResolver(versionResolver)
-					.addResolver(webjarsResolver)
-					.addResolver(pathResourceResolver)
-					.addTransformer(cachingTransformer)
-					.addTransformer(appCacheTransformer)
-					.addTransformer(cssLinkTransformer);
+				.addResolver(cachingResolver)
+				.addResolver(versionResolver)
+				.addResolver(webjarsResolver)
+				.addResolver(pathResourceResolver)
+				.addTransformer(cachingTransformer)
+				.addTransformer(appCacheTransformer)
+				.addTransformer(cssLinkTransformer);
 
 		ResourceWebHandler handler = getHandler("/resources/**");
 		List<ResourceResolver> resolvers = handler.getResourceResolvers();

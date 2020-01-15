@@ -16,8 +16,6 @@
 
 package org.springframework.expression.spel.ast;
 
-import java.lang.reflect.Array;
-
 import org.springframework.asm.MethodVisitor;
 import org.springframework.asm.Type;
 import org.springframework.expression.EvaluationException;
@@ -26,6 +24,8 @@ import org.springframework.expression.spel.CodeFlow;
 import org.springframework.expression.spel.ExpressionState;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.lang.reflect.Array;
 
 /**
  * Represents a reference to a type, for example
@@ -106,30 +106,22 @@ public class TypeReference extends SpelNodeImpl {
 		if (this.type.isPrimitive()) {
 			if (this.type == Boolean.TYPE) {
 				mv.visitFieldInsn(GETSTATIC, "java/lang/Boolean", "TYPE", "Ljava/lang/Class;");
-			}
-			else if (this.type == Byte.TYPE) {
+			} else if (this.type == Byte.TYPE) {
 				mv.visitFieldInsn(GETSTATIC, "java/lang/Byte", "TYPE", "Ljava/lang/Class;");
-			}
-			else if (this.type == Character.TYPE) {
+			} else if (this.type == Character.TYPE) {
 				mv.visitFieldInsn(GETSTATIC, "java/lang/Character", "TYPE", "Ljava/lang/Class;");
-			}
-			else if (this.type == Double.TYPE) {
+			} else if (this.type == Double.TYPE) {
 				mv.visitFieldInsn(GETSTATIC, "java/lang/Double", "TYPE", "Ljava/lang/Class;");
-			}
-			else if (this.type == Float.TYPE) {
+			} else if (this.type == Float.TYPE) {
 				mv.visitFieldInsn(GETSTATIC, "java/lang/Float", "TYPE", "Ljava/lang/Class;");
-			}
-			else if (this.type == Integer.TYPE) {
+			} else if (this.type == Integer.TYPE) {
 				mv.visitFieldInsn(GETSTATIC, "java/lang/Integer", "TYPE", "Ljava/lang/Class;");
-			}
-			else if (this.type == Long.TYPE) {
+			} else if (this.type == Long.TYPE) {
 				mv.visitFieldInsn(GETSTATIC, "java/lang/Long", "TYPE", "Ljava/lang/Class;");
-			}
-			else if (this.type == Short.TYPE) {
+			} else if (this.type == Short.TYPE) {
 				mv.visitFieldInsn(GETSTATIC, "java/lang/Short", "TYPE", "Ljava/lang/Class;");
 			}
-		}
-		else {
+		} else {
 			mv.visitLdcInsn(Type.getType(this.type));
 		}
 		cf.pushDescriptor(this.exitTypeDescriptor);

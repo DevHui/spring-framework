@@ -16,6 +16,15 @@
 
 package org.springframework.beans;
 
+import org.junit.Test;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceEditor;
+import org.springframework.tests.sample.beans.DerivedTestBean;
+import org.springframework.tests.sample.beans.ITestBean;
+import org.springframework.tests.sample.beans.TestBean;
+
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
@@ -27,16 +36,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
-
-import org.junit.Test;
-
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceEditor;
-import org.springframework.tests.sample.beans.DerivedTestBean;
-import org.springframework.tests.sample.beans.ITestBean;
-import org.springframework.tests.sample.beans.TestBean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -65,8 +64,7 @@ public class BeanUtilsTests {
 			// give interface
 			BeanUtils.instantiateClass(List.class);
 			fail("Should have thrown FatalBeanException");
-		}
-		catch (FatalBeanException ex) {
+		} catch (FatalBeanException ex) {
 			// expected
 		}
 
@@ -74,8 +72,7 @@ public class BeanUtilsTests {
 			// give class without default constructor
 			BeanUtils.instantiateClass(CustomDateEditor.class);
 			fail("Should have thrown FatalBeanException");
-		}
-		catch (FatalBeanException ex) {
+		} catch (FatalBeanException ex) {
 			// expected
 		}
 	}
@@ -222,16 +219,14 @@ public class BeanUtilsTests {
 		try {
 			BeanUtils.resolveSignature("doSomething(", MethodSignatureBean.class);
 			fail("Should not be able to parse with opening but no closing paren.");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// success
 		}
 
 		try {
 			BeanUtils.resolveSignature("doSomething)", MethodSignatureBean.class);
 			fail("Should not be able to parse with closing but no opening paren.");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// success
 		}
 	}
@@ -302,7 +297,7 @@ public class BeanUtilsTests {
 		).forEach(this::assertIsSimpleValueType);
 
 		Stream.of(int[].class, Object.class, List.class, void.class, Void.class)
-			.forEach(this::assertIsNotSimpleValueType);
+				.forEach(this::assertIsNotSimpleValueType);
 	}
 
 	@Test
@@ -322,7 +317,7 @@ public class BeanUtilsTests {
 		).forEach(this::assertIsSimpleProperty);
 
 		Stream.of(Object.class, List.class, void.class, Void.class)
-			.forEach(this::assertIsNotSimpleProperty);
+				.forEach(this::assertIsNotSimpleProperty);
 	}
 
 	private void assertIsSimpleValueType(Class<?> type) {
@@ -346,6 +341,17 @@ public class BeanUtilsTests {
 	}
 
 
+	private interface MapEntry<K, V> {
+
+		K getKey();
+
+		void setKey(V value);
+
+		V getValue();
+
+		void setValue(V value);
+	}
+
 	@SuppressWarnings("unused")
 	private static class NameAndSpecialProperty {
 
@@ -353,23 +359,22 @@ public class BeanUtilsTests {
 
 		private int specialProperty;
 
-		public void setName(String name) {
-			this.name = name;
-		}
-
 		public String getName() {
 			return this.name;
 		}
 
-		public void setSpecialProperty(int specialProperty) {
-			this.specialProperty = specialProperty;
+		public void setName(String name) {
+			this.name = name;
 		}
 
 		public int getSpecialProperty() {
 			return specialProperty;
 		}
-	}
 
+		public void setSpecialProperty(int specialProperty) {
+			this.specialProperty = specialProperty;
+		}
+	}
 
 	@SuppressWarnings("unused")
 	private static class InvalidProperty {
@@ -382,39 +387,38 @@ public class BeanUtilsTests {
 
 		private boolean flag2;
 
-		public void setName(String name) {
-			this.name = name;
-		}
-
 		public String getName() {
 			return this.name;
 		}
 
-		public void setValue(int value) {
-			this.value = Integer.toString(value);
+		public void setName(String name) {
+			this.name = name;
 		}
 
 		public String getValue() {
 			return this.value;
 		}
 
-		public void setFlag1(boolean flag1) {
-			this.flag1 = flag1;
+		public void setValue(int value) {
+			this.value = Integer.toString(value);
 		}
 
 		public Boolean getFlag1() {
 			return this.flag1;
 		}
 
-		public void setFlag2(Boolean flag2) {
-			this.flag2 = flag2;
+		public void setFlag1(boolean flag1) {
+			this.flag1 = flag1;
 		}
 
 		public boolean getFlag2() {
 			return this.flag2;
 		}
-	}
 
+		public void setFlag2(Boolean flag2) {
+			this.flag2 = flag2;
+		}
+	}
 
 	@SuppressWarnings("unused")
 	private static class ContainerBean {
@@ -430,7 +434,6 @@ public class BeanUtilsTests {
 		}
 	}
 
-
 	@SuppressWarnings("unused")
 	private static class ContainedBean {
 
@@ -444,7 +447,6 @@ public class BeanUtilsTests {
 			this.name = name;
 		}
 	}
-
 
 	@SuppressWarnings("unused")
 	private static class MethodSignatureBean {
@@ -470,19 +472,6 @@ public class BeanUtilsTests {
 		public void doSomethingWithAMultiDimensionalArray(String[][] strings) {
 		}
 	}
-
-
-	private interface MapEntry<K, V> {
-
-		K getKey();
-
-		void setKey(V value);
-
-		V getValue();
-
-		void setValue(V value);
-	}
-
 
 	private static class Bean implements MapEntry<String, String> {
 

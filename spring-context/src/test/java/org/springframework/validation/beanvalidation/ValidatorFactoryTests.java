@@ -16,6 +16,28 @@
 
 package org.springframework.validation.beanvalidation;
 
+import org.hibernate.validator.HibernateValidator;
+import org.hibernate.validator.HibernateValidatorFactory;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.core.env.Environment;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+
+import javax.validation.Constraint;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+import javax.validation.ConstraintViolation;
+import javax.validation.Payload;
+import javax.validation.Valid;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.constraints.NotNull;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -28,32 +50,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.validation.Constraint;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-import javax.validation.ConstraintViolation;
-import javax.validation.Payload;
-import javax.validation.Valid;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.HibernateValidator;
-import org.hibernate.validator.HibernateValidatorFactory;
-import org.junit.Test;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.core.env.Environment;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Juergen Hoeller
@@ -72,8 +75,7 @@ public class ValidatorFactoryTests {
 			String path = cv.getPropertyPath().toString();
 			if ("name".equals(path) || "address.street".equals(path)) {
 				assertTrue(cv.getConstraintDescriptor().getAnnotation() instanceof NotNull);
-			}
-			else {
+			} else {
 				fail("Invalid constraint violation with path '" + path + "'");
 			}
 		}
@@ -99,8 +101,7 @@ public class ValidatorFactoryTests {
 			String path = cv.getPropertyPath().toString();
 			if ("name".equals(path) || "address.street".equals(path)) {
 				assertTrue(cv.getConstraintDescriptor().getAnnotation() instanceof NotNull);
-			}
-			else {
+			} else {
 				fail("Invalid constraint violation with path '" + path + "'");
 			}
 		}
@@ -291,22 +292,56 @@ public class ValidatorFactoryTests {
 	}
 
 
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Constraint(validatedBy = NameAddressValidator.class)
+	public @interface NameAddressValid {
+
+		String message() default "Street must not contain name";
+
+		Class<?>[] groups() default {};
+
+		Class<?>[] payload() default {};
+	}
+
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	@Constraint(validatedBy = InnerValidator.class)
+	public @interface InnerValid {
+
+		String message() default "NOT VALID";
+
+		Class<?>[] groups() default {};
+
+		Class<? extends Payload>[] payload() default {};
+	}
+
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	@Constraint(validatedBy = NotXListValidator.class)
+	public @interface NotXList {
+
+		String message() default "Should not be X";
+
+		Class<?>[] groups() default {};
+
+		Class<? extends Payload>[] payload() default {};
+	}
+
 	@NameAddressValid
 	public static class ValidPerson {
 
+		public boolean expectsAutowiredValidator = false;
 		@NotNull
 		private String name;
-
 		@Valid
 		private ValidAddress address = new ValidAddress();
-
 		@Valid
 		private List<ValidAddress> addressList = new LinkedList<>();
-
 		@Valid
 		private Set<ValidAddress> addressSet = new LinkedHashSet<>();
-
-		public boolean expectsAutowiredValidator = false;
 
 		public String getName() {
 			return name;
@@ -341,7 +376,6 @@ public class ValidatorFactoryTests {
 		}
 	}
 
-
 	public static class ValidAddress {
 
 		@NotNull
@@ -355,20 +389,6 @@ public class ValidatorFactoryTests {
 			this.street = street;
 		}
 	}
-
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Constraint(validatedBy = NameAddressValidator.class)
-	public @interface NameAddressValid {
-
-		String message() default "Street must not contain name";
-
-		Class<?>[] groups() default {};
-
-		Class<?>[] payload() default {};
-	}
-
 
 	public static class NameAddressValidator implements ConstraintValidator<NameAddressValid, ValidPerson> {
 
@@ -393,7 +413,6 @@ public class ValidatorFactoryTests {
 		}
 	}
 
-
 	public static class MainBean {
 
 		@InnerValid
@@ -403,7 +422,6 @@ public class ValidatorFactoryTests {
 			return inner;
 		}
 	}
-
 
 	public static class MainBeanWithOptional {
 
@@ -415,7 +433,6 @@ public class ValidatorFactoryTests {
 		}
 	}
 
-
 	public static class InnerBean {
 
 		private String value;
@@ -423,24 +440,11 @@ public class ValidatorFactoryTests {
 		public String getValue() {
 			return value;
 		}
+
 		public void setValue(String value) {
 			this.value = value;
 		}
 	}
-
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.FIELD)
-	@Constraint(validatedBy=InnerValidator.class)
-	public @interface InnerValid {
-
-		String message() default "NOT VALID";
-
-		Class<?>[] groups() default { };
-
-		Class<? extends Payload>[] payload() default {};
-	}
-
 
 	public static class InnerValidator implements ConstraintValidator<InnerValid, InnerBean> {
 
@@ -459,7 +463,6 @@ public class ValidatorFactoryTests {
 		}
 	}
 
-
 	public static class ListContainer {
 
 		@NotXList
@@ -473,20 +476,6 @@ public class ValidatorFactoryTests {
 			return list;
 		}
 	}
-
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.FIELD)
-	@Constraint(validatedBy = NotXListValidator.class)
-	public @interface NotXList {
-
-		String message() default "Should not be X";
-
-		Class<?>[] groups() default {};
-
-		Class<? extends Payload>[] payload() default {};
-	}
-
 
 	public static class NotXListValidator implements ConstraintValidator<NotXList, List<String>> {
 

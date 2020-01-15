@@ -16,22 +16,29 @@
 
 package org.springframework.cache.config;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.UUID;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.UUID;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Abstract cache annotation tests (containing several reusable methods).
@@ -154,8 +161,7 @@ public abstract class AbstractCacheAnnotationTests {
 		assertSame(r1, r2);
 		try {
 			service.evictEarly(o1);
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			// expected
 		}
 
@@ -174,8 +180,7 @@ public abstract class AbstractCacheAnnotationTests {
 		assertSame(r1, r2);
 		try {
 			service.evictWithException(o1);
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			// expected
 		}
 		// exception occurred, eviction skipped, data should still be in the cache
@@ -207,8 +212,7 @@ public abstract class AbstractCacheAnnotationTests {
 
 		try {
 			service.invalidateEarly(o1, null);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			// expected
 		}
 		Object r3 = service.cache(o1);
@@ -331,8 +335,7 @@ public abstract class AbstractCacheAnnotationTests {
 		try {
 			service.throwChecked(arg);
 			fail("Excepted exception");
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			assertEquals("Wrong exception type", IOException.class, ex.getClass());
 			assertEquals(arg, ex.getMessage());
 		}
@@ -342,8 +345,7 @@ public abstract class AbstractCacheAnnotationTests {
 		try {
 			service.throwUnchecked(1L);
 			fail("Excepted exception");
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			assertEquals("Wrong exception type", UnsupportedOperationException.class, ex.getClass());
 			assertEquals("1", ex.getMessage());
 		}
@@ -354,8 +356,7 @@ public abstract class AbstractCacheAnnotationTests {
 		try {
 			service.throwCheckedSync(arg);
 			fail("Excepted exception");
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			assertEquals("Wrong exception type", IOException.class, ex.getClass());
 			assertEquals(arg, ex.getMessage());
@@ -366,8 +367,7 @@ public abstract class AbstractCacheAnnotationTests {
 		try {
 			service.throwUncheckedSync(1L);
 			fail("Excepted exception");
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			assertEquals("Wrong exception type", UnsupportedOperationException.class, ex.getClass());
 			assertEquals("1", ex.getMessage());
 		}
@@ -705,8 +705,7 @@ public abstract class AbstractCacheAnnotationTests {
 			Object param = new Object();
 			this.cs.unknownCustomKeyGenerator(param);
 			fail("should have failed with NoSuchBeanDefinitionException");
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			// expected
 		}
 	}
@@ -728,8 +727,7 @@ public abstract class AbstractCacheAnnotationTests {
 			Object param = new Object();
 			this.cs.unknownCustomCacheManager(param);
 			fail("should have failed with NoSuchBeanDefinitionException");
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			// expected
 		}
 	}

@@ -16,13 +16,7 @@
 
 package org.springframework.http.codec;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.AbstractDecoder;
 import org.springframework.core.codec.Decoder;
@@ -35,6 +29,11 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@code HttpMessageReader} that wraps and delegates to a {@link Decoder}.
@@ -43,11 +42,11 @@ import org.springframework.util.Assert;
  * from the extra information available on the server side such as the request
  * or controller method parameter annotations.
  *
+ * @param <T> the type of objects in the decoded output stream
  * @author Arjen Poutsma
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
  * @since 5.0
- * @param <T> the type of objects in the decoded output stream
  */
 public class DecoderHttpMessageReader<T> implements HttpMessageReader<T> {
 
@@ -109,6 +108,7 @@ public class DecoderHttpMessageReader<T> implements HttpMessageReader<T> {
 	 * Determine the Content-Type of the HTTP message based on the
 	 * "Content-Type" header or otherwise default to
 	 * {@link MediaType#APPLICATION_OCTET_STREAM}.
+	 *
 	 * @param inputMessage the HTTP message
 	 * @return the MediaType, possibly {@code null}.
 	 */
@@ -123,7 +123,7 @@ public class DecoderHttpMessageReader<T> implements HttpMessageReader<T> {
 
 	@Override
 	public Flux<T> read(ResolvableType actualType, ResolvableType elementType,
-			ServerHttpRequest request, ServerHttpResponse response, Map<String, Object> hints) {
+						ServerHttpRequest request, ServerHttpResponse response, Map<String, Object> hints) {
 
 		Map<String, Object> allHints = Hints.merge(hints,
 				getReadHints(actualType, elementType, request, response));
@@ -133,7 +133,7 @@ public class DecoderHttpMessageReader<T> implements HttpMessageReader<T> {
 
 	@Override
 	public Mono<T> readMono(ResolvableType actualType, ResolvableType elementType,
-			ServerHttpRequest request, ServerHttpResponse response, Map<String, Object> hints) {
+							ServerHttpRequest request, ServerHttpResponse response, Map<String, Object> hints) {
 
 		Map<String, Object> allHints = Hints.merge(hints,
 				getReadHints(actualType, elementType, request, response));
@@ -147,7 +147,7 @@ public class DecoderHttpMessageReader<T> implements HttpMessageReader<T> {
 	 * the decoder if it is an instance of {@link HttpMessageDecoder}.
 	 */
 	protected Map<String, Object> getReadHints(ResolvableType actualType,
-			ResolvableType elementType, ServerHttpRequest request, ServerHttpResponse response) {
+											   ResolvableType elementType, ServerHttpRequest request, ServerHttpResponse response) {
 
 		if (this.decoder instanceof HttpMessageDecoder) {
 			HttpMessageDecoder<?> decoder = (HttpMessageDecoder<?>) this.decoder;

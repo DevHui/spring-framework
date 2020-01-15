@@ -16,20 +16,19 @@
 
 package org.springframework.core.io.buffer;
 
+import io.netty.buffer.PooledByteBufAllocator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jetbrains.annotations.NotNull;
+import org.junit.After;
+import org.springframework.util.Assert;
+
 import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import io.netty.buffer.PooledByteBufAllocator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jetbrains.annotations.NotNull;
-import org.junit.After;
-
-import org.springframework.util.Assert;
 
 /**
  * Implementation of the {@code DataBufferFactory} interface that keep track of memory leaks.
@@ -61,6 +60,7 @@ public class LeakAwareDataBufferFactory implements DataBufferFactory {
 
 	/**
 	 * Creates a new {@code LeakAwareDataBufferFactory} by wrapping the given delegate.
+	 *
 	 * @param delegate the delegate buffer factory to wrap.
 	 */
 	public LeakAwareDataBufferFactory(DataBufferFactory delegate) {
@@ -83,8 +83,7 @@ public class LeakAwareDataBufferFactory implements DataBufferFactory {
 			if (Instant.now().isBefore(start.plus(Duration.ofSeconds(5)))) {
 				try {
 					Thread.sleep(50);
-				}
-				catch (InterruptedException ex) {
+				} catch (InterruptedException ex) {
 					// ignore
 				}
 				continue;

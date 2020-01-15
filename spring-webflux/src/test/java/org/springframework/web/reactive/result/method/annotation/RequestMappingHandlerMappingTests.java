@@ -16,19 +16,8 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -46,10 +35,20 @@ import org.springframework.web.reactive.result.method.RequestMappingInfo;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link RequestMappingHandlerMapping}.
@@ -72,10 +71,10 @@ public class RequestMappingHandlerMappingTests {
 	public void resolveEmbeddedValuesInPatterns() {
 		this.handlerMapping.setEmbeddedValueResolver(value -> "/${pattern}/bar".equals(value) ? "/foo/bar" : value);
 
-		String[] patterns = new String[] { "/foo", "/${pattern}/bar" };
+		String[] patterns = new String[]{"/foo", "/${pattern}/bar"};
 		String[] result = this.handlerMapping.resolveEmbeddedValuesInPatterns(patterns);
 
-		assertArrayEquals(new String[] { "/foo", "/foo/bar" }, result);
+		assertArrayEquals(new String[]{"/foo", "/foo/bar"}, result);
 	}
 
 	@Test
@@ -97,9 +96,9 @@ public class RequestMappingHandlerMappingTests {
 		RequestMappingInfo info = assertComposedAnnotationMapping("postJson", "/postJson", RequestMethod.POST);
 
 		assertEquals(MediaType.APPLICATION_JSON_VALUE,
-			info.getConsumesCondition().getConsumableMediaTypes().iterator().next().toString());
+				info.getConsumesCondition().getConsumableMediaTypes().iterator().next().toString());
 		assertEquals(MediaType.APPLICATION_JSON_VALUE,
-			info.getProducesCondition().getProducibleMediaTypes().iterator().next().toString());
+				info.getProducesCondition().getProducibleMediaTypes().iterator().next().toString());
 	}
 
 	@Test // SPR-14988
@@ -144,7 +143,7 @@ public class RequestMappingHandlerMappingTests {
 	}
 
 	private RequestMappingInfo assertComposedAnnotationMapping(String methodName, String path,
-			RequestMethod requestMethod) throws Exception {
+															   RequestMethod requestMethod) throws Exception {
 
 		Class<?> clazz = ComposedAnnotationController.class;
 		Method method = clazz.getMethod(methodName);
@@ -164,7 +163,19 @@ public class RequestMappingHandlerMappingTests {
 	}
 
 
-	@Controller @SuppressWarnings("unused")
+	@RequestMapping(method = RequestMethod.POST,
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface PostJson {
+
+		@AliasFor(annotation = RequestMapping.class, attribute = "path") @SuppressWarnings("unused")
+		String[] value() default {};
+	}
+
+	@Controller
+	@SuppressWarnings("unused")
 	@RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	static class ComposedAnnotationController {
 
@@ -196,19 +207,6 @@ public class RequestMappingHandlerMappingTests {
 		public void patch() {
 		}
 	}
-
-
-	@RequestMapping(method = RequestMethod.POST,
-			produces = MediaType.APPLICATION_JSON_VALUE,
-			consumes = MediaType.APPLICATION_JSON_VALUE)
-	@Target(ElementType.METHOD)
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface PostJson {
-
-		@AliasFor(annotation = RequestMapping.class, attribute = "path") @SuppressWarnings("unused")
-		String[] value() default {};
-	}
-
 
 	@RestController
 	@RequestMapping("/user")

@@ -16,15 +16,16 @@
 
 package org.springframework.web.context.request;
 
-import javax.servlet.ServletRequestEvent;
-
 import org.junit.Test;
-
 import org.springframework.core.task.MockRunnable;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockServletContext;
 
-import static org.junit.Assert.*;
+import javax.servlet.ServletRequestEvent;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Juergen Hoeller
@@ -100,8 +101,7 @@ public class RequestContextListenerTests {
 		thread.start();
 		try {
 			thread.join();
-		}
-		catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 		}
 		// Still bound to original thread, but at least completed.
 		assertNotNull(RequestContextHolder.getRequestAttributes());

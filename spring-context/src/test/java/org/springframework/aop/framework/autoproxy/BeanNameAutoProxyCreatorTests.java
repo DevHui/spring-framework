@@ -18,9 +18,6 @@ package org.springframework.aop.framework.autoproxy;
 
 import org.junit.Before;
 import org.junit.Test;
-import test.mixin.Lockable;
-import test.mixin.LockedException;
-
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanFactory;
@@ -31,8 +28,13 @@ import org.springframework.tests.aop.advice.CountingBeforeAdvice;
 import org.springframework.tests.aop.interceptor.NopInterceptor;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
+import test.mixin.Lockable;
+import test.mixin.LockedException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Rod Johnson
@@ -106,8 +108,7 @@ public class BeanNameAutoProxyCreatorTests {
 		try {
 			tb.setAge(6);
 			fail("Mixin should have locked this object");
-		}
-		catch (LockedException ex) {
+		} catch (LockedException ex) {
 			// Ok
 		}
 	}
@@ -144,8 +145,7 @@ public class BeanNameAutoProxyCreatorTests {
 		try {
 			tb.setAge(6);
 			fail("Mixin should have locked this object");
-		}
-		catch (LockedException ex) {
+		} catch (LockedException ex) {
 			// Ok
 		}
 	}
@@ -167,11 +167,11 @@ public class BeanNameAutoProxyCreatorTests {
 	@Test
 	public void testWithFrozenProxy() {
 		ITestBean testBean = (ITestBean) beanFactory.getBean("frozenBean");
-		assertTrue(((Advised)testBean).isFrozen());
+		assertTrue(((Advised) testBean).isFrozen());
 	}
 
 
-	private void jdkAssertions(ITestBean tb, int nopInterceptorCount)  {
+	private void jdkAssertions(ITestBean tb, int nopInterceptorCount) {
 		NopInterceptor nop = (NopInterceptor) beanFactory.getBean("nopInterceptor");
 		assertEquals(0, nop.getCount());
 		assertTrue(AopUtils.isJdkDynamicProxy(tb));

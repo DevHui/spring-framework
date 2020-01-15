@@ -16,12 +16,11 @@
 
 package org.springframework.web.servlet.mvc.condition;
 
-import java.util.Collection;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.web.servlet.mvc.condition.ParamsRequestCondition.ParamExpression;
+
+import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -31,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link ParamsRequestCondition}.
+ *
  * @author Arjen Poutsma
  */
 public class ParamsRequestConditionTests {

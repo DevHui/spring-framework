@@ -17,12 +17,11 @@
 package org.springframework.web.reactive.function.server;
 
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 import static org.springframework.web.reactive.function.server.RequestPredicates.contentType;
@@ -84,8 +83,8 @@ public class ToStringVisitorTests {
 		testPredicate(method(HttpMethod.GET).negate(), "!(GET)");
 
 		testPredicate(GET("/foo")
-				.or(contentType(MediaType.TEXT_PLAIN))
-				.and(accept(MediaType.APPLICATION_JSON).negate()),
+						.or(contentType(MediaType.TEXT_PLAIN))
+						.and(accept(MediaType.APPLICATION_JSON).negate()),
 				"(((GET && /foo) || Content-Type: text/plain) && !(Accept: application/json))");
 	}
 

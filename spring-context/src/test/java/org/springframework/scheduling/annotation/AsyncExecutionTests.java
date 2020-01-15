@@ -16,21 +16,10 @@
 
 package org.springframework.scheduling.annotation;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.awaitility.Awaitility;
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.aop.support.DefaultIntroductionAdvisor;
@@ -43,7 +32,19 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Juergen Hoeller
@@ -80,40 +81,35 @@ public class AsyncExecutionTests {
 		try {
 			asyncTest.returnSomething(0).get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			assertTrue(ex.getCause() instanceof IllegalArgumentException);
 		}
 
 		try {
 			asyncTest.returnSomething(-1).get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			assertTrue(ex.getCause() instanceof IOException);
 		}
 
 		try {
 			asyncTest.returnSomethingListenable(0).get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			assertTrue(ex.getCause() instanceof IllegalArgumentException);
 		}
 
 		try {
 			asyncTest.returnSomethingListenable(-1).get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			assertTrue(ex.getCause() instanceof IOException);
 		}
 
 		try {
 			asyncTest.returnSomethingCompletable(0).get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			assertTrue(ex.getCause() instanceof IllegalArgumentException);
 		}
 	}
@@ -197,24 +193,21 @@ public class AsyncExecutionTests {
 		try {
 			asyncTest.returnSomething(0).get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			assertTrue(ex.getCause() instanceof IllegalArgumentException);
 		}
 
 		try {
 			asyncTest.returnSomethingListenable(0).get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			assertTrue(ex.getCause() instanceof IllegalArgumentException);
 		}
 
 		try {
 			asyncTest.returnSomethingCompletable(0).get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			assertTrue(ex.getCause() instanceof IllegalArgumentException);
 		}
 	}
@@ -378,9 +371,9 @@ public class AsyncExecutionTests {
 		context.refresh();
 		// Assert
 		Awaitility.await()
-					.atMost(1, TimeUnit.SECONDS)
-					.pollInterval(10, TimeUnit.MILLISECONDS)
-					.until(() -> listenerCalled == 1);
+				.atMost(1, TimeUnit.SECONDS)
+				.pollInterval(10, TimeUnit.MILLISECONDS)
+				.until(() -> listenerCalled == 1);
 		context.close();
 	}
 
@@ -399,9 +392,9 @@ public class AsyncExecutionTests {
 		context.close();
 		// Assert
 		Awaitility.await()
-					.atMost(1, TimeUnit.SECONDS)
-					.pollInterval(10, TimeUnit.MILLISECONDS)
-					.until(() -> listenerCalled == 2);
+				.atMost(1, TimeUnit.SECONDS)
+				.pollInterval(10, TimeUnit.MILLISECONDS)
+				.until(() -> listenerCalled == 2);
 		assertEquals(1, listenerConstructed);
 	}
 
@@ -422,9 +415,9 @@ public class AsyncExecutionTests {
 		context.close();
 		// Assert
 		Awaitility.await()
-					.atMost(1, TimeUnit.SECONDS)
-					.pollInterval(10, TimeUnit.MILLISECONDS)
-					.until(() -> listenerCalled == 2);
+				.atMost(1, TimeUnit.SECONDS)
+				.pollInterval(10, TimeUnit.MILLISECONDS)
+				.until(() -> listenerCalled == 2);
 		assertEquals(2, listenerConstructed);
 	}
 
@@ -440,6 +433,40 @@ public class AsyncExecutionTests {
 		Future<String> returnSomething2(int i);
 	}
 
+
+	@Async("e2")
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface MyAsync {
+	}
+
+
+	public interface RegularInterface {
+
+		void doSomething(int i);
+
+		Future<String> returnSomething(int i);
+	}
+
+
+	@Async
+	public interface AsyncInterface {
+
+		void doSomething(int i);
+
+		Future<String> returnSomething(int i);
+	}
+
+
+	public interface AsyncMethodsInterface {
+
+		void doNothing(int i);
+
+		@Async
+		void doSomething(int i);
+
+		@Async
+		Future<String> returnSomething(int i);
+	}
 
 	public static class AsyncMethodBean {
 
@@ -457,8 +484,7 @@ public class AsyncExecutionTests {
 			assertTrue(!Thread.currentThread().getName().equals(originalThreadName));
 			if (i == 0) {
 				throw new IllegalArgumentException();
-			}
-			else if (i < 0) {
+			} else if (i < 0) {
 				return AsyncResult.forExecutionException(new IOException());
 			}
 			return AsyncResult.forValue(Integer.toString(i));
@@ -469,8 +495,7 @@ public class AsyncExecutionTests {
 			assertTrue(!Thread.currentThread().getName().equals(originalThreadName));
 			if (i == 0) {
 				throw new IllegalArgumentException();
-			}
-			else if (i < 0) {
+			} else if (i < 0) {
 				return AsyncResult.forExecutionException(new IOException());
 			}
 			return new AsyncResult<>(Integer.toString(i));
@@ -486,7 +511,6 @@ public class AsyncExecutionTests {
 		}
 	}
 
-
 	public static class SimpleAsyncMethodBean extends AsyncMethodBean implements SimpleInterface {
 
 		@Override
@@ -494,7 +518,6 @@ public class AsyncExecutionTests {
 			throw new UnsupportedOperationException();
 		}
 	}
-
 
 	@Async("e0")
 	public static class AsyncMethodWithQualifierBean {
@@ -523,16 +546,8 @@ public class AsyncExecutionTests {
 		}
 	}
 
-
 	public static class SimpleAsyncMethodWithQualifierBean extends AsyncMethodWithQualifierBean implements SimpleInterface {
 	}
-
-
-	@Async("e2")
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface MyAsync {
-	}
-
 
 	@Async
 	@SuppressWarnings("serial")
@@ -572,15 +587,6 @@ public class AsyncExecutionTests {
 		}
 	}
 
-
-	public interface RegularInterface {
-
-		void doSomething(int i);
-
-		Future<String> returnSomething(int i);
-	}
-
-
 	@Async
 	public static class AsyncClassBeanWithInterface implements RegularInterface {
 
@@ -593,16 +599,6 @@ public class AsyncExecutionTests {
 			return new AsyncResult<>(Integer.toString(i));
 		}
 	}
-
-
-	@Async
-	public interface AsyncInterface {
-
-		void doSomething(int i);
-
-		Future<String> returnSomething(int i);
-	}
-
 
 	public static class AsyncInterfaceBean implements AsyncInterface {
 
@@ -617,7 +613,6 @@ public class AsyncExecutionTests {
 			return new AsyncResult<>(Integer.toString(i));
 		}
 	}
-
 
 	public static class DynamicAsyncInterfaceBean implements FactoryBean<AsyncInterface> {
 
@@ -655,19 +650,6 @@ public class AsyncExecutionTests {
 			return true;
 		}
 	}
-
-
-	public interface AsyncMethodsInterface {
-
-		void doNothing(int i);
-
-		@Async
-		void doSomething(int i);
-
-		@Async
-		Future<String> returnSomething(int i);
-	}
-
 
 	public static class AsyncMethodsInterfaceBean implements AsyncMethodsInterface {
 

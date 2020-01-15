@@ -16,13 +16,7 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.time.ZoneId;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.http.HttpMethod;
@@ -36,6 +30,11 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
+
+import java.time.ZoneId;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -45,6 +44,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Unit tests for {@link ServerWebExchangeArgumentResolver}.
+ *
  * @author Rossen Stoyanchev
  */
 public class ServerWebExchangeArgumentResolverTests {
@@ -75,8 +75,7 @@ public class ServerWebExchangeArgumentResolverTests {
 		try {
 			this.resolver.supportsParameter(this.testMethod.arg(Mono.class, ServerWebExchange.class));
 			fail();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertTrue("Unexpected error message:\n" + ex.getMessage(),
 					ex.getMessage().startsWith(
 							"ServerWebExchangeArgumentResolver doesn't support reactive type wrapper"));
@@ -107,7 +106,6 @@ public class ServerWebExchangeArgumentResolverTests {
 		assertEquals(UriComponentsBuilder.class, value.getClass());
 		assertEquals("https://example.org:9999/next", ((UriComponentsBuilder) value).path("/next").toUriString());
 	}
-
 
 
 	@SuppressWarnings("unused")

@@ -16,12 +16,12 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.util.ConcurrentReferenceHashMap;
+
+import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * Utilities for processing {@link Bean}-annotated methods.

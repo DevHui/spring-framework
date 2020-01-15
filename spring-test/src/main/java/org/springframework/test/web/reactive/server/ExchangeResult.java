@@ -16,16 +16,6 @@
 
 package org.springframework.test.web.reactive.server;
 
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -36,6 +26,15 @@ import org.springframework.http.client.reactive.ClientHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Container for request and response details for exchanges performed through
@@ -48,9 +47,9 @@ import org.springframework.util.MultiValueMap;
  * respectively.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see EntityExchangeResult
  * @see FluxExchangeResult
+ * @since 5.0
  */
 public class ExchangeResult {
 
@@ -77,15 +76,15 @@ public class ExchangeResult {
 	 * Create an instance with an HTTP request and response along with promises
 	 * for the serialized request and response body content.
 	 *
-	 * @param request the HTTP request
-	 * @param response the HTTP response
-	 * @param requestBody capture of serialized request body content
+	 * @param request      the HTTP request
+	 * @param response     the HTTP response
+	 * @param requestBody  capture of serialized request body content
 	 * @param responseBody capture of serialized response body content
-	 * @param timeout how long to wait for content to materialize
-	 * @param uriTemplate the URI template used to set up the request, if any
+	 * @param timeout      how long to wait for content to materialize
+	 * @param uriTemplate  the URI template used to set up the request, if any
 	 */
 	ExchangeResult(ClientHttpRequest request, ClientHttpResponse response,
-			Mono<byte[]> requestBody, Mono<byte[]> responseBody, Duration timeout, @Nullable String uriTemplate) {
+				   Mono<byte[]> requestBody, Mono<byte[]> responseBody, Duration timeout, @Nullable String uriTemplate) {
 
 		Assert.notNull(request, "ClientHttpRequest is required");
 		Assert.notNull(response, "ClientHttpResponse is required");
@@ -146,6 +145,7 @@ public class ExchangeResult {
 	 * Return the raw request body content written through the request.
 	 * <p><strong>Note:</strong> If the request content has not been consumed
 	 * for any reason yet, use of this method will trigger consumption.
+	 *
 	 * @throws IllegalStateException if the request body is not been fully written.
 	 */
 	@Nullable
@@ -164,6 +164,7 @@ public class ExchangeResult {
 	/**
 	 * Return the HTTP status code (potentially non-standard and not resolvable
 	 * through the {@link HttpStatus} enum) as an integer.
+	 *
 	 * @since 5.1.10
 	 */
 	public int getRawStatusCode() {
@@ -188,6 +189,7 @@ public class ExchangeResult {
 	 * Return the raw request body content written to the response.
 	 * <p><strong>Note:</strong> If the response content has not been consumed
 	 * yet, use of this method will trigger consumption.
+	 *
 	 * @throws IllegalStateException if the response is not been fully read.
 	 */
 	@Nullable
@@ -204,8 +206,7 @@ public class ExchangeResult {
 	public void assertWithDiagnostics(Runnable assertion) {
 		try {
 			assertion.run();
-		}
-		catch (AssertionError ex) {
+		} catch (AssertionError ex) {
 			throw new AssertionError(ex.getMessage() + "\n" + this, ex);
 		}
 	}
@@ -222,7 +223,7 @@ public class ExchangeResult {
 				"< " + getStatus() + " " + getStatus().getReasonPhrase() + "\n" +
 				"< " + formatHeaders(getResponseHeaders(), "\n< ") + "\n" +
 				"\n" +
-				formatBody(getResponseHeaders().getContentType(), this.responseBody) +"\n";
+				formatBody(getResponseHeaders().getContentType(), this.responseBody) + "\n";
 	}
 
 	private String formatHeaders(HttpHeaders headers, String delimiter) {

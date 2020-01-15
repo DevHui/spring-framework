@@ -16,32 +16,31 @@
 
 package org.springframework.web.reactive.socket.adapter;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * Convenient base class for {@link WebSocketSession} implementations that
  * holds common fields and exposes accessors. Also implements the
  * {@code WebSocketMessage} factory methods.
  *
+ * @param <T> the native delegate type
  * @author Rossen Stoyanchev
  * @since 5.0
- * @param <T> the native delegate type
  */
 public abstract class AbstractWebSocketSession<T> implements WebSocketSession {
 

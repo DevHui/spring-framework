@@ -16,20 +16,20 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.io.Writer;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.Tag;
-
 import org.junit.Test;
-
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.BindTag;
 import org.springframework.web.servlet.tags.NestedPathTag;
 
-import static org.junit.Assert.*;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.Tag;
+import java.io.Writer;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Rob Harrop
@@ -362,8 +362,7 @@ public class InputTagTests extends AbstractFormTagTests {
 		try {
 			this.tag.setDynamicAttribute(null, "type", "radio");
 			fail("Expected exception");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals("Attribute type=\"radio\" is not allowed", e.getMessage());
 		}
 	}
@@ -373,8 +372,7 @@ public class InputTagTests extends AbstractFormTagTests {
 		try {
 			this.tag.setDynamicAttribute(null, "type", "checkbox");
 			fail("Expected exception");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals("Attribute type=\"checkbox\" is not allowed", e.getMessage());
 		}
 	}

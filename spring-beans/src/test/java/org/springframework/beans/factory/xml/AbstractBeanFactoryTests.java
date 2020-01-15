@@ -16,11 +16,7 @@
 
 package org.springframework.beans.factory.xml;
 
-import java.beans.PropertyEditorSupport;
-import java.util.StringTokenizer;
-
 import org.junit.Test;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyBatchUpdateException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -34,7 +30,14 @@ import org.springframework.tests.sample.beans.MustBeInitialized;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.tests.sample.beans.factory.DummyFactory;
 
-import static org.junit.Assert.*;
+import java.beans.PropertyEditorSupport;
+import java.util.StringTokenizer;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Subclasses must initialize the bean factory and any other variables they need.
@@ -113,8 +116,7 @@ public abstract class AbstractBeanFactoryTests {
 		try {
 			getBeanFactory().getBean("rod", BeanFactory.class);
 			fail("Rod bean is not of type BeanFactory; getBeanInstance(rod, BeanFactory.class) should throw BeanNotOfRequiredTypeException");
-		}
-		catch (BeanNotOfRequiredTypeException ex) {
+		} catch (BeanNotOfRequiredTypeException ex) {
 			// So far, so good
 			assertTrue("Exception has correct bean name", ex.getBeanName().equals("rod"));
 			assertTrue("Exception requiredType must be BeanFactory.class", ex.getRequiredType().equals(BeanFactory.class));
@@ -140,8 +142,7 @@ public abstract class AbstractBeanFactoryTests {
 		try {
 			getBeanFactory().getBean("rod", BeanFactory.class);
 			fail("Rod bean is not of type BeanFactory; getBeanInstance(rod, BeanFactory.class) should throw BeanNotOfRequiredTypeException");
-		}
-		catch (BeanNotOfRequiredTypeException ex) {
+		} catch (BeanNotOfRequiredTypeException ex) {
 			// So far, so good
 			assertTrue("Exception has correct bean name", ex.getBeanName().equals("rod"));
 			assertTrue("Exception requiredType must be BeanFactory.class", ex.getRequiredType().equals(BeanFactory.class));
@@ -189,8 +190,7 @@ public abstract class AbstractBeanFactoryTests {
 		try {
 			getBeanFactory().getBean("typeMismatch");
 			fail("Shouldn't succeed with type mismatch");
-		}
-		catch (BeanCreationException wex) {
+		} catch (BeanCreationException wex) {
 			assertEquals("typeMismatch", wex.getBeanName());
 			assertTrue(wex.getCause() instanceof PropertyBatchUpdateException);
 			PropertyBatchUpdateException ex = (PropertyBatchUpdateException) wex.getCause();
@@ -232,6 +232,7 @@ public abstract class AbstractBeanFactoryTests {
 	/**
 	 * Check that we can get the factory bean itself.
 	 * This is only possible if we're dealing with a factory
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -241,6 +242,7 @@ public abstract class AbstractBeanFactoryTests {
 
 	/**
 	 * Check that afterPropertiesSet gets called on factory
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -273,8 +275,7 @@ public abstract class AbstractBeanFactoryTests {
 		try {
 			cbf.getBean(alias);
 			fail("Shouldn't permit factory get on normal bean");
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			// Ok
 			assertTrue(alias.equals(ex.getBeanName()));
 		}

@@ -16,6 +16,8 @@
 
 package org.springframework.core.env;
 
+import org.springframework.lang.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,15 +25,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.lang.Nullable;
-
 /**
  * A simple representation of command line arguments, broken into "option arguments" and
  * "non-option arguments".
  *
  * @author Chris Beams
- * @since 3.1
  * @see SimpleCommandLineArgsParser
+ * @since 3.1
  */
 class CommandLineArgs {
 

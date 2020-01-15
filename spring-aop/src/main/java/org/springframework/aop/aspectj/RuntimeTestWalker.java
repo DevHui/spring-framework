@@ -16,8 +16,6 @@
 
 package org.springframework.aop.aspectj;
 
-import java.lang.reflect.Field;
-
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedType;
@@ -36,10 +34,11 @@ import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegate;
 import org.aspectj.weaver.reflect.ReflectionVar;
 import org.aspectj.weaver.reflect.ShadowMatchImpl;
 import org.aspectj.weaver.tools.ShadowMatch;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Field;
 
 /**
  * This class encapsulates some AspectJ internal knowledge that should be
@@ -71,8 +70,7 @@ class RuntimeTestWalker {
 			residualTestField = ShadowMatchImpl.class.getDeclaredField("residualTest");
 			varTypeField = ReflectionVar.class.getDeclaredField("varType");
 			myClassField = ReflectionBasedReferenceTypeDelegate.class.getDeclaredField("myClass");
-		}
-		catch (NoSuchFieldException ex) {
+		} catch (NoSuchFieldException ex) {
 			throw new IllegalStateException("The version of aspectjtools.jar / aspectjweaver.jar " +
 					"on the classpath is incompatible with this version of Spring: " + ex);
 		}
@@ -87,8 +85,7 @@ class RuntimeTestWalker {
 		try {
 			ReflectionUtils.makeAccessible(residualTestField);
 			this.runtimeTest = (Test) residualTestField.get(shadowMatch);
-		}
-		catch (IllegalAccessException ex) {
+		} catch (IllegalAccessException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -167,8 +164,7 @@ class RuntimeTestWalker {
 			try {
 				ReflectionUtils.makeAccessible(varTypeField);
 				return (Integer) varTypeField.get(v);
-			}
-			catch (IllegalAccessException ex) {
+			} catch (IllegalAccessException ex) {
 				throw new IllegalStateException(ex);
 			}
 		}
@@ -178,10 +174,8 @@ class RuntimeTestWalker {
 	private abstract static class InstanceOfResidueTestVisitor extends TestVisitorAdapter {
 
 		private final Class<?> matchClass;
-
-		private boolean matches;
-
 		private final int matchVarType;
+		private boolean matches;
 
 		public InstanceOfResidueTestVisitor(Class<?> matchClass, boolean defaultMatches, int matchVarType) {
 			this.matchClass = matchClass;
@@ -208,8 +202,7 @@ class RuntimeTestWalker {
 					try {
 						ReflectionUtils.makeAccessible(myClassField);
 						typeClass = (Class<?>) myClassField.get(delegate);
-					}
-					catch (IllegalAccessException ex) {
+					} catch (IllegalAccessException ex) {
 						throw new IllegalStateException(ex);
 					}
 				}
@@ -220,8 +213,7 @@ class RuntimeTestWalker {
 					typeClass = ClassUtils.forName(type.getName(), this.matchClass.getClassLoader());
 				}
 				this.matches = typeClass.isAssignableFrom(this.matchClass);
-			}
-			catch (ClassNotFoundException ex) {
+			} catch (ClassNotFoundException ex) {
 				this.matches = false;
 			}
 		}

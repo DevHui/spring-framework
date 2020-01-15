@@ -16,14 +16,8 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.SynthesizingMethodParameter;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -40,7 +34,17 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.View;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Test fixture with {@link PathVariableMethodArgumentResolver}.
@@ -182,8 +186,8 @@ public class PathVariableMethodArgumentResolverTests {
 
 	@SuppressWarnings("unused")
 	public void handle(@PathVariable("name") String param1, String param2,
-			@PathVariable(name="name", required = false) String param3,
-			@PathVariable("name") Optional<String> param4) {
+					   @PathVariable(name = "name", required = false) String param3,
+					   @PathVariable("name") Optional<String> param4) {
 	}
 
 }

@@ -16,22 +16,22 @@
 
 package org.springframework.messaging.support;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
+import java.io.Serializable;
+import java.util.Map;
+
 /**
  * An implementation of {@link Message} with a generic payload.
  * Once created, a GenericMessage is immutable.
  *
- * @author Mark Fisher
- * @since 4.0
  * @param <T> the payload type
+ * @author Mark Fisher
  * @see MessageBuilder
+ * @since 4.0
  */
 public class GenericMessage<T> implements Message<T>, Serializable {
 
@@ -45,6 +45,7 @@ public class GenericMessage<T> implements Message<T>, Serializable {
 
 	/**
 	 * Create a new message with the given payload.
+	 *
 	 * @param payload the message payload (never {@code null})
 	 */
 	public GenericMessage(T payload) {
@@ -54,6 +55,7 @@ public class GenericMessage<T> implements Message<T>, Serializable {
 	/**
 	 * Create a new message with the given payload and headers.
 	 * The content of the given header map is copied.
+	 *
 	 * @param payload the message payload (never {@code null})
 	 * @param headers message headers to use for initialization
 	 */
@@ -65,6 +67,7 @@ public class GenericMessage<T> implements Message<T>, Serializable {
 	 * A constructor with the {@link MessageHeaders} instance to use.
 	 * <p><strong>Note:</strong> the given {@code MessageHeaders} instance is used
 	 * directly in the new message, i.e. it is not copied.
+	 *
 	 * @param payload the message payload (never {@code null})
 	 * @param headers message headers
 	 */
@@ -107,8 +110,7 @@ public class GenericMessage<T> implements Message<T>, Serializable {
 		sb.append(" [payload=");
 		if (this.payload instanceof byte[]) {
 			sb.append("byte[").append(((byte[]) this.payload).length).append("]");
-		}
-		else {
+		} else {
 			sb.append(this.payload);
 		}
 		sb.append(", headers=").append(this.headers).append("]");

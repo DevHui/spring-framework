@@ -17,7 +17,6 @@
 package org.springframework.messaging.simp.broker;
 
 import org.apache.commons.logging.Log;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.SimpLogging;

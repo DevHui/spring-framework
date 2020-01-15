@@ -16,11 +16,10 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.io.IOException;
+import org.springframework.core.io.Resource;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.core.io.Resource;
+import java.io.IOException;
 
 /**
  * A contract for invoking a chain of {@link ResourceTransformer ResourceTransformers} where each resolver
@@ -40,7 +39,8 @@ public interface ResourceTransformerChain {
 
 	/**
 	 * Transform the given resource.
-	 * @param request the current request
+	 *
+	 * @param request  the current request
 	 * @param resource the candidate resource to transform
 	 * @return the transformed or the same resource, never {@code null}
 	 * @throws IOException if transformation fails

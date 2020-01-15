@@ -16,13 +16,9 @@
 
 package org.springframework.test.web.servlet.samples.spr;
 
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +35,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -63,6 +62,15 @@ public class ControllerAdviceIntegrationTests {
 	WebApplicationContext wac;
 
 	MockMvc mockMvc;
+
+	private static void resetCounters() {
+		SingletonControllerAdvice.invocationCount.set(0);
+		SingletonControllerAdvice.instanceCount.set(0);
+		PrototypeControllerAdvice.invocationCount.set(0);
+		PrototypeControllerAdvice.instanceCount.set(0);
+		RequestScopedControllerAdvice.invocationCount.set(0);
+		RequestScopedControllerAdvice.instanceCount.set(0);
+	}
 
 	@Before
 	public void setUpMockMvc() {
@@ -103,16 +111,6 @@ public class ControllerAdviceIntegrationTests {
 		assertEquals(2, PrototypeControllerAdvice.instanceCount.get());
 		assertEquals(2, RequestScopedControllerAdvice.instanceCount.get());
 	}
-
-	private static void resetCounters() {
-		SingletonControllerAdvice.invocationCount.set(0);
-		SingletonControllerAdvice.instanceCount.set(0);
-		PrototypeControllerAdvice.invocationCount.set(0);
-		PrototypeControllerAdvice.instanceCount.set(0);
-		RequestScopedControllerAdvice.invocationCount.set(0);
-		RequestScopedControllerAdvice.instanceCount.set(0);
-	}
-
 
 	@Configuration
 	@EnableWebMvc

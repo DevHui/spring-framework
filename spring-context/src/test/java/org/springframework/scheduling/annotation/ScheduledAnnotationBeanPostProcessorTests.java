@@ -16,23 +16,8 @@
 
 package org.springframework.scheduling.annotation;
 
-import java.io.IOException;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TimeZone;
-
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.DirectFieldAccessor;
@@ -58,7 +43,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TimeZone;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Mark Fisher
@@ -199,7 +200,7 @@ public class ScheduledAnnotationBeanPostProcessorTests {
 	}
 
 	private void severalFixedRates(StaticApplicationContext context,
-			BeanDefinition processorDefinition, BeanDefinition targetDefinition) {
+								   BeanDefinition processorDefinition, BeanDefinition targetDefinition) {
 
 		context.registerBeanDefinition("postProcessor", processorDefinition);
 		context.registerBeanDefinition("target", targetDefinition);
@@ -687,156 +688,11 @@ public class ScheduledAnnotationBeanPostProcessorTests {
 	}
 
 
-	static class FixedDelayTestBean {
-
-		@Scheduled(fixedDelay = 5000)
-		public void fixedDelay() {
-		}
-	}
-
-
-	static class FixedRateTestBean {
-
-		@Scheduled(fixedRate = 3000)
-		public void fixedRate() {
-		}
-	}
-
-
-	static class FixedRateWithInitialDelayTestBean {
-
-		@Scheduled(fixedRate = 3000, initialDelay = 1000)
-		public void fixedRate() {
-		}
-	}
-
-
-	static class SeveralFixedRatesWithSchedulesContainerAnnotationTestBean {
-
-		@Schedules({@Scheduled(fixedRate = 4000), @Scheduled(fixedRate = 4000, initialDelay = 2000)})
-		public void fixedRate() {
-		}
-	}
-
-
-	static class SeveralFixedRatesWithRepeatedScheduledAnnotationTestBean {
-
-		@Scheduled(fixedRate = 4000)
-		@Scheduled(fixedRate = 4000, initialDelay = 2000)
-		public void fixedRate() {
-		}
-
-		static SeveralFixedRatesWithRepeatedScheduledAnnotationTestBean nestedProxy() {
-			ProxyFactory pf1 = new ProxyFactory(new SeveralFixedRatesWithRepeatedScheduledAnnotationTestBean());
-			pf1.setProxyTargetClass(true);
-			ProxyFactory pf2 = new ProxyFactory(pf1.getProxy());
-			pf2.setProxyTargetClass(true);
-			return (SeveralFixedRatesWithRepeatedScheduledAnnotationTestBean) pf2.getProxy();
-		}
-	}
-
-
-	static class FixedRatesBaseBean {
-
-		@Scheduled(fixedRate = 4000)
-		@Scheduled(fixedRate = 4000, initialDelay = 2000)
-		public void fixedRate() {
-		}
-	}
-
-
-	static class FixedRatesSubBean extends FixedRatesBaseBean {
-	}
-
-
 	interface FixedRatesDefaultMethod {
 
 		@Scheduled(fixedRate = 4000)
 		@Scheduled(fixedRate = 4000, initialDelay = 2000)
 		default void fixedRate() {
-		}
-	}
-
-
-	static class FixedRatesDefaultBean implements FixedRatesDefaultMethod {
-	}
-
-
-	@Validated
-	static class CronTestBean {
-
-		@Scheduled(cron = "*/7 * * * * ?")
-		private void cron() throws IOException {
-			throw new IOException("no no no");
-		}
-	}
-
-
-	static class CronWithTimezoneTestBean {
-
-		@Scheduled(cron = "0 0 0-4,6-23 * * ?", zone = "GMT+10")
-		protected void cron() throws IOException {
-			throw new IOException("no no no");
-		}
-	}
-
-
-	static class CronWithInvalidTimezoneTestBean {
-
-		@Scheduled(cron = "0 0 0-4,6-23 * * ?", zone = "FOO")
-		public void cron() throws IOException {
-			throw new IOException("no no no");
-		}
-	}
-
-
-	@Component("target")
-	@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-	static class ProxiedCronTestBean {
-
-		@Scheduled(cron = "*/7 * * * * ?")
-		public void cron() throws IOException {
-			throw new IOException("no no no");
-		}
-	}
-
-
-	static class ProxiedCronTestBeanDependent {
-
-		public ProxiedCronTestBeanDependent(ProxiedCronTestBean testBean) {
-		}
-	}
-
-
-	static class NonVoidReturnTypeTestBean {
-
-		@Scheduled(cron = "0 0 9-17 * * MON-FRI")
-		public String cron() {
-			return "oops";
-		}
-	}
-
-
-	static class EmptyAnnotationTestBean {
-
-		@Scheduled
-		public void invalid() {
-		}
-	}
-
-
-	static class InvalidCronTestBean {
-
-		@Scheduled(cron = "abc")
-		public void invalid() {
-		}
-	}
-
-
-	static class NonEmptyParamListTestBean {
-
-		@Scheduled(fixedRate = 3000)
-		public void invalid(String oops) {
 		}
 	}
 
@@ -847,11 +703,13 @@ public class ScheduledAnnotationBeanPostProcessorTests {
 	private @interface EveryFiveSeconds {
 	}
 
+
 	@Scheduled(cron = "0 0 * * * ?")
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	private @interface Hourly {
 	}
+
 
 	@Scheduled(initialDelay = 1000)
 	@Retention(RetentionPolicy.RUNTIME)
@@ -865,13 +723,146 @@ public class ScheduledAnnotationBeanPostProcessorTests {
 	}
 
 
+	@Scheduled(cron = "${schedules.businessHours}")
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	private @interface BusinessHours {
+	}
+
+	static class FixedDelayTestBean {
+
+		@Scheduled(fixedDelay = 5000)
+		public void fixedDelay() {
+		}
+	}
+
+	static class FixedRateTestBean {
+
+		@Scheduled(fixedRate = 3000)
+		public void fixedRate() {
+		}
+	}
+
+	static class FixedRateWithInitialDelayTestBean {
+
+		@Scheduled(fixedRate = 3000, initialDelay = 1000)
+		public void fixedRate() {
+		}
+	}
+
+	static class SeveralFixedRatesWithSchedulesContainerAnnotationTestBean {
+
+		@Schedules({@Scheduled(fixedRate = 4000), @Scheduled(fixedRate = 4000, initialDelay = 2000)})
+		public void fixedRate() {
+		}
+	}
+
+	static class SeveralFixedRatesWithRepeatedScheduledAnnotationTestBean {
+
+		static SeveralFixedRatesWithRepeatedScheduledAnnotationTestBean nestedProxy() {
+			ProxyFactory pf1 = new ProxyFactory(new SeveralFixedRatesWithRepeatedScheduledAnnotationTestBean());
+			pf1.setProxyTargetClass(true);
+			ProxyFactory pf2 = new ProxyFactory(pf1.getProxy());
+			pf2.setProxyTargetClass(true);
+			return (SeveralFixedRatesWithRepeatedScheduledAnnotationTestBean) pf2.getProxy();
+		}
+
+		@Scheduled(fixedRate = 4000)
+		@Scheduled(fixedRate = 4000, initialDelay = 2000)
+		public void fixedRate() {
+		}
+	}
+
+	static class FixedRatesBaseBean {
+
+		@Scheduled(fixedRate = 4000)
+		@Scheduled(fixedRate = 4000, initialDelay = 2000)
+		public void fixedRate() {
+		}
+	}
+
+	static class FixedRatesSubBean extends FixedRatesBaseBean {
+	}
+
+	static class FixedRatesDefaultBean implements FixedRatesDefaultMethod {
+	}
+
+	@Validated
+	static class CronTestBean {
+
+		@Scheduled(cron = "*/7 * * * * ?")
+		private void cron() throws IOException {
+			throw new IOException("no no no");
+		}
+	}
+
+	static class CronWithTimezoneTestBean {
+
+		@Scheduled(cron = "0 0 0-4,6-23 * * ?", zone = "GMT+10")
+		protected void cron() throws IOException {
+			throw new IOException("no no no");
+		}
+	}
+
+	static class CronWithInvalidTimezoneTestBean {
+
+		@Scheduled(cron = "0 0 0-4,6-23 * * ?", zone = "FOO")
+		public void cron() throws IOException {
+			throw new IOException("no no no");
+		}
+	}
+
+	@Component("target")
+	@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+	static class ProxiedCronTestBean {
+
+		@Scheduled(cron = "*/7 * * * * ?")
+		public void cron() throws IOException {
+			throw new IOException("no no no");
+		}
+	}
+
+	static class ProxiedCronTestBeanDependent {
+
+		public ProxiedCronTestBeanDependent(ProxiedCronTestBean testBean) {
+		}
+	}
+
+	static class NonVoidReturnTypeTestBean {
+
+		@Scheduled(cron = "0 0 9-17 * * MON-FRI")
+		public String cron() {
+			return "oops";
+		}
+	}
+
+	static class EmptyAnnotationTestBean {
+
+		@Scheduled
+		public void invalid() {
+		}
+	}
+
+	static class InvalidCronTestBean {
+
+		@Scheduled(cron = "abc")
+		public void invalid() {
+		}
+	}
+
+	static class NonEmptyParamListTestBean {
+
+		@Scheduled(fixedRate = 3000)
+		public void invalid(String oops) {
+		}
+	}
+
 	static class MetaAnnotationFixedRateTestBean {
 
 		@EveryFiveSeconds
 		public void checkForUpdates() {
 		}
 	}
-
 
 	static class ComposedAnnotationFixedRateTestBean {
 
@@ -880,14 +871,12 @@ public class ScheduledAnnotationBeanPostProcessorTests {
 		}
 	}
 
-
 	static class MetaAnnotationCronTestBean {
 
 		@Hourly
 		public void generateReport() {
 		}
 	}
-
 
 	static class PropertyPlaceholderWithCronTestBean {
 
@@ -896,14 +885,12 @@ public class ScheduledAnnotationBeanPostProcessorTests {
 		}
 	}
 
-
 	static class PropertyPlaceholderWithFixedDelayTestBean {
 
 		@Scheduled(fixedDelayString = "${fixedDelay}", initialDelayString = "${initialDelay}")
 		public void fixedDelay() {
 		}
 	}
-
 
 	static class PropertyPlaceholderWithFixedRateTestBean {
 
@@ -912,21 +899,12 @@ public class ScheduledAnnotationBeanPostProcessorTests {
 		}
 	}
 
-
 	static class ExpressionWithCronTestBean {
 
 		@Scheduled(cron = "#{schedules.businessHours}")
 		public void x() {
 		}
 	}
-
-
-	@Scheduled(cron = "${schedules.businessHours}")
-	@Target(ElementType.METHOD)
-	@Retention(RetentionPolicy.RUNTIME)
-	private @interface BusinessHours {
-	}
-
 
 	static class PropertyPlaceholderMetaAnnotationTestBean {
 

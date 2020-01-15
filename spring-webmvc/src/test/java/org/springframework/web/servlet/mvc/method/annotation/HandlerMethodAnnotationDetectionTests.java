@@ -16,15 +16,10 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.aop.interceptor.SimpleTraceInterceptor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
@@ -50,7 +45,12 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.ModelAndView;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Test various scenarios for detecting method-level and method parameter annotations depending
@@ -63,41 +63,9 @@ import static org.junit.Assert.*;
 @RunWith(Parameterized.class)
 public class HandlerMethodAnnotationDetectionTests {
 
-	@Parameters(name = "controller [{0}], auto-proxy [{1}]")
-	public static Object[][] handlerTypes() {
-		return new Object[][] {
-				{ SimpleController.class, true }, // CGLIB proxy
-				{ SimpleController.class, false },
-
-				{ AbstractClassController.class, true }, // CGLIB proxy
-				{ AbstractClassController.class, false },
-
-				{ ParameterizedAbstractClassController.class, true }, // CGLIB proxy
-				{ ParameterizedAbstractClassController.class, false },
-
-				{ ParameterizedSubclassOverridesDefaultMappings.class, true }, // CGLIB proxy
-				{ ParameterizedSubclassOverridesDefaultMappings.class, false },
-
-				// TODO [SPR-9517] Enable ParameterizedSubclassDoesNotOverrideConcreteImplementationsFromGenericAbstractSuperclass test cases
-				// { ParameterizedSubclassDoesNotOverrideConcreteImplementationsFromGenericAbstractSuperclass.class, true }, // CGLIB proxy
-				// { ParameterizedSubclassDoesNotOverrideConcreteImplementationsFromGenericAbstractSuperclass.class, false },
-
-				{ InterfaceController.class, true }, // JDK dynamic proxy
-				{ InterfaceController.class, false },
-
-				{ ParameterizedInterfaceController.class, false }, // no AOP
-
-				{ SupportClassController.class, true }, // CGLIB proxy
-				{ SupportClassController.class, false }
-		};
-	}
-
 	private RequestMappingHandlerMapping handlerMapping = new RequestMappingHandlerMapping();
-
 	private RequestMappingHandlerAdapter handlerAdapter = new RequestMappingHandlerAdapter();
-
 	private ExceptionHandlerExceptionResolver exceptionResolver = new ExceptionHandlerExceptionResolver();
-
 
 	public HandlerMethodAnnotationDetectionTests(Class<?> controllerType, boolean useAutoProxy) {
 		GenericWebApplicationContext context = new GenericWebApplicationContext();
@@ -119,6 +87,34 @@ public class HandlerMethodAnnotationDetectionTests {
 		context.close();
 	}
 
+	@Parameters(name = "controller [{0}], auto-proxy [{1}]")
+	public static Object[][] handlerTypes() {
+		return new Object[][]{
+				{SimpleController.class, true}, // CGLIB proxy
+				{SimpleController.class, false},
+
+				{AbstractClassController.class, true}, // CGLIB proxy
+				{AbstractClassController.class, false},
+
+				{ParameterizedAbstractClassController.class, true}, // CGLIB proxy
+				{ParameterizedAbstractClassController.class, false},
+
+				{ParameterizedSubclassOverridesDefaultMappings.class, true}, // CGLIB proxy
+				{ParameterizedSubclassOverridesDefaultMappings.class, false},
+
+				// TODO [SPR-9517] Enable ParameterizedSubclassDoesNotOverrideConcreteImplementationsFromGenericAbstractSuperclass test cases
+				// { ParameterizedSubclassDoesNotOverrideConcreteImplementationsFromGenericAbstractSuperclass.class, true }, // CGLIB proxy
+				// { ParameterizedSubclassDoesNotOverrideConcreteImplementationsFromGenericAbstractSuperclass.class, false },
+
+				{InterfaceController.class, true}, // JDK dynamic proxy
+				{InterfaceController.class, false},
+
+				{ParameterizedInterfaceController.class, false}, // no AOP
+
+				{SupportClassController.class, true}, // CGLIB proxy
+				{SupportClassController.class, false}
+		};
+	}
 
 	@Test
 	public void testRequestMappingMethod() throws Exception {
@@ -147,6 +143,44 @@ public class HandlerMethodAnnotationDetectionTests {
 	}
 
 
+	// SPR-9374
+	@RequestMapping
+	interface MappingInterface {
+
+		@InitBinder
+		void initBinder(WebDataBinder dataBinder, @RequestParam("datePattern") String thePattern);
+
+		@ModelAttribute
+		void initModel(@RequestHeader("header1") Date date, Model model);
+
+		@RequestMapping(value = "/path1/path2", method = RequestMethod.POST)
+		@ModelAttribute("attr2")
+		Date handle(@RequestHeader("header2") Date date, Model model) throws Exception;
+
+		@ExceptionHandler(Exception.class)
+		@ResponseBody
+		String handleException(Exception exception);
+	}
+
+
+	@RequestMapping
+	interface MappingGenericInterface<A, B, C> {
+
+		@InitBinder
+		void initBinder(WebDataBinder dataBinder, A thePattern);
+
+		@ModelAttribute
+		void initModel(B date, Model model);
+
+		@RequestMapping(value = "/path1/path2", method = RequestMethod.POST)
+		@ModelAttribute("attr2")
+		Date handle(C date, Model model) throws Exception;
+
+		@ExceptionHandler(Exception.class)
+		@ResponseBody
+		String handleException(Exception exception);
+	}
+
 	/**
 	 * SIMPLE CASE
 	 */
@@ -164,7 +198,7 @@ public class HandlerMethodAnnotationDetectionTests {
 			model.addAttribute("attr1", date);
 		}
 
-		@RequestMapping(value="/path1/path2", method=RequestMethod.POST)
+		@RequestMapping(value = "/path1/path2", method = RequestMethod.POST)
 		@ModelAttribute("attr2")
 		public Date handle(@RequestHeader("header2") Date date) throws Exception {
 			return date;
@@ -177,7 +211,6 @@ public class HandlerMethodAnnotationDetectionTests {
 		}
 	}
 
-
 	@Controller
 	static abstract class MappingAbstractClass {
 
@@ -187,7 +220,7 @@ public class HandlerMethodAnnotationDetectionTests {
 		@ModelAttribute
 		public abstract void initModel(Date date, Model model);
 
-		@RequestMapping(value="/path1/path2", method=RequestMethod.POST)
+		@RequestMapping(value = "/path1/path2", method = RequestMethod.POST)
 		@ModelAttribute("attr2")
 		public abstract Date handle(Date date, Model model) throws Exception;
 
@@ -195,7 +228,6 @@ public class HandlerMethodAnnotationDetectionTests {
 		@ResponseBody
 		public abstract String handleException(Exception exception);
 	}
-
 
 	/**
 	 * CONTROLLER WITH ABSTRACT CLASS
@@ -224,27 +256,6 @@ public class HandlerMethodAnnotationDetectionTests {
 			return exception.getMessage();
 		}
 	}
-
-
-	// SPR-9374
-	@RequestMapping
-	interface MappingInterface {
-
-		@InitBinder
-		void initBinder(WebDataBinder dataBinder, @RequestParam("datePattern") String thePattern);
-
-		@ModelAttribute
-		void initModel(@RequestHeader("header1") Date date, Model model);
-
-		@RequestMapping(value="/path1/path2", method=RequestMethod.POST)
-		@ModelAttribute("attr2")
-		Date handle(@RequestHeader("header2") Date date, Model model) throws Exception;
-
-		@ExceptionHandler(Exception.class)
-		@ResponseBody
-		String handleException(Exception exception);
-	}
-
 
 	/**
 	 * CONTROLLER WITH INTERFACE
@@ -275,7 +286,6 @@ public class HandlerMethodAnnotationDetectionTests {
 		}
 	}
 
-
 	@Controller
 	static abstract class MappingGenericAbstractClass<A, B, C> {
 
@@ -285,7 +295,7 @@ public class HandlerMethodAnnotationDetectionTests {
 		@ModelAttribute
 		public abstract void initModel(B date, Model model);
 
-		@RequestMapping(value="/path1/path2", method=RequestMethod.POST)
+		@RequestMapping(value = "/path1/path2", method = RequestMethod.POST)
 		@ModelAttribute("attr2")
 		public abstract Date handle(C date, Model model) throws Exception;
 
@@ -293,7 +303,6 @@ public class HandlerMethodAnnotationDetectionTests {
 		@ResponseBody
 		public abstract String handleException(Exception exception);
 	}
-
 
 	/**
 	 * CONTROLLER WITH PARAMETERIZED BASE CLASS
@@ -323,7 +332,6 @@ public class HandlerMethodAnnotationDetectionTests {
 		}
 	}
 
-
 	@Controller
 	static abstract class MappedGenericAbstractClassWithConcreteImplementations<A, B, C> {
 
@@ -343,7 +351,6 @@ public class HandlerMethodAnnotationDetectionTests {
 		@ResponseBody
 		public abstract String handleException(Exception exception);
 	}
-
 
 	static class ParameterizedSubclassDoesNotOverrideConcreteImplementationsFromGenericAbstractSuperclass extends
 			MappedGenericAbstractClassWithConcreteImplementations<String, Date, Date> {
@@ -367,7 +374,6 @@ public class HandlerMethodAnnotationDetectionTests {
 		}
 	}
 
-
 	@Controller
 	static abstract class GenericAbstractClassDeclaresDefaultMappings<A, B, C> {
 
@@ -387,7 +393,6 @@ public class HandlerMethodAnnotationDetectionTests {
 		@ResponseBody
 		public abstract String handleException(Exception exception);
 	}
-
 
 	static class ParameterizedSubclassOverridesDefaultMappings
 			extends GenericAbstractClassDeclaresDefaultMappings<String, Date, Date> {
@@ -419,26 +424,6 @@ public class HandlerMethodAnnotationDetectionTests {
 		}
 	}
 
-
-	@RequestMapping
-	interface MappingGenericInterface<A, B, C> {
-
-		@InitBinder
-		void initBinder(WebDataBinder dataBinder, A thePattern);
-
-		@ModelAttribute
-		void initModel(B date, Model model);
-
-		@RequestMapping(value="/path1/path2", method=RequestMethod.POST)
-		@ModelAttribute("attr2")
-		Date handle(C date, Model model) throws Exception;
-
-		@ExceptionHandler(Exception.class)
-		@ResponseBody
-		String handleException(Exception exception);
-	}
-
-
 	/**
 	 * CONTROLLER WITH PARAMETERIZED INTERFACE
 	 * <p>All annotations can be on interface except parameter annotations.
@@ -460,7 +445,7 @@ public class HandlerMethodAnnotationDetectionTests {
 		}
 
 		@Override
-		@RequestMapping(value="/path1/path2", method=RequestMethod.POST)
+		@RequestMapping(value = "/path1/path2", method = RequestMethod.POST)
 		@ModelAttribute("attr2")
 		public Date handle(@RequestHeader("header2") Date date, Model model) throws Exception {
 			return date;
@@ -493,7 +478,7 @@ public class HandlerMethodAnnotationDetectionTests {
 			model.addAttribute("attr1", date);
 		}
 
-		@RequestMapping(value="/path2", method=RequestMethod.POST)
+		@RequestMapping(value = "/path2", method = RequestMethod.POST)
 		@ModelAttribute("attr2")
 		public Date handle(@RequestHeader("header2") Date date, Model model) throws Exception {
 			return date;

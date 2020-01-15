@@ -15,12 +15,8 @@
  */
 package org.springframework.test.web.client.samples;
 
-import java.io.IOException;
-import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
@@ -34,7 +30,11 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.client.ExpectedCount.manyTimes;
 import static org.springframework.test.web.client.ExpectedCount.never;
 import static org.springframework.test.web.client.ExpectedCount.once;
@@ -68,7 +68,7 @@ public class SampleTests {
 		String responseBody = "{\"name\" : \"Ludwig van Beethoven\", \"someDouble\" : \"1.6035\"}";
 
 		this.mockServer.expect(requestTo("/composers/42")).andExpect(method(HttpMethod.GET))
-			.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+				.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
 		@SuppressWarnings("unused")
 		Person ludwig = this.restTemplate.getForObject("/composers/{id}", Person.class, 42);
@@ -137,7 +137,7 @@ public class SampleTests {
 		Resource responseBody = new ClassPathResource("ludwig.json", this.getClass());
 
 		this.mockServer.expect(requestTo("/composers/42")).andExpect(method(HttpMethod.GET))
-			.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+				.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
 		@SuppressWarnings("unused")
 		Person ludwig = this.restTemplate.getForObject("/composers/{id}", Person.class, 42);
@@ -152,16 +152,16 @@ public class SampleTests {
 	public void verify() {
 
 		this.mockServer.expect(requestTo("/number")).andExpect(method(HttpMethod.GET))
-			.andRespond(withSuccess("1", MediaType.TEXT_PLAIN));
+				.andRespond(withSuccess("1", MediaType.TEXT_PLAIN));
 
 		this.mockServer.expect(requestTo("/number")).andExpect(method(HttpMethod.GET))
-			.andRespond(withSuccess("2", MediaType.TEXT_PLAIN));
+				.andRespond(withSuccess("2", MediaType.TEXT_PLAIN));
 
 		this.mockServer.expect(requestTo("/number")).andExpect(method(HttpMethod.GET))
-			.andRespond(withSuccess("4", MediaType.TEXT_PLAIN));
+				.andRespond(withSuccess("4", MediaType.TEXT_PLAIN));
 
 		this.mockServer.expect(requestTo("/number")).andExpect(method(HttpMethod.GET))
-			.andRespond(withSuccess("8", MediaType.TEXT_PLAIN));
+				.andRespond(withSuccess("8", MediaType.TEXT_PLAIN));
 
 		@SuppressWarnings("unused")
 		String result1 = this.restTemplate.getForObject("/number", String.class);
@@ -173,8 +173,7 @@ public class SampleTests {
 
 		try {
 			this.mockServer.verify();
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			assertTrue(error.getMessage(), error.getMessage().contains("2 unsatisfied expectation(s)"));
 		}
 	}
@@ -212,7 +211,7 @@ public class SampleTests {
 
 		@Override
 		public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-				ClientHttpRequestExecution execution) throws IOException {
+											ClientHttpRequestExecution execution) throws IOException {
 
 			ClientHttpResponse response = execution.execute(request, body);
 			byte[] expected = FileCopyUtils.copyToByteArray(this.resource.getInputStream());

@@ -16,12 +16,7 @@
 
 package org.springframework.test.context.web;
 
-import java.io.File;
-
-import javax.servlet.ServletContext;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +30,12 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.ServletWebRequest;
 
-import static org.junit.Assert.*;
+import javax.servlet.ServletContext;
+import java.io.File;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * JUnit-based integration tests that verify support for loading a
@@ -48,39 +48,21 @@ import static org.junit.Assert.*;
 @WebAppConfiguration
 public class JUnit4SpringContextWebTests extends AbstractJUnit4SpringContextTests implements ServletContextAware {
 
-	@Configuration
-	static class Config {
-
-		@Bean
-		public String foo() {
-			return "enigma";
-		}
-	}
-
-
 	protected ServletContext servletContext;
-
 	@Autowired
 	protected WebApplicationContext wac;
-
 	@Autowired
 	protected MockServletContext mockServletContext;
-
 	@Autowired
 	protected MockHttpServletRequest request;
-
 	@Autowired
 	protected MockHttpServletResponse response;
-
 	@Autowired
 	protected MockHttpSession session;
-
 	@Autowired
 	protected ServletWebRequest webRequest;
-
 	@Autowired
 	protected String foo;
-
 
 	@Override
 	public void setServletContext(ServletContext servletContext) {
@@ -107,13 +89,22 @@ public class JUnit4SpringContextWebTests extends AbstractJUnit4SpringContextTest
 		assertSame("ServletContext in the WAC and in the mock request", mockServletContext, request.getServletContext());
 
 		assertEquals("Getting real path for ServletContext resource.",
-			new File("src/main/webapp/index.jsp").getCanonicalPath(), mockServletContext.getRealPath("index.jsp"));
+				new File("src/main/webapp/index.jsp").getCanonicalPath(), mockServletContext.getRealPath("index.jsp"));
 
 	}
 
 	@Test
 	public void fooEnigmaAutowired() {
 		assertEquals("enigma", foo);
+	}
+
+	@Configuration
+	static class Config {
+
+		@Bean
+		public String foo() {
+			return "enigma";
+		}
 	}
 
 }

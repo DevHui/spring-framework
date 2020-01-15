@@ -16,18 +16,20 @@
 
 package org.springframework.http.converter;
 
-import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.MockHttpInputMessage;
 import org.springframework.http.MockHttpOutputMessage;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
 
-/** @author Arjen Poutsma */
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
+
+/**
+ * @author Arjen Poutsma
+ */
 public class ByteArrayHttpMessageConverterTests {
 
 	private ByteArrayHttpMessageConverter converter;

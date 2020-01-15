@@ -16,6 +16,11 @@
 
 package org.springframework.jmx.export.assembler;
 
+import org.junit.Test;
+import org.springframework.jmx.AbstractJmxTests;
+import org.springframework.jmx.IJmxTestBean;
+import org.springframework.jmx.support.ObjectNameManager;
+
 import javax.management.Attribute;
 import javax.management.Descriptor;
 import javax.management.MBeanAttributeInfo;
@@ -28,13 +33,8 @@ import javax.management.modelmbean.ModelMBeanAttributeInfo;
 import javax.management.modelmbean.ModelMBeanInfo;
 import javax.management.modelmbean.ModelMBeanOperationInfo;
 
-import org.junit.Test;
-
-import org.springframework.jmx.AbstractJmxTests;
-import org.springframework.jmx.IJmxTestBean;
-import org.springframework.jmx.support.ObjectNameManager;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Rob Harrop
@@ -134,11 +134,11 @@ public abstract class AbstractJmxAssemblerTests extends AbstractJmxTests {
 	}
 
 	@Test
-	public void testOperationInvocation() throws Exception{
+	public void testOperationInvocation() throws Exception {
 		ObjectName objectName = ObjectNameManager.getInstance(getObjectName());
 		Object result = getServer().invoke(objectName, "add",
-				new Object[] {new Integer(20), new Integer(30)}, new String[] {"int", "int"});
-	assertEquals("Incorrect result", new Integer(50), result);
+				new Object[]{new Integer(20), new Integer(30)}, new String[]{"int", "int"});
+		assertEquals("Incorrect result", new Integer(50), result);
 	}
 
 	@Test

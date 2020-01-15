@@ -16,14 +16,6 @@
 
 package org.springframework.aop.aspectj.annotation;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 import org.aopalliance.aop.Advice;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -32,7 +24,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.DeclareParents;
 import org.aspectj.lang.annotation.Pointcut;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.aop.aspectj.AbstractAspectJAdvice;
@@ -53,6 +44,14 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.comparator.InstanceComparator;
+
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Factory that can create Spring AOP Advisors given AspectJ classes from
@@ -77,7 +76,7 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 						Around.class, Before.class, After.class, AfterReturning.class, AfterThrowing.class),
 				(Converter<Method, Annotation>) method -> {
 					AspectJAnnotation<?> annotation =
-						AbstractAspectJAdvisorFactory.findAspectJAnnotationOnMethod(method);
+							AbstractAspectJAdvisorFactory.findAspectJAnnotationOnMethod(method);
 					return (annotation != null ? annotation.getAnnotation() : null);
 				});
 		Comparator<Method> methodNameComparator = new ConvertingComparator<>(Method::getName);
@@ -100,10 +99,11 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 	 * Create a new {@code ReflectiveAspectJAdvisorFactory}, propagating the given
 	 * {@link BeanFactory} to the created {@link AspectJExpressionPointcut} instances,
 	 * for bean pointcut handling as well as consistent {@link ClassLoader} resolution.
+	 *
 	 * @param beanFactory the BeanFactory to propagate (may be {@code null}}
-	 * @since 4.3.6
 	 * @see AspectJExpressionPointcut#setBeanFactory
 	 * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#getBeanClassLoader()
+	 * @since 4.3.6
 	 */
 	public ReflectiveAspectJAdvisorFactory(@Nullable BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
@@ -168,6 +168,7 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 	 * Build a {@link org.springframework.aop.aspectj.DeclareParentsAdvisor}
 	 * for the given introduction field.
 	 * <p>Resulting Advisors will need to be evaluated for targets.
+	 *
 	 * @param introductionField the field to introspect
 	 * @return the Advisor instance, or {@code null} if not an Advisor
 	 */
@@ -191,7 +192,7 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 	@Override
 	@Nullable
 	public Advisor getAdvisor(Method candidateAdviceMethod, MetadataAwareAspectInstanceFactory aspectInstanceFactory,
-			int declarationOrderInAspect, String aspectName) {
+							  int declarationOrderInAspect, String aspectName) {
 
 		validate(aspectInstanceFactory.getAspectMetadata().getAspectClass());
 
@@ -209,6 +210,7 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 
 	/**
 	 * 切点信息获取， 指定注解的表达式信息的获取，如@Befor("test()")
+	 *
 	 * @param candidateAdviceMethod
 	 * @param candidateAspectClass
 	 * @return
@@ -238,7 +240,7 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 	@Override
 	@Nullable
 	public Advice getAdvice(Method candidateAdviceMethod, AspectJExpressionPointcut expressionPointcut,
-			MetadataAwareAspectInstanceFactory aspectInstanceFactory, int declarationOrder, String aspectName) {
+							MetadataAwareAspectInstanceFactory aspectInstanceFactory, int declarationOrder, String aspectName) {
 
 		Class<?> candidateAspectClass = aspectInstanceFactory.getAspectMetadata().getAspectClass();
 		validate(candidateAspectClass);

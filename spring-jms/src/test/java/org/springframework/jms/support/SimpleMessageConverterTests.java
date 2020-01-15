@@ -16,10 +16,11 @@
 
 package org.springframework.jms.support;
 
-import java.io.ByteArrayInputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.springframework.jms.support.converter.MessageConversionException;
+import org.springframework.jms.support.converter.SimpleMessageConverter;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -28,16 +29,18 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import java.io.ByteArrayInputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import org.springframework.jms.support.converter.MessageConversionException;
-import org.springframework.jms.support.converter.SimpleMessageConverter;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Unit tests for the {@link SimpleMessageConverter} class.
@@ -167,8 +170,7 @@ public class SimpleMessageConverterTests {
 		try {
 			converter.toMessage(content, session);
 			fail("expected MessageConversionException");
-		}
-		catch (MessageConversionException ex) { /* expected */ }
+		} catch (MessageConversionException ex) { /* expected */ }
 	}
 
 	@Test
@@ -184,8 +186,7 @@ public class SimpleMessageConverterTests {
 		try {
 			converter.toMessage(content, session);
 			fail("expected MessageConversionException");
-		}
-		catch (MessageConversionException ex) { /* expected */ }
+		} catch (MessageConversionException ex) { /* expected */ }
 	}
 
 }

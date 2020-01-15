@@ -16,16 +16,15 @@
 
 package org.springframework.web.servlet.mvc.condition;
 
+import org.junit.Test;
+import org.springframework.mock.web.test.MockHttpServletRequest;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.junit.Test;
-
-import org.springframework.mock.web.test.MockHttpServletRequest;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Rossen Stoyanchev
@@ -109,7 +108,7 @@ public class PatternsRequestConditionTests {
 		assertEquals("/{foo}.*", match.getPatterns().iterator().next());
 
 		boolean useSuffixPatternMatch = false;
-		condition = new PatternsRequestCondition(new String[] {"/{foo}"}, null, null, useSuffixPatternMatch, false);
+		condition = new PatternsRequestCondition(new String[]{"/{foo}"}, null, null, useSuffixPatternMatch, false);
 		match = condition.getMatchingCondition(request);
 
 		assertNotNull(match);
@@ -120,7 +119,7 @@ public class PatternsRequestConditionTests {
 
 	@Test
 	public void matchSuffixPatternUsingFileExtensions() {
-		String[] patterns = new String[] {"/jobs/{jobName}"};
+		String[] patterns = new String[]{"/jobs/{jobName}"};
 		List<String> extensions = Arrays.asList("json");
 		PatternsRequestCondition condition = new PatternsRequestCondition(patterns, null, null, true, false, extensions);
 
@@ -140,10 +139,10 @@ public class PatternsRequestConditionTests {
 	@Test
 	public void matchSuffixPatternUsingFileExtensions2() {
 		PatternsRequestCondition condition1 = new PatternsRequestCondition(
-				new String[] {"/prefix"}, null, null, true, false, Arrays.asList("json"));
+				new String[]{"/prefix"}, null, null, true, false, Arrays.asList("json"));
 
 		PatternsRequestCondition condition2 = new PatternsRequestCondition(
-				new String[] {"/suffix"}, null, null, true, false, null);
+				new String[]{"/suffix"}, null, null, true, false, null);
 
 		PatternsRequestCondition combined = condition1.combine(condition2);
 
@@ -163,14 +162,14 @@ public class PatternsRequestConditionTests {
 		assertNotNull(match);
 		assertEquals("Should match by default", "/foo/", match.getPatterns().iterator().next());
 
-		condition = new PatternsRequestCondition(new String[] {"/foo"}, null, null, false, true);
+		condition = new PatternsRequestCondition(new String[]{"/foo"}, null, null, false, true);
 		match = condition.getMatchingCondition(request);
 
 		assertNotNull(match);
 		assertEquals("Trailing slash should be insensitive to useSuffixPatternMatch settings (SPR-6164, SPR-5636)",
 				"/foo/", match.getPatterns().iterator().next());
 
-		condition = new PatternsRequestCondition(new String[] {"/foo"}, null, null, false, false);
+		condition = new PatternsRequestCondition(new String[]{"/foo"}, null, null, false, false);
 		match = condition.getMatchingCondition(request);
 
 		assertNull(match);

@@ -16,17 +16,16 @@
 
 package org.springframework.cache.jcache;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.Before;
+import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManagerTests;
 
 import javax.cache.Cache;
 import javax.cache.CacheManager;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.junit.Before;
-
-import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManagerTests;
-
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Stephane Nicoll
@@ -59,8 +58,7 @@ public class JCacheCacheManagerTests extends AbstractTransactionSupportingCacheM
 	protected JCacheCacheManager getCacheManager(boolean transactionAware) {
 		if (transactionAware) {
 			return transactionalCacheManager;
-		}
-		else {
+		} else {
 			return cacheManager;
 		}
 	}

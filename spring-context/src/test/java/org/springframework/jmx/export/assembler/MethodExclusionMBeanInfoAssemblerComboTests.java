@@ -16,15 +16,16 @@
 
 package org.springframework.jmx.export.assembler;
 
-import java.util.Properties;
+import org.junit.Test;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.modelmbean.ModelMBeanAttributeInfo;
 import javax.management.modelmbean.ModelMBeanInfo;
+import java.util.Properties;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Juergen Hoeller
@@ -78,7 +79,7 @@ public class MethodExclusionMBeanInfoAssemblerComboTests extends AbstractJmxAsse
 		Properties props = new Properties();
 		props.setProperty(OBJECT_NAME, "setAge,isSuperman,setSuperman,dontExposeMe");
 		assembler.setIgnoredMethodMappings(props);
-		assembler.setIgnoredMethods(new String[] {"someMethod"});
+		assembler.setIgnoredMethods(new String[]{"someMethod"});
 		return assembler;
 	}
 

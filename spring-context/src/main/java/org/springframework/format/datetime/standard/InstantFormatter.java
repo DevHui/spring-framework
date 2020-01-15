@@ -16,12 +16,12 @@
 
 package org.springframework.format.datetime.standard;
 
+import org.springframework.format.Formatter;
+
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-
-import org.springframework.format.Formatter;
 
 /**
  * {@link Formatter} implementation for a JSR-310 {@link java.time.Instant},
@@ -32,10 +32,10 @@ import org.springframework.format.Formatter;
  *
  * @author Juergen Hoeller
  * @author Andrei Nevedomskii
- * @since 4.0
  * @see java.time.Instant#parse
  * @see java.time.format.DateTimeFormatter#ISO_INSTANT
  * @see java.time.format.DateTimeFormatter#RFC_1123_DATE_TIME
+ * @since 4.0
  */
 public class InstantFormatter implements Formatter<Instant> {
 
@@ -44,8 +44,7 @@ public class InstantFormatter implements Formatter<Instant> {
 		if (text.length() > 0 && Character.isAlphabetic(text.charAt(0))) {
 			// assuming RFC-1123 value a la "Tue, 3 Jun 2008 11:05:30 GMT"
 			return Instant.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(text));
-		}
-		else {
+		} else {
 			// assuming UTC instant a la "2007-12-03T10:15:30.00Z"
 			return Instant.parse(text);
 		}

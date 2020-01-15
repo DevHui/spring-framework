@@ -16,13 +16,10 @@
 
 package org.springframework.dao.annotation;
 
-import javax.persistence.PersistenceException;
-
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.junit.Test;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.aop.framework.Advised;
@@ -38,7 +35,11 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationAdvisor
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.stereotype.Repository;
 
-import static org.junit.Assert.*;
+import javax.persistence.PersistenceException;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Rod Johnson
@@ -80,8 +81,7 @@ public class PersistenceExceptionTranslationPostProcessorTests {
 		try {
 			rwi2.additionalMethod(true);
 			fail("Should have thrown DataAccessResourceFailureException");
-		}
-		catch (DataAccessResourceFailureException ex) {
+		} catch (DataAccessResourceFailureException ex) {
 			assertEquals("my failure", ex.getMessage());
 		}
 	}
@@ -98,19 +98,17 @@ public class PersistenceExceptionTranslationPostProcessorTests {
 	}
 
 
+	public interface Additional {
+
+		void additionalMethod(boolean fail);
+	}
+
 	@Repository
 	public static class RepositoryWithoutInterface {
 
 		public void nameDoesntMatter() {
 		}
 	}
-
-
-	public interface Additional {
-
-		void additionalMethod(boolean fail);
-	}
-
 
 	public static class RepositoryWithoutInterfaceAndOtherwiseAdvised extends StereotypedRepositoryInterfaceImpl
 			implements Additional {

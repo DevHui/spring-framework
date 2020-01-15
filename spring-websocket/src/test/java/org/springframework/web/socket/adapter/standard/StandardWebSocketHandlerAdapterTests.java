@@ -16,21 +16,22 @@
 
 package org.springframework.web.socket.adapter.standard;
 
-import java.net.URI;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketHandler;
 
 import javax.websocket.CloseReason;
 import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
+import java.net.URI;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketHandler;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.atLeast;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Test fixture for {@link org.springframework.web.socket.adapter.standard.StandardWebSocketHandlerAdapter}.

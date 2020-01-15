@@ -16,20 +16,8 @@
 
 package org.springframework.http.codec.multipart;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.channels.ReadableByteChannel;
-import java.time.Duration;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import org.junit.Test;
 import org.reactivestreams.Subscription;
-import reactor.core.publisher.BaseSubscriber;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.DecodingException;
 import org.springframework.core.io.ClassPathResource;
@@ -43,6 +31,17 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.mock.http.client.reactive.test.MockClientHttpRequest;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.BaseSubscriber;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.channels.ReadableByteChannel;
+import java.time.Duration;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
@@ -65,11 +64,10 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
  */
 public class SynchronossPartHttpMessageReaderTests {
 
-	private final MultipartHttpMessageReader reader =
-			new MultipartHttpMessageReader(new SynchronossPartHttpMessageReader());
-
 	private static final ResolvableType PARTS_ELEMENT_TYPE =
 			forClassWithGenerics(MultiValueMap.class, String.class, Part.class);
+	private final MultipartHttpMessageReader reader =
+			new MultipartHttpMessageReader(new SynchronossPartHttpMessageReader());
 
 	@Test
 	public void canRead() {

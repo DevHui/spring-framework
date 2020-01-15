@@ -16,13 +16,7 @@
 
 package org.springframework.web.socket.sockjs.transport.session;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.concurrent.ScheduledFuture;
-
 import org.junit.Test;
-
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
@@ -30,6 +24,11 @@ import org.springframework.web.socket.handler.ExceptionWebSocketHandlerDecorator
 import org.springframework.web.socket.sockjs.SockJsMessageDeliveryException;
 import org.springframework.web.socket.sockjs.SockJsTransportFailureException;
 import org.springframework.web.socket.sockjs.frame.SockJsFrame;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.concurrent.ScheduledFuture;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -121,8 +120,7 @@ public class SockJsSessionTests extends AbstractSockJsSessionTests<TestSockJsSes
 		try {
 			sockJsSession.delegateMessages(msg1, msg2, msg3);
 			fail("expected exception");
-		}
-		catch (SockJsMessageDeliveryException ex) {
+		} catch (SockJsMessageDeliveryException ex) {
 			assertEquals(Collections.singletonList(msg3), ex.getUndeliveredMessages());
 			verify(this.webSocketHandler).afterConnectionEstablished(sockJsSession);
 			verify(this.webSocketHandler).handleMessage(sockJsSession, new TextMessage(msg1));
@@ -240,8 +238,7 @@ public class SockJsSessionTests extends AbstractSockJsSessionTests<TestSockJsSes
 		try {
 			this.session.writeFrame(SockJsFrame.openFrame());
 			fail("expected exception");
-		}
-		catch (SockJsTransportFailureException ex) {
+		} catch (SockJsTransportFailureException ex) {
 			assertEquals(CloseStatus.SERVER_ERROR, this.session.getCloseStatus());
 			verify(this.webSocketHandler).afterConnectionClosed(this.session, CloseStatus.SERVER_ERROR);
 		}

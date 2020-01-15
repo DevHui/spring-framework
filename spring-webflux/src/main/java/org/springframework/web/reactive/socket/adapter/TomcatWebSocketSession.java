@@ -16,16 +16,14 @@
 
 package org.springframework.web.reactive.socket.adapter;
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-
-import javax.websocket.Session;
-
 import org.apache.tomcat.websocket.WsSession;
-import reactor.core.publisher.MonoProcessor;
-
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketSession;
+import reactor.core.publisher.MonoProcessor;
+
+import javax.websocket.Session;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
  * Spring {@link WebSocketSession} adapter for Tomcat's
@@ -48,7 +46,7 @@ public class TomcatWebSocketSession extends StandardWebSocketSession {
 	}
 
 	public TomcatWebSocketSession(Session session, HandshakeInfo info, DataBufferFactory factory,
-			MonoProcessor<Void> completionMono) {
+								  MonoProcessor<Void> completionMono) {
 
 		super(session, info, factory, completionMono);
 		suspendReceiving();

@@ -17,7 +17,6 @@
 package org.springframework.web.socket.sockjs.transport.handler;
 
 import org.junit.Test;
-
 import org.springframework.web.socket.AbstractHttpRequestTests;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
@@ -26,8 +25,12 @@ import org.springframework.web.socket.sockjs.transport.session.AbstractSockJsSes
 import org.springframework.web.socket.sockjs.transport.session.StubSockJsServiceConfig;
 import org.springframework.web.socket.sockjs.transport.session.TestHttpSockJsSession;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.willThrow;
 
 /**
  * Test fixture for {@link AbstractHttpReceivingTransportHandler} and sub-classes
@@ -76,8 +79,7 @@ public class HttpReceivingTransportHandlerTests extends AbstractHttpRequestTests
 			transportHandler.initialize(sockJsConfig);
 			transportHandler.handleRequest(this.request, this.response, wsHandler, session);
 			fail("Expected exception");
-		}
-		catch (SockJsMessageDeliveryException ex) {
+		} catch (SockJsMessageDeliveryException ex) {
 			assertNull(session.getCloseStatus());
 		}
 	}

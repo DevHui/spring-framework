@@ -16,22 +16,10 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-import rx.Observable;
-import rx.RxReactiveStreams;
-import rx.Single;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.ResolvableType;
@@ -46,8 +34,24 @@ import org.springframework.web.method.ResolvableMethod;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebInputException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+import rx.Observable;
+import rx.RxReactiveStreams;
+import rx.Single;
 
-import static org.junit.Assert.*;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.springframework.core.ResolvableType.forClassWithGenerics;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.post;
@@ -100,8 +104,7 @@ public class HttpEntityArgumentResolverTests {
 		try {
 			this.resolver.supportsParameter(this.testMethod.arg(Mono.class, httpEntityType(String.class)));
 			fail();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertTrue("Unexpected error message:\n" + ex.getMessage(),
 					ex.getMessage().startsWith(
 							"HttpEntityArgumentResolver doesn't support reactive type wrapper"));
@@ -348,6 +351,7 @@ public class HttpEntityArgumentResolverTests {
 			HttpEntity<Flowable<String>> flowableBody,
 			HttpEntity<CompletableFuture<String>> completableFutureBody,
 			RequestEntity<String> requestEntity,
-			Mono<HttpEntity<String>> httpEntityMono) {}
+			Mono<HttpEntity<String>> httpEntityMono) {
+	}
 
 }

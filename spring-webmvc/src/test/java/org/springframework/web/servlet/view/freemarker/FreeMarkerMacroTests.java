@@ -16,22 +16,12 @@
 
 package org.springframework.web.servlet.view.freemarker;
 
-import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -48,7 +38,18 @@ import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.theme.FixedThemeResolver;
 import org.springframework.web.servlet.view.DummyMacroRequestContext;
 
-import static org.junit.Assert.*;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Darren Davison
@@ -134,8 +135,7 @@ public class FreeMarkerMacroTests {
 
 		try {
 			fv.render(model, request, response);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			assertTrue(ex instanceof ServletException);
 			assertTrue(ex.getMessage().contains(FreeMarkerView.SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE));
 		}
@@ -307,7 +307,7 @@ public class FreeMarkerMacroTests {
 		fred.setJedi(true);
 		darren.setSpouse(fred);
 		darren.setJedi(true);
-		darren.setStringArray(new String[] {"John", "Fred"});
+		darren.setStringArray(new String[]{"John", "Fred"});
 		request.setAttribute("command", darren);
 
 		Map<String, String> names = new HashMap<>();
@@ -320,7 +320,7 @@ public class FreeMarkerMacroTests {
 		Map<String, Object> model = new HashMap<>();
 		model.put("command", darren);
 		model.put("springMacroRequestContext", rc);
-		model.put("msgArgs", new Object[] { "World" });
+		model.put("msgArgs", new Object[]{"World"});
 		model.put("nameOptionMap", names);
 		model.put("options", names.values());
 

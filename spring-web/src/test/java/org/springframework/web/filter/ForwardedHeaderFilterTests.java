@@ -16,9 +16,11 @@
 
 package org.springframework.web.filter;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.Enumeration;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.mock.web.test.MockFilterChain;
+import org.springframework.mock.web.test.MockHttpServletRequest;
+import org.springframework.mock.web.test.MockHttpServletResponse;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
@@ -27,16 +29,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Enumeration;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.mock.web.test.MockFilterChain;
-import org.springframework.mock.web.test.MockHttpServletRequest;
-import org.springframework.mock.web.test.MockHttpServletResponse;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link ForwardedHeaderFilter}.
@@ -68,7 +69,8 @@ public class ForwardedHeaderFilterTests {
 		this.request.setScheme("http");
 		this.request.setServerName("localhost");
 		this.request.setServerPort(80);
-		this.filterChain = new MockFilterChain(new HttpServlet() {});
+		this.filterChain = new MockFilterChain(new HttpServlet() {
+		});
 	}
 
 
@@ -504,7 +506,7 @@ public class ForwardedHeaderFilterTests {
 		Filter filter = new OncePerRequestFilter() {
 			@Override
 			protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res,
-					FilterChain chain) throws IOException {
+											FilterChain chain) throws IOException {
 
 				res.sendRedirect(location);
 			}

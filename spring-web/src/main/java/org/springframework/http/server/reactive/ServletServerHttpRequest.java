@@ -16,26 +16,7 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-import java.security.cert.X509Certificate;
-import java.util.Enumeration;
-import java.util.Map;
-
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -48,6 +29,23 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import reactor.core.publisher.Flux;
+
+import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
+import javax.servlet.ReadListener;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.security.cert.X509Certificate;
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * Adapt {@link ServerHttpRequest} to the Servlet {@link HttpServletRequest}.
@@ -71,14 +69,14 @@ class ServletServerHttpRequest extends AbstractServerHttpRequest {
 	private final byte[] buffer;
 
 	public ServletServerHttpRequest(HttpServletRequest request, AsyncContext asyncContext,
-			String servletPath, DataBufferFactory bufferFactory, int bufferSize)
+									String servletPath, DataBufferFactory bufferFactory, int bufferSize)
 			throws IOException, URISyntaxException {
 
 		this(createDefaultHttpHeaders(request), request, asyncContext, servletPath, bufferFactory, bufferSize);
 	}
 
 	public ServletServerHttpRequest(HttpHeaders headers, HttpServletRequest request, AsyncContext asyncContext,
-			String servletPath, DataBufferFactory bufferFactory, int bufferSize)
+									String servletPath, DataBufferFactory bufferFactory, int bufferSize)
 			throws IOException, URISyntaxException {
 
 		super(initUri(request), request.getContextPath() + servletPath, initHeaders(headers, request));
@@ -203,6 +201,7 @@ class ServletServerHttpRequest extends AbstractServerHttpRequest {
 	/**
 	 * Read from the request body InputStream and return a DataBuffer.
 	 * Invoked only when {@link ServletInputStream#isReady()} returns "true".
+	 *
 	 * @return a DataBuffer with data read, or {@link #EOF_BUFFER} if the input
 	 * stream returned -1, or null if 0 bytes were read.
 	 */

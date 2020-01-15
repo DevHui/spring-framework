@@ -16,15 +16,16 @@
 
 package org.springframework.jdbc.core.namedparam;
 
+import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 /**
  * @author Thomas Risberg
@@ -81,8 +82,7 @@ public class NamedParameterUtilsTests {
 		try {
 			NamedParameterUtils.buildValueArray("xxx :a :b ?", paramMap);
 			fail("mixed named parameters and ? placeholders not detected");
-		}
-		catch (InvalidDataAccessApiUsageException expected) {
+		} catch (InvalidDataAccessApiUsageException expected) {
 		}
 	}
 

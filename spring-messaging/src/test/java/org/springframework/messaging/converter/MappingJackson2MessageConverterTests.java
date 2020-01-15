@@ -16,6 +16,15 @@
 
 package org.springframework.messaging.converter;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import org.junit.Test;
+import org.springframework.core.MethodParameter;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.util.MimeType;
+
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -23,18 +32,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import org.junit.Test;
-
-import org.springframework.core.MethodParameter;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.util.MimeType;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test fixture for {@link MappingJackson2MessageConverter}.
@@ -123,7 +130,7 @@ public class MappingJackson2MessageConverterTests {
 		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
 		String payload = "{\"string\":\"string\",\"unknownProperty\":\"value\"}";
 		Message<?> message = MessageBuilder.withPayload(payload.getBytes(StandardCharsets.UTF_8)).build();
-		MyBean myBean = (MyBean)converter.fromMessage(message, MyBean.class);
+		MyBean myBean = (MyBean) converter.fromMessage(message, MyBean.class);
 		assertEquals("string", myBean.getString());
 	}
 
@@ -232,7 +239,6 @@ public class MappingJackson2MessageConverterTests {
 	}
 
 
-
 	@JsonView(MyJacksonView1.class)
 	public JacksonViewBean jsonViewResponse() {
 		JacksonViewBean bean = new JacksonViewBean();
@@ -245,9 +251,20 @@ public class MappingJackson2MessageConverterTests {
 	public void jsonViewPayload(@JsonView(MyJacksonView2.class) JacksonViewBean payload) {
 	}
 
-	void handleList(List<Long> payload) {}
+	void handleList(List<Long> payload) {
+	}
 
-	void handleMessage(Message<MyBean> message) {}
+	void handleMessage(Message<MyBean> message) {
+	}
+
+	public interface MyJacksonView1 {
+	}
+
+
+	public interface MyJacksonView2 {
+	}
+
+	;
 
 	public static class MyBean {
 
@@ -312,11 +329,7 @@ public class MappingJackson2MessageConverterTests {
 		}
 	}
 
-
-	public interface MyJacksonView1 {};
-
-	public interface MyJacksonView2 {};
-
+	;
 
 	public static class JacksonViewBean {
 

@@ -46,7 +46,22 @@ public class HeuristicCompletionException extends TransactionException {
 	 * Mixed outcome state.
 	 */
 	public static final int STATE_MIXED = 3;
+	/**
+	 * The outcome state of the transaction: have some or all resources been committed?
+	 */
+	private final int outcomeState;
 
+
+	/**
+	 * Constructor for HeuristicCompletionException.
+	 *
+	 * @param outcomeState the outcome state of the transaction
+	 * @param cause        the root cause from the transaction API in use
+	 */
+	public HeuristicCompletionException(int outcomeState, Throwable cause) {
+		super("Heuristic completion: outcome state is " + getStateString(outcomeState), cause);
+		this.outcomeState = outcomeState;
+	}
 
 	public static String getStateString(int state) {
 		switch (state) {
@@ -61,26 +76,10 @@ public class HeuristicCompletionException extends TransactionException {
 		}
 	}
 
-
-	/**
-	 * The outcome state of the transaction: have some or all resources been committed?
-	 */
-	private final int outcomeState;
-
-
-	/**
-	 * Constructor for HeuristicCompletionException.
-	 * @param outcomeState the outcome state of the transaction
-	 * @param cause the root cause from the transaction API in use
-	 */
-	public HeuristicCompletionException(int outcomeState, Throwable cause) {
-		super("Heuristic completion: outcome state is " + getStateString(outcomeState), cause);
-		this.outcomeState = outcomeState;
-	}
-
 	/**
 	 * Return the outcome state of the transaction state,
 	 * as one of the constants in this class.
+	 *
 	 * @see #STATE_UNKNOWN
 	 * @see #STATE_COMMITTED
 	 * @see #STATE_ROLLED_BACK

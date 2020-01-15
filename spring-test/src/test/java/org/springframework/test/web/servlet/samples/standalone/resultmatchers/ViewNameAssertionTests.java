@@ -18,12 +18,12 @@ package org.springframework.test.web.servlet.samples.standalone.resultmatchers;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
@@ -47,8 +47,8 @@ public class ViewNameAssertionTests {
 	@Test
 	public void testEqualTo() throws Exception {
 		this.mockMvc.perform(get("/"))
-			.andExpect(view().name("mySpecialView"))
-			.andExpect(view().name(equalTo("mySpecialView")));
+				.andExpect(view().name("mySpecialView"))
+				.andExpect(view().name(equalTo("mySpecialView")));
 	}
 
 	@Test

@@ -16,15 +16,20 @@
 
 package org.springframework.core.io;
 
+import org.junit.Test;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests that serve as regression tests for the bugs described in SPR-6888
@@ -134,8 +139,7 @@ public class ClassPathResourceTests {
 		try {
 			resource.getInputStream();
 			fail("FileNotFoundException expected for resource: " + resource);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			assertThat(ex, instanceOf(FileNotFoundException.class));
 			assertThat(ex.getMessage(), containsString(FQ_RESOURCE_PATH));
 		}

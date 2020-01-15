@@ -16,26 +16,27 @@
 
 package org.springframework.test.context.web;
 
-import java.io.File;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.Assert.*;
+import java.io.File;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Integration test that verifies meta-annotation support for {@link WebAppConfiguration}
  * and {@link ContextConfiguration}.
  *
  * @author Sam Brannen
- * @since 4.0
  * @see WebTestConfiguration
+ * @since 4.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebTestConfiguration
@@ -69,7 +70,7 @@ public class MetaAnnotationConfigWacTests {
 		assertSame("ServletContext instances must be the same object.", mockServletContext, wac.getServletContext());
 
 		assertEquals("Getting real path for ServletContext resource.",
-			new File("src/main/webapp/index.jsp").getCanonicalPath(), mockServletContext.getRealPath("index.jsp"));
+				new File("src/main/webapp/index.jsp").getCanonicalPath(), mockServletContext.getRealPath("index.jsp"));
 	}
 
 }

@@ -16,22 +16,7 @@
 
 package org.springframework.web.reactive.result.view;
 
-import java.nio.ByteBuffer;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-import rx.Completable;
-
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.Ordered;
@@ -54,13 +39,29 @@ import org.springframework.web.reactive.accept.HeaderContentTypeResolver;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.server.NotAcceptableStatusException;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+import rx.Completable;
 
-import static java.nio.charset.StandardCharsets.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.http.MediaType.*;
-import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.*;
-import static org.springframework.web.method.ResolvableMethod.*;
+import java.nio.ByteBuffer;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.get;
+import static org.springframework.web.method.ResolvableMethod.on;
 
 /**
  * ViewResolutionResultHandler relying on a canned {@link TestViewResolver}
@@ -116,8 +117,7 @@ public class ViewResolutionResultHandlerTests {
 		HandlerResult handlerResult = new HandlerResult(new Object(), null, returnType, this.bindingContext);
 		if (supports) {
 			assertTrue("return type [" + returnType + "] should be supported", resultHandler.supports(handlerResult));
-		}
-		else {
+		} else {
 			assertFalse("return type [" + returnType + "] should not be supported", resultHandler.supports(handlerResult));
 		}
 	}
@@ -316,7 +316,7 @@ public class ViewResolutionResultHandlerTests {
 	}
 
 	private ServerWebExchange testHandle(String path, MethodParameter returnType, Object returnValue,
-			String responseBody, ViewResolver... resolvers) {
+										 String responseBody, ViewResolver... resolvers) {
 
 		Model model = this.bindingContext.getModel();
 		model.asMap().clear();
@@ -346,13 +346,13 @@ public class ViewResolutionResultHandlerTests {
 			Arrays.stream(viewNames).forEach(name -> this.views.put(name, new TestView(name)));
 		}
 
-		void setOrder(int order) {
-			this.order = order;
-		}
-
 		@Override
 		public int getOrder() {
 			return this.order;
+		}
+
+		void setOrder(int order) {
+			this.order = order;
 		}
 
 		@Override
@@ -428,31 +428,75 @@ public class ViewResolutionResultHandlerTests {
 	@SuppressWarnings("unused")
 	private static class Handler {
 
-		String string() { return null; }
-		Mono<String> monoString() { return null; }
-		@ModelAttribute("myString") String stringWithAnnotation() { return null; }
+		String string() {
+			return null;
+		}
 
-		Rendering rendering() { return null; }
-		Mono<Rendering> monoRendering() { return null; }
+		Mono<String> monoString() {
+			return null;
+		}
 
-		View view() { return null; }
-		Mono<View> monoView() { return null; }
+		@ModelAttribute("myString")
+		String stringWithAnnotation() {
+			return null;
+		}
 
-		void voidMethod() { }
-		Mono<Void> monoVoid() { return null; }
-		Completable completable() { return null; }
+		Rendering rendering() {
+			return null;
+		}
 
-		Model model() { return null; }
+		Mono<Rendering> monoRendering() {
+			return null;
+		}
 
-		Map<?,?> map() { return null; }
-		@ModelAttribute("myMap") Map<?,?> mapWithAnnotation() { return null; }
+		View view() {
+			return null;
+		}
 
-		TestBean testBean() { return null; }
+		Mono<View> monoView() {
+			return null;
+		}
 
-		Long longValue() { return null; }
-		@ModelAttribute("myLong") Long longModelAttribute() { return null; }
+		void voidMethod() {
+		}
 
-		Mono<?> monoWildcard() { return null; }
+		Mono<Void> monoVoid() {
+			return null;
+		}
+
+		Completable completable() {
+			return null;
+		}
+
+		Model model() {
+			return null;
+		}
+
+		Map<?, ?> map() {
+			return null;
+		}
+
+		@ModelAttribute("myMap")
+		Map<?, ?> mapWithAnnotation() {
+			return null;
+		}
+
+		TestBean testBean() {
+			return null;
+		}
+
+		Long longValue() {
+			return null;
+		}
+
+		@ModelAttribute("myLong")
+		Long longModelAttribute() {
+			return null;
+		}
+
+		Mono<?> monoWildcard() {
+			return null;
+		}
 	}
 
 }

@@ -16,6 +16,9 @@
 
 package org.springframework.core.annotation;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -26,11 +29,11 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-import static org.springframework.core.annotation.AnnotatedElementUtils.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.core.annotation.AnnotatedElementUtils.findAllMergedAnnotations;
+import static org.springframework.core.annotation.AnnotatedElementUtils.getAllMergedAnnotations;
 
 /**
  * Unit tests that verify support for finding multiple composed annotations on
@@ -39,10 +42,10 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.*;
  * <p>See <a href="https://jira.spring.io/browse/SPR-13486">SPR-13486</a>.
  *
  * @author Sam Brannen
- * @since 4.3
  * @see AnnotatedElementUtils
  * @see AnnotatedElementUtilsTests
  * @see ComposedRepeatableAnnotationsTests
+ * @since 4.3
  */
 public class MultipleComposedAnnotationsOnSingleAnnotatedElementTests {
 
@@ -194,8 +197,7 @@ public class MultipleComposedAnnotationsOnSingleAnnotatedElementTests {
 			if ("getFor".equals(method.getName()) && !method.getParameterTypes()[0].equals(Integer.class)) {
 				if (method.getReturnType().equals(Object.class)) {
 					bridgeMethod = method;
-				}
-				else {
+				} else {
 					bridgedMethod = method;
 				}
 			}
@@ -241,10 +243,20 @@ public class MultipleComposedAnnotationsOnSingleAnnotatedElementTests {
 
 	// -------------------------------------------------------------------------
 
+	@FooCache(key = "fooKey")
+	@BarCache(key = "barKey")
+	private void multipleComposedCachesMethod() {
+	}
+
+	@Cacheable(cacheName = "fooCache", key = "fooKey")
+	@BarCache(key = "barKey")
+	private void composedPlusLocalCachesMethod() {
+	}
+
 	/**
 	 * Mock of {@code org.springframework.cache.annotation.Cacheable}.
 	 */
-	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Target({ElementType.METHOD, ElementType.TYPE})
 	@Retention(RetentionPolicy.RUNTIME)
 	@Inherited
 	@interface Cacheable {
@@ -259,7 +271,7 @@ public class MultipleComposedAnnotationsOnSingleAnnotatedElementTests {
 	}
 
 	@Cacheable("fooCache")
-	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Target({ElementType.METHOD, ElementType.TYPE})
 	@Retention(RetentionPolicy.RUNTIME)
 	@Inherited
 	@interface FooCache {
@@ -269,7 +281,7 @@ public class MultipleComposedAnnotationsOnSingleAnnotatedElementTests {
 	}
 
 	@Cacheable("barCache")
-	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Target({ElementType.METHOD, ElementType.TYPE})
 	@Retention(RetentionPolicy.RUNTIME)
 	@Inherited
 	@interface BarCache {
@@ -279,7 +291,7 @@ public class MultipleComposedAnnotationsOnSingleAnnotatedElementTests {
 	}
 
 	@Cacheable("noninheritedCache1")
-	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Target({ElementType.METHOD, ElementType.TYPE})
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface NoninheritedCache1 {
 
@@ -288,12 +300,26 @@ public class MultipleComposedAnnotationsOnSingleAnnotatedElementTests {
 	}
 
 	@Cacheable("noninheritedCache2")
-	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Target({ElementType.METHOD, ElementType.TYPE})
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface NoninheritedCache2 {
 
 		@AliasFor(annotation = Cacheable.class)
 		String key() default "";
+	}
+
+	@FooCache(key = "fooKey")
+	@BarCache(key = "barKey")
+	private interface MultipleComposedCachesInterface {
+	}
+
+	@Cacheable(cacheName = "fooCache", key = "fooKey")
+	private interface ComposedCacheInterface {
+	}
+
+	public interface GenericParameter<T> {
+
+		T getFor(Class<T> cls);
 	}
 
 	@FooCache(key = "fooKey")
@@ -317,37 +343,11 @@ public class MultipleComposedAnnotationsOnSingleAnnotatedElementTests {
 	private static class ComposedPlusLocalCachesClass {
 	}
 
-	@FooCache(key = "fooKey")
-	@BarCache(key = "barKey")
-	private interface MultipleComposedCachesInterface {
-	}
-
 	private static class MultipleComposedCachesOnInterfaceClass implements MultipleComposedCachesInterface {
-	}
-
-	@Cacheable(cacheName = "fooCache", key = "fooKey")
-	private interface ComposedCacheInterface {
 	}
 
 	@BarCache(key = "barKey")
 	private static class ComposedCacheOnInterfaceAndLocalCacheClass implements ComposedCacheInterface {
-	}
-
-
-	@FooCache(key = "fooKey")
-	@BarCache(key = "barKey")
-	private void multipleComposedCachesMethod() {
-	}
-
-	@Cacheable(cacheName = "fooCache", key = "fooKey")
-	@BarCache(key = "barKey")
-	private void composedPlusLocalCachesMethod() {
-	}
-
-
-	public interface GenericParameter<T> {
-
-		T getFor(Class<T> cls);
 	}
 
 	@SuppressWarnings("unused")

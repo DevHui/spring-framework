@@ -38,6 +38,9 @@ abstract class ConfigurationMethod {
 		this.configurationClass = configurationClass;
 	}
 
+	static String getShortMethodName(String fullyQualifiedMethodName) {
+		return fullyQualifiedMethodName.substring(fullyQualifiedMethodName.indexOf('#') + 1);
+	}
 
 	public MethodMetadata getMetadata() {
 		return this.metadata;
@@ -53,10 +56,6 @@ abstract class ConfigurationMethod {
 
 	String getFullyQualifiedMethodName() {
 		return this.metadata.getDeclaringClassName() + "#" + this.metadata.getMethodName();
-	}
-
-	static String getShortMethodName(String fullyQualifiedMethodName) {
-		return fullyQualifiedMethodName.substring(fullyQualifiedMethodName.indexOf('#') + 1);
 	}
 
 	public void validate(ProblemReporter problemReporter) {

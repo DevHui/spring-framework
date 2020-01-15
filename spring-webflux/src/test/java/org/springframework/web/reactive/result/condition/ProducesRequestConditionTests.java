@@ -16,19 +16,22 @@
 
 package org.springframework.web.reactive.result.condition;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.junit.Test;
-
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolverBuilder;
 import org.springframework.web.server.ServerWebExchange;
 
-import static org.junit.Assert.*;
-import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.*;
+import java.util.Collection;
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.get;
 
 /**
  * Unit tests for {@link ProducesRequestCondition}.
@@ -117,7 +120,7 @@ public class ProducesRequestConditionTests {
 		RequestedContentTypeResolver resolver = builder.build();
 
 		ProducesRequestCondition none = new ProducesRequestCondition(new String[0], null, resolver);
-		ProducesRequestCondition html = new ProducesRequestCondition(new String[] {"text/html"}, null, resolver);
+		ProducesRequestCondition html = new ProducesRequestCondition(new String[]{"text/html"}, null, resolver);
 
 		MockServerWebExchange exchange = MockServerWebExchange.from(get("/").header("Accept", "*/*"));
 
@@ -297,7 +300,7 @@ public class ProducesRequestConditionTests {
 
 	@Test
 	public void instantiateWithProducesAndHeaderConditions() {
-		String[] produces = new String[] {"text/plain"};
+		String[] produces = new String[]{"text/plain"};
 		String[] headers = new String[]{"foo=bar", "accept=application/xml,application/pdf"};
 		ProducesRequestCondition condition = new ProducesRequestCondition(produces, headers);
 

@@ -16,6 +16,13 @@
 
 package org.springframework.web.context.support;
 
+import org.junit.Test;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.core.io.Resource;
+import org.springframework.mock.web.test.MockServletContext;
+import org.springframework.tests.sample.beans.TestBean;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,15 +30,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
-
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.core.io.Resource;
-import org.springframework.mock.web.test.MockServletContext;
-import org.springframework.tests.sample.beans.TestBean;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for various ServletContext-related support classes.
@@ -73,8 +75,7 @@ public class ServletContextSupportTests {
 		try {
 			wac.refresh();
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// expected
 			assertTrue(ex.getCause() instanceof IllegalStateException);
 			assertTrue(ex.getCause().getMessage().contains("myAttr"));
@@ -112,8 +113,7 @@ public class ServletContextSupportTests {
 		try {
 			wac.refresh();
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// expected
 			assertTrue(ex.getCause() instanceof IllegalStateException);
 			assertTrue(ex.getCause().getMessage().contains("myParam"));

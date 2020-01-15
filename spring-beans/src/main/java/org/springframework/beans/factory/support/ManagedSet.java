@@ -16,21 +16,21 @@
 
 package org.springframework.beans.factory.support;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.springframework.beans.BeanMetadataElement;
 import org.springframework.beans.Mergeable;
 import org.springframework.lang.Nullable;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Tag collection class used to hold managed Set values, which may
  * include runtime bean references (to be resolved into bean objects).
  *
+ * @param <E> the element type
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @since 21.01.2004
- * @param <E> the element type
  */
 @SuppressWarnings("serial")
 public class ManagedSet<E> extends LinkedHashSet<E> implements Mergeable, BeanMetadataElement {
@@ -51,15 +51,6 @@ public class ManagedSet<E> extends LinkedHashSet<E> implements Mergeable, BeanMe
 		super(initialCapacity);
 	}
 
-
-	/**
-	 * Set the configuration source {@code Object} for this metadata element.
-	 * <p>The exact type of the object will depend on the configuration mechanism used.
-	 */
-	public void setSource(@Nullable Object source) {
-		this.source = source;
-	}
-
 	@Override
 	@Nullable
 	public Object getSource() {
@@ -67,10 +58,11 @@ public class ManagedSet<E> extends LinkedHashSet<E> implements Mergeable, BeanMe
 	}
 
 	/**
-	 * Set the default element type name (class name) to be used for this set.
+	 * Set the configuration source {@code Object} for this metadata element.
+	 * <p>The exact type of the object will depend on the configuration mechanism used.
 	 */
-	public void setElementTypeName(@Nullable String elementTypeName) {
-		this.elementTypeName = elementTypeName;
+	public void setSource(@Nullable Object source) {
+		this.source = source;
 	}
 
 	/**
@@ -82,16 +74,23 @@ public class ManagedSet<E> extends LinkedHashSet<E> implements Mergeable, BeanMe
 	}
 
 	/**
-	 * Set whether merging should be enabled for this collection,
-	 * in case of a 'parent' collection value being present.
+	 * Set the default element type name (class name) to be used for this set.
 	 */
-	public void setMergeEnabled(boolean mergeEnabled) {
-		this.mergeEnabled = mergeEnabled;
+	public void setElementTypeName(@Nullable String elementTypeName) {
+		this.elementTypeName = elementTypeName;
 	}
 
 	@Override
 	public boolean isMergeEnabled() {
 		return this.mergeEnabled;
+	}
+
+	/**
+	 * Set whether merging should be enabled for this collection,
+	 * in case of a 'parent' collection value being present.
+	 */
+	public void setMergeEnabled(boolean mergeEnabled) {
+		this.mergeEnabled = mergeEnabled;
 	}
 
 	@Override

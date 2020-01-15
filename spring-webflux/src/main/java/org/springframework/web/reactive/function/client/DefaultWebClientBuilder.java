@@ -16,13 +16,6 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
@@ -36,6 +29,13 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilderFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Default implementation of {@link WebClient.Builder}.
@@ -104,8 +104,7 @@ final class DefaultWebClientBuilder implements WebClient.Builder {
 		if (other.defaultHeaders != null) {
 			this.defaultHeaders = new HttpHeaders();
 			this.defaultHeaders.putAll(other.defaultHeaders);
-		}
-		else {
+		} else {
 			this.defaultHeaders = null;
 		}
 		this.defaultCookies = (other.defaultCookies != null ?
@@ -117,6 +116,13 @@ final class DefaultWebClientBuilder implements WebClient.Builder {
 		this.exchangeFunction = other.exchangeFunction;
 	}
 
+	private static HttpHeaders unmodifiableCopy(HttpHeaders headers) {
+		return HttpHeaders.readOnlyHttpHeaders(headers);
+	}
+
+	private static <K, V> MultiValueMap<K, V> unmodifiableCopy(MultiValueMap<K, V> map) {
+		return CollectionUtils.unmodifiableMultiValueMap(new LinkedMultiValueMap<>(map));
+	}
 
 	@Override
 	public WebClient.Builder baseUrl(String baseUrl) {
@@ -267,11 +273,9 @@ final class DefaultWebClientBuilder implements WebClient.Builder {
 	private ClientHttpConnector getOrInitConnector() {
 		if (this.connector != null) {
 			return this.connector;
-		}
-		else if (reactorClientPresent) {
+		} else if (reactorClientPresent) {
 			return new ReactorClientHttpConnector();
-		}
-		else if (jettyClientPresent) {
+		} else if (jettyClientPresent) {
 			return new JettyClientHttpConnector();
 		}
 		throw new IllegalStateException("No suitable default ClientHttpConnector found");
@@ -297,14 +301,6 @@ final class DefaultWebClientBuilder implements WebClient.Builder {
 				new DefaultUriBuilderFactory(this.baseUrl) : new DefaultUriBuilderFactory();
 		factory.setDefaultUriVariables(this.defaultUriVariables);
 		return factory;
-	}
-
-	private static HttpHeaders unmodifiableCopy(HttpHeaders headers) {
-		return HttpHeaders.readOnlyHttpHeaders(headers);
-	}
-
-	private static <K, V> MultiValueMap<K, V> unmodifiableCopy(MultiValueMap<K, V> map) {
-		return CollectionUtils.unmodifiableMultiValueMap(new LinkedMultiValueMap<>(map));
 	}
 
 }

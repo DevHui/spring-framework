@@ -16,18 +16,6 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.zip.CRC32;
-
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -37,10 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -57,6 +41,21 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.codec.Pojo;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.zip.CRC32;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -75,21 +74,24 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public class WebClientIntegrationTests {
 
-	private MockWebServer server;
-
-	private WebClient webClient;
-
 	@Parameterized.Parameter(0)
 	public ClientHttpConnector connector;
+	private MockWebServer server;
+	private WebClient webClient;
 
 	@Parameterized.Parameters(name = "webClient [{0}]")
 	public static Object[][] arguments() {
-		return new Object[][] {
+		return new Object[][]{
 				{new JettyClientHttpConnector()},
 				{new ReactorClientHttpConnector()}
 		};
 	}
 
+	private static long hash(byte[] bytes) {
+		CRC32 crc = new CRC32();
+		crc.update(bytes, 0, bytes.length);
+		return crc.getValue();
+	}
 
 	@Before
 	public void setup() {
@@ -105,7 +107,6 @@ public class WebClientIntegrationTests {
 	public void shutdown() throws IOException {
 		this.server.shutdown();
 	}
-
 
 	@Test
 	public void shouldReceiveResponseHeaders() {
@@ -208,7 +209,8 @@ public class WebClientIntegrationTests {
 		Mono<ValueContainer<Foo>> result = this.webClient.get()
 				.uri("/json").accept(MediaType.APPLICATION_JSON)
 				.retrieve()
-				.bodyToMono(new ParameterizedTypeReference<ValueContainer<Foo>>() {});
+				.bodyToMono(new ParameterizedTypeReference<ValueContainer<Foo>>() {
+				});
 
 		StepVerifier.create(result)
 				.assertNext(valueContainer -> {
@@ -405,7 +407,8 @@ public class WebClientIntegrationTests {
 
 	@Test  // SPR-16246
 	public void shouldSendLargeTextFile() throws IOException {
-		prepareResponse(response -> {});
+		prepareResponse(response -> {
+		});
 
 		Resource resource = new ClassPathResource("largeTextFile.txt", getClass());
 		Flux<DataBuffer> body = DataBufferUtils.read(resource, new DefaultDataBufferFactory(), 4096);
@@ -427,17 +430,10 @@ public class WebClientIntegrationTests {
 				String actual = bos.toString("UTF-8");
 				String expected = new String(Files.readAllBytes(resource.getFile().toPath()), StandardCharsets.UTF_8);
 				assertEquals(expected, actual);
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new UncheckedIOException(ex);
 			}
 		});
-	}
-
-	private static long hash(byte[] bytes) {
-		CRC32 crc = new CRC32();
-		crc.update(bytes, 0, bytes.length);
-		return crc.getValue();
 	}
 
 	@Test
@@ -578,7 +574,7 @@ public class WebClientIntegrationTests {
 				.expectErrorSatisfies(throwable -> {
 					assertTrue(throwable instanceof UnknownHttpStatusCodeException);
 					UnknownHttpStatusCodeException ex = (UnknownHttpStatusCodeException) throwable;
-					assertEquals("Unknown status code ["+errorStatus+"]", ex.getMessage());
+					assertEquals("Unknown status code [" + errorStatus + "]", ex.getMessage());
 					assertEquals(errorStatus, ex.getRawStatusCode());
 					assertEquals("", ex.getStatusText());
 					assertEquals(MediaType.TEXT_PLAIN, ex.getHeaders().getContentType());
@@ -646,7 +642,8 @@ public class WebClientIntegrationTests {
 				.uri("/greeting?name=Spring")
 				.retrieve()
 				.onStatus(HttpStatus::is5xxServerError, response -> Mono.just(new MyException("500 error!")))
-				.bodyToMono(new ParameterizedTypeReference<String>() {});
+				.bodyToMono(new ParameterizedTypeReference<String>() {
+				});
 
 		StepVerifier.create(result)
 				.expectError(MyException.class)
@@ -785,8 +782,7 @@ public class WebClientIntegrationTests {
 	private void expectRequest(Consumer<RecordedRequest> consumer) {
 		try {
 			consumer.accept(this.server.takeRequest());
-		}
-		catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}

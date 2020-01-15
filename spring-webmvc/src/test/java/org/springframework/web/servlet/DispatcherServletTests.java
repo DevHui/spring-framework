@@ -16,20 +16,8 @@
 
 package org.springframework.web.servlet;
 
-import java.io.IOException;
-import java.util.Locale;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.context.ApplicationContextInitializer;
@@ -59,9 +47,33 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.util.WebUtils;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import javax.servlet.Servlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Locale;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Rod Johnson
@@ -286,8 +298,7 @@ public class DispatcherServletTests {
 			complexDispatcherServlet.service(request, response);
 			assertEquals(200, response.getStatus());
 			assertTrue("forwarded to failed", "failed1.jsp".equals(response.getForwardedUrl()));
-		}
-		catch (ServletException ex) {
+		} catch (ServletException ex) {
 			fail("Should not have thrown ServletException: " + ex.getMessage());
 		}
 	}
@@ -406,8 +417,7 @@ public class DispatcherServletTests {
 		try {
 			complexDispatcherServlet.service(request, response);
 			assertTrue("Not forwarded", response.getForwardedUrl() == null);
-		}
-		catch (ServletException ex) {
+		} catch (ServletException ex) {
 			fail("Should not have thrown ServletException: " + ex.getMessage());
 		}
 	}
@@ -420,8 +430,7 @@ public class DispatcherServletTests {
 		try {
 			complexDispatcherServlet.service(request, response);
 			assertTrue("Correct response", response.getStatus() == HttpServletResponse.SC_FORBIDDEN);
-		}
-		catch (ServletException ex) {
+		} catch (ServletException ex) {
 			fail("Should not have thrown ServletException: " + ex.getMessage());
 		}
 	}
@@ -562,8 +571,7 @@ public class DispatcherServletTests {
 		try {
 			complexDispatcherServlet.service(request, response);
 			fail("Should have thrown ServletException");
-		}
-		catch (ServletException ex) {
+		} catch (ServletException ex) {
 			// expected
 			assertTrue(ex.getMessage().contains("No adapter for handler"));
 		}
@@ -582,8 +590,7 @@ public class DispatcherServletTests {
 		try {
 			complexDispatcherServlet.service(request, response);
 			fail("Should have thrown ServletException");
-		}
-		catch (ServletException ex) {
+		} catch (ServletException ex) {
 			// expected
 			assertTrue(ex.getMessage().contains("failed0"));
 		}
@@ -723,8 +730,7 @@ public class DispatcherServletTests {
 		try {
 			complexDispatcherServlet.service(request, response);
 			fail("Should have thrown ServletException");
-		}
-		catch (ServletException ex) {
+		} catch (ServletException ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -802,10 +808,10 @@ public class DispatcherServletTests {
 		try {
 			servlet.setEnvironment(new DummyEnvironment());
 			fail("expected IllegalArgumentException for non-configurable Environment");
+		} catch (IllegalArgumentException ex) {
 		}
-		catch (IllegalArgumentException ex) {
+		class CustomServletEnvironment extends StandardServletEnvironment {
 		}
-		class CustomServletEnvironment extends StandardServletEnvironment { }
 		@SuppressWarnings("serial")
 		DispatcherServlet custom = new DispatcherServlet() {
 			@Override

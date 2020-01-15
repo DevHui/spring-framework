@@ -16,11 +16,8 @@
 
 package org.springframework.transaction.interceptor;
 
-import java.lang.reflect.Method;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
@@ -34,15 +31,24 @@ import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.interceptor.TransactionAspectSupport.TransactionInfo;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.lang.reflect.Method;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Mock object based tests for transaction aspects.
  * True unit test in that it tests how the transaction aspect uses
  * the PlatformTransactionManager helper, rather than indirectly
  * testing the helper implementation.
- *
+ * <p>
  * This is a superclass to allow testing both the AOP Alliance MethodInterceptor
  * and the AspectJ aspect.
  *
@@ -151,8 +157,7 @@ public abstract class AbstractTransactionAspectTests {
 		try {
 			itb.exceptional(new OptimisticLockingFailureException(""));
 			fail("Should have thrown OptimisticLockingFailureException");
-		}
-		catch (OptimisticLockingFailureException ex) {
+		} catch (OptimisticLockingFailureException ex) {
 			// expected
 		}
 		checkTransactionStatus(false);
@@ -179,7 +184,7 @@ public abstract class AbstractTransactionAspectTests {
 		given(ptm.getTransaction(txatt)).willReturn(status);
 
 		TestBean tb = new TestBean();
-		ITestBean itb = (ITestBean) advised(tb, ptm, new TransactionAttributeSource[] {tas1, tas2});
+		ITestBean itb = (ITestBean) advised(tb, ptm, new TransactionAttributeSource[]{tas1, tas2});
 
 		checkTransactionStatus(false);
 		itb.getName();
@@ -362,7 +367,8 @@ public abstract class AbstractTransactionAspectTests {
 	/**
 	 * Check that the given exception thrown by the target can produce the
 	 * desired behavior with the appropriate transaction attribute.
-	 * @param ex exception to be thrown by the target
+	 *
+	 * @param ex             exception to be thrown by the target
 	 * @param shouldRollback whether this should cause a transaction rollback
 	 */
 	@SuppressWarnings("serial")
@@ -391,8 +397,7 @@ public abstract class AbstractTransactionAspectTests {
 		if (rollbackException) {
 			if (shouldRollback) {
 				willThrow(tex).given(ptm).rollback(status);
-			}
-			else {
+			} else {
 				willThrow(tex).given(ptm).commit(status);
 			}
 		}
@@ -403,12 +408,10 @@ public abstract class AbstractTransactionAspectTests {
 		try {
 			itb.exceptional(ex);
 			fail("Should have thrown exception");
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			if (rollbackException) {
 				assertEquals("Caught wrong exception", tex, t);
-			}
-			else {
+			} else {
 				assertEquals("Caught wrong exception", ex, t);
 			}
 		}
@@ -416,8 +419,7 @@ public abstract class AbstractTransactionAspectTests {
 		if (!rollbackException) {
 			if (shouldRollback) {
 				verify(ptm).rollback(status);
-			}
-			else {
+			} else {
 				verify(ptm).commit(status);
 			}
 		}
@@ -486,8 +488,7 @@ public abstract class AbstractTransactionAspectTests {
 		try {
 			itb.getName();
 			fail("Shouldn't have invoked method");
-		}
-		catch (CannotCreateTransactionException thrown) {
+		} catch (CannotCreateTransactionException thrown) {
 			assertTrue(thrown == ex);
 		}
 	}
@@ -521,8 +522,7 @@ public abstract class AbstractTransactionAspectTests {
 		try {
 			itb.setName(name);
 			fail("Shouldn't have succeeded");
-		}
-		catch (UnexpectedRollbackException thrown) {
+		} catch (UnexpectedRollbackException thrown) {
 			assertTrue(thrown == ex);
 		}
 
@@ -536,8 +536,7 @@ public abstract class AbstractTransactionAspectTests {
 			if (!expected) {
 				fail("Should have thrown NoTransactionException");
 			}
-		}
-		catch (NoTransactionException ex) {
+		} catch (NoTransactionException ex) {
 			if (expected) {
 				fail("Should have current TransactionStatus");
 			}
@@ -557,8 +556,9 @@ public abstract class AbstractTransactionAspectTests {
 	 * have been created, as there's no distinction between target and proxy.
 	 * In the case of Spring's own AOP framework, a proxy must be created
 	 * using a suitably configured transaction interceptor
+	 *
 	 * @param target target if there's a distinct target. If not (AspectJ),
-	 * return target.
+	 *               return target.
 	 * @return transactional advised object
 	 */
 	protected abstract Object advised(

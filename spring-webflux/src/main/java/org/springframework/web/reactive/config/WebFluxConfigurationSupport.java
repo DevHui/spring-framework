@@ -16,12 +16,6 @@
 
 package org.springframework.web.reactive.config;
 
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.ApplicationContext;
@@ -68,6 +62,11 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebExceptionHandler;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * The main class for Spring WebFlux configuration.
@@ -92,22 +91,20 @@ public class WebFluxConfigurationSupport implements ApplicationContextAware {
 	@Nullable
 	private ApplicationContext applicationContext;
 
-
-	@Override
-	public void setApplicationContext(@Nullable ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
-		if (applicationContext != null) {
-				Assert.state(!applicationContext.containsBean("mvcContentNegotiationManager"),
-						"The Java/XML config for Spring MVC and Spring WebFlux cannot both be enabled, " +
-						"e.g. via @EnableWebMvc and @EnableWebFlux, in the same application.");
-		}
-	}
-
 	@Nullable
 	public final ApplicationContext getApplicationContext() {
 		return this.applicationContext;
 	}
 
+	@Override
+	public void setApplicationContext(@Nullable ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+		if (applicationContext != null) {
+			Assert.state(!applicationContext.containsBean("mvcContentNegotiationManager"),
+					"The Java/XML config for Spring MVC and Spring WebFlux cannot both be enabled, " +
+							"e.g. via @EnableWebMvc and @EnableWebFlux, in the same application.");
+		}
+	}
 
 	@Bean
 	public DispatcherHandler webHandler() {
@@ -179,6 +176,7 @@ public class WebFluxConfigurationSupport implements ApplicationContextAware {
 
 	/**
 	 * Override this method to configure cross origin requests processing.
+	 *
 	 * @see CorsRegistry
 	 */
 	protected void addCorsMappings(CorsRegistry registry) {
@@ -245,8 +243,7 @@ public class WebFluxConfigurationSupport implements ApplicationContextAware {
 			if (useCaseSensitiveMatch != null) {
 				handlerMapping.setUseCaseSensitiveMatch(useCaseSensitiveMatch);
 			}
-		}
-		else {
+		} else {
 			handlerMapping = new EmptyHandlerMapping();
 		}
 		return handlerMapping;
@@ -259,6 +256,7 @@ public class WebFluxConfigurationSupport implements ApplicationContextAware {
 
 	/**
 	 * Override this method to add resource handlers for serving static resources.
+	 *
 	 * @see ResourceHandlerRegistry
 	 */
 	protected void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -350,6 +348,7 @@ public class WebFluxConfigurationSupport implements ApplicationContextAware {
 	/**
 	 * Override this method to add custom {@link Converter} and/or {@link Formatter}
 	 * delegates to the common {@link FormattingConversionService}.
+	 *
 	 * @see #webFluxConversionService()
 	 */
 	protected void addFormatters(FormatterRegistry registry) {
@@ -380,13 +379,11 @@ public class WebFluxConfigurationSupport implements ApplicationContextAware {
 				try {
 					String name = "org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean";
 					clazz = ClassUtils.forName(name, getClass().getClassLoader());
-				}
-				catch (ClassNotFoundException | LinkageError ex) {
+				} catch (ClassNotFoundException | LinkageError ex) {
 					throw new BeanInitializationException("Failed to resolve default validator class", ex);
 				}
 				validator = (Validator) BeanUtils.instantiateClass(clazz);
-			}
-			else {
+			} else {
 				validator = new NoOpValidator();
 			}
 		}
@@ -465,6 +462,7 @@ public class WebFluxConfigurationSupport implements ApplicationContextAware {
 
 	/**
 	 * Configure view resolution for supporting template engines.
+	 *
 	 * @see ViewResolverRegistry
 	 */
 	protected void configureViewResolvers(ViewResolverRegistry registry) {

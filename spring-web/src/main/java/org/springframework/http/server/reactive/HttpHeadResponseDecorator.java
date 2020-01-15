@@ -16,15 +16,14 @@
 
 package org.springframework.http.server.reactive;
 
-import java.util.function.BiFunction;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.function.BiFunction;
 
 /**
  * {@link ServerHttpResponse} decorator for HTTP HEAD requests.

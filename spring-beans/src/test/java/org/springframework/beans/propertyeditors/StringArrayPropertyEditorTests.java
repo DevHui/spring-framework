@@ -18,7 +18,10 @@ package org.springframework.beans.propertyeditors;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rick Evans
@@ -54,7 +57,7 @@ public class StringArrayPropertyEditorTests {
 
 	@Test
 	public void noTrim() throws Exception {
-		StringArrayPropertyEditor editor = new StringArrayPropertyEditor(",",false,false);
+		StringArrayPropertyEditor editor = new StringArrayPropertyEditor(",", false, false);
 		editor.setAsText("  0,1  , 2 ");
 		Object value = editor.getValue();
 		String[] array = (String[]) value;

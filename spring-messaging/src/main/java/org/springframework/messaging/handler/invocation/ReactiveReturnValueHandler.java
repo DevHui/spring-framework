@@ -16,13 +16,12 @@
 
 package org.springframework.messaging.handler.invocation;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.MonoToListenableFutureAdapter;
+import reactor.core.publisher.Mono;
 
 /**
  * Support for single-value reactive types (like {@code Mono} or {@code Single})

@@ -16,10 +16,6 @@
 
 package org.springframework.http.client;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.concurrent.Future;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpResponse;
@@ -28,7 +24,6 @@ import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.nio.client.HttpAsyncClient;
 import org.apache.http.nio.entity.NByteArrayEntity;
 import org.apache.http.protocol.HttpContext;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.concurrent.FailureCallback;
 import org.springframework.util.concurrent.FutureAdapter;
@@ -36,6 +31,10 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.util.concurrent.ListenableFutureCallbackRegistry;
 import org.springframework.util.concurrent.SuccessCallback;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.concurrent.Future;
 
 
 /**
@@ -46,8 +45,8 @@ import org.springframework.util.concurrent.SuccessCallback;
  *
  * @author Oleg Kalnichevski
  * @author Arjen Poutsma
- * @since 4.0
  * @see HttpComponentsClientHttpRequestFactory#createRequest
+ * @since 4.0
  * @deprecated as of Spring 5.0, with no direct replacement
  */
 @Deprecated
@@ -161,7 +160,7 @@ final class HttpComponentsAsyncClientHttpRequest extends AbstractBufferingAsyncC
 
 		@Override
 		public void addCallback(SuccessCallback<? super ClientHttpResponse> successCallback,
-				FailureCallback failureCallback) {
+								FailureCallback failureCallback) {
 
 			this.callback.addSuccessCallback(successCallback);
 			this.callback.addFailureCallback(failureCallback);

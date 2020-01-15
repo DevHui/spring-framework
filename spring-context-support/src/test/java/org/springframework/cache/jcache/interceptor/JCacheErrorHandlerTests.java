@@ -16,21 +16,10 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicLong;
-
-import javax.cache.annotation.CacheDefaults;
-import javax.cache.annotation.CachePut;
-import javax.cache.annotation.CacheRemove;
-import javax.cache.annotation.CacheRemoveAll;
-import javax.cache.annotation.CacheResult;
-import javax.cache.annotation.CacheValue;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -42,25 +31,32 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.cache.annotation.CacheDefaults;
+import javax.cache.annotation.CachePut;
+import javax.cache.annotation.CacheRemove;
+import javax.cache.annotation.CacheRemoveAll;
+import javax.cache.annotation.CacheResult;
+import javax.cache.annotation.CacheValue;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.willThrow;
 
 /**
  * @author Stephane Nicoll
  */
 public class JCacheErrorHandlerTests {
 
-	private Cache cache;
-
-	private Cache errorCache;
-
-	private CacheErrorHandler errorHandler;
-
-	private SimpleService simpleService;
-
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
-
+	private Cache cache;
+	private Cache errorCache;
+	private CacheErrorHandler errorHandler;
+	private SimpleService simpleService;
 
 	@Before
 	public void setup() {
@@ -102,8 +98,7 @@ public class JCacheErrorHandlerTests {
 
 		try {
 			this.simpleService.getFail(0L);
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertEquals("Test exception", ex.getMessage());
 		}
 		verify(this.errorHandler).handleCachePutError(

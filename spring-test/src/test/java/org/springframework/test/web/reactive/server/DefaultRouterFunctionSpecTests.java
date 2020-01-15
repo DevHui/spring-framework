@@ -16,16 +16,16 @@
 package org.springframework.test.web.reactive.server;
 
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.server.HandlerStrategies;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Mono;
 
 /**
  * Unit tests for {@link DefaultRouterFunctionSpec}.
+ *
  * @author Rossen Stoyanchev
  */
 public class DefaultRouterFunctionSpecTests {

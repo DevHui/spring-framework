@@ -16,13 +16,13 @@
 
 package org.springframework.web.socket.config.annotation;
 
+import org.springframework.context.annotation.Import;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.springframework.context.annotation.Import;
 
 /**
  * Add this annotation to an {@code @Configuration} class to enable broker-backed

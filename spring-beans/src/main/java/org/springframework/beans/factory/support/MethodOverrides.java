@@ -16,11 +16,11 @@
 
 package org.springframework.beans.factory.support;
 
+import org.springframework.lang.Nullable;
+
 import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Set of method overrides, determining which, if any, methods on a
@@ -31,8 +31,8 @@ import org.springframework.lang.Nullable;
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
- * @since 1.1
  * @see MethodOverride
+ * @since 1.1
  */
 public class MethodOverrides {
 
@@ -71,6 +71,7 @@ public class MethodOverrides {
 
 	/**
 	 * Return all method overrides contained by this object.
+	 *
 	 * @return a Set of MethodOverride objects
 	 * @see MethodOverride
 	 */
@@ -87,6 +88,7 @@ public class MethodOverrides {
 
 	/**
 	 * Return the override for the given method, if any.
+	 *
 	 * @param method method to check for overrides for
 	 * @return the method override, or {@code null} if none
 	 */

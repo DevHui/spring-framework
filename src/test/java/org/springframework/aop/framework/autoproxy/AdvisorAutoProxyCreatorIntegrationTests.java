@@ -16,14 +16,7 @@
 
 package org.springframework.aop.framework.autoproxy;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.List;
-
-import javax.servlet.ServletException;
-
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.aop.support.StaticMethodMatcherPointcutAdvisor;
 import org.springframework.beans.factory.BeanFactory;
@@ -38,16 +31,22 @@ import org.springframework.tests.transaction.CallCountingTransactionManager;
 import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
-import static org.junit.Assert.*;
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for auto proxy creation by advisor recognition working in
  * conjunction with transaction management resources.
  *
- * @see org.springframework.aop.framework.autoproxy.AdvisorAutoProxyCreatorTests
- *
  * @author Rod Johnson
  * @author Chris Beams
+ * @see org.springframework.aop.framework.autoproxy.AdvisorAutoProxyCreatorTests
  */
 public class AdvisorAutoProxyCreatorIntegrationTests {
 
@@ -141,8 +140,7 @@ public class AdvisorAutoProxyCreatorIntegrationTests {
 		Exception ex = new Exception();
 		try {
 			rb.echoException(ex);
-		}
-		catch (Exception actual) {
+		} catch (Exception actual) {
 			assertEquals(ex, actual);
 		}
 		assertEquals("Transaction counts match", 1, txMan.rollbacks);
@@ -159,8 +157,7 @@ public class AdvisorAutoProxyCreatorIntegrationTests {
 		// Should NOT roll back on ServletException
 		try {
 			rb.echoException(new ServletException());
-		}
-		catch (ServletException ex) {
+		} catch (ServletException ex) {
 
 		}
 		assertEquals("Transaction counts match", 1, txMan.commits);
@@ -235,15 +232,13 @@ class OrderedTxCheckAdvisor extends StaticMethodMatcherPointcutAdvisor implement
 	 */
 	private boolean requireTransactionContext = false;
 
-
-	public void setRequireTransactionContext(boolean requireTransactionContext) {
-		this.requireTransactionContext = requireTransactionContext;
-	}
-
 	public boolean isRequireTransactionContext() {
 		return requireTransactionContext;
 	}
 
+	public void setRequireTransactionContext(boolean requireTransactionContext) {
+		this.requireTransactionContext = requireTransactionContext;
+	}
 
 	public CountingBeforeAdvice getCountingBeforeAdvice() {
 		return (CountingBeforeAdvice) getAdvice();
@@ -267,13 +262,11 @@ class OrderedTxCheckAdvisor extends StaticMethodMatcherPointcutAdvisor implement
 			// do transaction checks
 			if (requireTransactionContext) {
 				TransactionInterceptor.currentTransactionStatus();
-			}
-			else {
+			} else {
 				try {
 					TransactionInterceptor.currentTransactionStatus();
 					throw new RuntimeException("Shouldn't have a transaction");
-				}
-				catch (NoTransactionException ex) {
+				} catch (NoTransactionException ex) {
 					// this is Ok
 				}
 			}
@@ -289,6 +282,7 @@ class Rollback {
 	/**
 	 * Inherits transaction attribute.
 	 * Illustrates programmatic rollback.
+	 *
 	 * @param rollbackOnly
 	 */
 	public void rollbackOnly(boolean rollbackOnly) {
@@ -305,9 +299,9 @@ class Rollback {
 	}
 
 	/**
-	 * @org.springframework.transaction.interceptor.RuleBasedTransaction ( timeout=-1 )
-	 * @org.springframework.transaction.interceptor.RollbackRule ( "java.lang.Exception" )
-	 * @org.springframework.transaction.interceptor.NoRollbackRule ( "ServletException" )
+	 * @org.springframework.transaction.interceptor.RuleBasedTransaction (timeout = - 1)
+	 * @org.springframework.transaction.interceptor.RollbackRule (" java.lang.Exception ")
+	 * @org.springframework.transaction.interceptor.NoRollbackRule (" ServletException ")
 	 */
 	public void echoException(Exception ex) throws Exception {
 		if (ex != null)

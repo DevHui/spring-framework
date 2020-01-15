@@ -16,22 +16,24 @@
 
 package org.springframework.beans.factory.config;
 
-import java.util.Properties;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.beans.factory.support.BeanDefinitionBuilder.*;
-import static org.springframework.beans.factory.support.BeanDefinitionReaderUtils.*;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.springframework.beans.factory.support.BeanDefinitionBuilder.genericBeanDefinition;
+import static org.springframework.beans.factory.support.BeanDefinitionBuilder.rootBeanDefinition;
+import static org.springframework.beans.factory.support.BeanDefinitionReaderUtils.registerWithGeneratedName;
 
 /**
  * Unit tests for {@link PropertyPlaceholderConfigurer}.
@@ -79,8 +81,8 @@ public class PropertyPlaceholderConfigurerTests {
 		DefaultListableBeanFactory bf = new DefaultListableBeanFactory();
 		bf.registerBeanDefinition("testBean",
 				genericBeanDefinition(TestBean.class)
-					.addPropertyValue("name", "${my.name}")
-					.getBeanDefinition());
+						.addPropertyValue("name", "${my.name}")
+						.getBeanDefinition());
 
 		PropertyPlaceholderConfigurer pc = new PropertyPlaceholderConfigurer();
 		Resource resource = new ClassPathResource("PropertyPlaceholderConfigurerTests.properties", this.getClass());
@@ -193,9 +195,9 @@ public class PropertyPlaceholderConfigurerTests {
 		DefaultListableBeanFactory bf = new DefaultListableBeanFactory();
 		bf.registerBeanDefinition("testBean",
 				rootBeanDefinition(TestBean.class)
-				.addPropertyValue("name", "@<key1>")
-				.addPropertyValue("sex", "${key2}")
-				.getBeanDefinition());
+						.addPropertyValue("name", "@<key1>")
+						.addPropertyValue("sex", "${key2}")
+						.getBeanDefinition());
 
 		System.setProperty("key1", "systemKey1Value");
 		System.setProperty("key2", "systemKey2Value");

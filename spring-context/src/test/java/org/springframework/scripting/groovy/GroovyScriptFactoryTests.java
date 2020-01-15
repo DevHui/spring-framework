@@ -16,14 +16,9 @@
 
 package org.springframework.scripting.groovy;
 
-import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.Map;
-
 import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovyObject;
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.aop.target.dynamic.Refreshable;
 import org.springframework.beans.factory.BeanCreationException;
@@ -45,8 +40,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.ObjectUtils;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Rob Harrop
@@ -258,8 +264,7 @@ public class GroovyScriptFactoryTests {
 		try {
 			new ClassPathXmlApplicationContext("org/springframework/scripting/groovy/groovyBrokenContext.xml");
 			fail("Should throw exception for broken script file");
-		}
-		catch (NestedRuntimeException ex) {
+		} catch (NestedRuntimeException ex) {
 			assertTrue("Wrong root cause: " + ex, ex.contains(ScriptCompilationException.class));
 		}
 	}
@@ -275,8 +280,7 @@ public class GroovyScriptFactoryTests {
 		try {
 			factory.getScriptedObject(script);
 			fail("Must have thrown a ScriptCompilationException (no public no-arg ctor in scripted class).");
-		}
-		catch (ScriptCompilationException expected) {
+		} catch (ScriptCompilationException expected) {
 			assertTrue(expected.contains(NoSuchMethodException.class));
 		}
 	}
@@ -320,8 +324,7 @@ public class GroovyScriptFactoryTests {
 		try {
 			new GroovyScriptFactory(null);
 			fail("Must have thrown exception by this point.");
-		}
-		catch (IllegalArgumentException expected) {
+		} catch (IllegalArgumentException expected) {
 		}
 	}
 
@@ -330,8 +333,7 @@ public class GroovyScriptFactoryTests {
 		try {
 			new GroovyScriptFactory("");
 			fail("Must have thrown exception by this point.");
-		}
-		catch (IllegalArgumentException expected) {
+		} catch (IllegalArgumentException expected) {
 		}
 	}
 
@@ -340,8 +342,7 @@ public class GroovyScriptFactoryTests {
 		try {
 			new GroovyScriptFactory("\n   ");
 			fail("Must have thrown exception by this point.");
-		}
-		catch (IllegalArgumentException expected) {
+		} catch (IllegalArgumentException expected) {
 		}
 	}
 
@@ -350,8 +351,7 @@ public class GroovyScriptFactoryTests {
 		try {
 			new ClassPathXmlApplicationContext("lwspBadGroovyContext.xml", getClass());
 			fail("Must have thrown a BeanCreationException ('inline:' prefix was preceded by whitespace");
-		}
-		catch (BeanCreationException expected) {
+		} catch (BeanCreationException expected) {
 			assertTrue(expected.contains(FileNotFoundException.class));
 		}
 	}
@@ -373,8 +373,7 @@ public class GroovyScriptFactoryTests {
 		try {
 			factory.getScriptedObject(null);
 			fail("Must have thrown a NullPointerException as per contract ('null' ScriptSource supplied");
-		}
-		catch (NullPointerException expected) {
+		} catch (NullPointerException expected) {
 		}
 	}
 
@@ -459,8 +458,7 @@ public class GroovyScriptFactoryTests {
 	public void testProxyTargetClassNotAllowedIfNotGroovy() throws Exception {
 		try {
 			new ClassPathXmlApplicationContext("groovy-with-xsd-proxy-target-class.xml", getClass());
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getMessage().contains("Cannot use proxyTargetClass=true"));
 		}
 	}
@@ -554,8 +552,7 @@ public class GroovyScriptFactoryTests {
 			Calculator calc = (Calculator) ctx.getBean("delegatingCalculator");
 			calc.add(1, 2);
 			fail("expected IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertEquals("Gotcha", ex.getMessage());
 		}
 	}
@@ -590,8 +587,7 @@ public class GroovyScriptFactoryTests {
 				public Object invokeMethod(Object arg0, String mName, Object[] arg2) {
 					if (mName.contains("Missing")) {
 						throw new IllegalStateException("Gotcha");
-					}
-					else {
+					} else {
 						return super.invokeMethod(arg0, mName, arg2);
 					}
 				}

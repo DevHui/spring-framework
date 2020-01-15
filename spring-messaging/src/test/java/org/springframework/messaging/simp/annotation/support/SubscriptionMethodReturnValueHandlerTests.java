@@ -16,10 +16,6 @@
 
 package org.springframework.messaging.simp.annotation.support;
 
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.security.Principal;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +24,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -45,8 +40,19 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.util.MimeType;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.security.Principal;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Test fixture for {@link SubscriptionMethodReturnValueHandler}.
@@ -65,9 +71,11 @@ public class SubscriptionMethodReturnValueHandlerTests {
 
 	private SubscriptionMethodReturnValueHandler jsonHandler;
 
-	@Mock private MessageChannel messageChannel;
+	@Mock
+	private MessageChannel messageChannel;
 
-	@Captor private ArgumentCaptor<Message<?>> messageCaptor;
+	@Captor
+	private ArgumentCaptor<Message<?>> messageCaptor;
 
 	private MethodParameter subscribeEventReturnType;
 
@@ -138,7 +146,7 @@ public class SubscriptionMethodReturnValueHandlerTests {
 	}
 
 	@Test
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testHeadersPassedToMessagingTemplate() throws Exception {
 		String sessionId = "sess1";
 		String subscriptionId = "subs1";
@@ -203,12 +211,12 @@ public class SubscriptionMethodReturnValueHandlerTests {
 		return PAYLOAD;
 	}
 
-	@MessageMapping("/handle")	// not needed for the tests but here for completeness
+	@MessageMapping("/handle")    // not needed for the tests but here for completeness
 	public String handle() {
 		return PAYLOAD;
 	}
 
-	@SubscribeMapping("/jsonview")	// not needed for the tests but here for completeness
+	@SubscribeMapping("/jsonview")    // not needed for the tests but here for completeness
 	@JsonView(MyJacksonView1.class)
 	public JacksonViewBean getJsonView() {
 		JacksonViewBean payload = new JacksonViewBean();
@@ -219,8 +227,15 @@ public class SubscriptionMethodReturnValueHandlerTests {
 	}
 
 
-	private interface MyJacksonView1 {};
-	private interface MyJacksonView2 {};
+	private interface MyJacksonView1 {
+	}
+
+	;
+
+	private interface MyJacksonView2 {
+	}
+
+	;
 
 	private static class JacksonViewBean {
 

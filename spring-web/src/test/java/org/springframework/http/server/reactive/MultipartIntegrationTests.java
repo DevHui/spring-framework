@@ -16,12 +16,7 @@
 
 package org.springframework.http.server.reactive;
 
-import java.net.URI;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpEntity;
@@ -39,8 +34,13 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebHandler;
 import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import java.net.URI;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sebastien Deleuze

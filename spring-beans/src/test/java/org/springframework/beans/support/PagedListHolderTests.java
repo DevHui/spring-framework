@@ -16,16 +16,17 @@
 
 package org.springframework.beans.support;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.tests.Assume;
 import org.springframework.tests.TestGroup;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Juergen Hoeller
@@ -163,7 +164,6 @@ public class PagedListHolderTests {
 		holder.previousPage();
 		assertEquals(0, holder.getPage());
 	}
-
 
 
 	public static class MockFilter {

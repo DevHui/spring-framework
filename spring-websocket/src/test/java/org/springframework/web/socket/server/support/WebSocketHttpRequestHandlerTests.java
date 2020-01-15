@@ -15,15 +15,8 @@
  */
 package org.springframework.web.socket.server.support;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -33,17 +26,22 @@ import org.springframework.web.socket.server.HandshakeFailureException;
 import org.springframework.web.socket.server.HandshakeHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link WebSocketHttpRequestHandler}.
+ *
  * @author Rossen Stoyanchev
  * @since 5.1.9
  */
@@ -85,8 +83,7 @@ public class WebSocketHttpRequestHandlerTests {
 		try {
 			this.requestHandler.handleRequest(new MockHttpServletRequest(), this.response);
 			fail();
-		}
-		catch (HandshakeFailureException ex) {
+		} catch (HandshakeFailureException ex) {
 			assertSame(ex, interceptor.getException());
 			assertEquals("headerValue", this.response.getHeader("headerName"));
 			assertEquals("exceptionHeaderValue", this.response.getHeader("exceptionHeaderName"));
@@ -124,7 +121,7 @@ public class WebSocketHttpRequestHandlerTests {
 
 		@Override
 		public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
-				WebSocketHandler wsHandler, Map<String, Object> attributes) {
+									   WebSocketHandler wsHandler, Map<String, Object> attributes) {
 
 			response.getHeaders().add("headerName", "headerValue");
 			return this.allowHandshake;
@@ -132,7 +129,7 @@ public class WebSocketHttpRequestHandlerTests {
 
 		@Override
 		public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
-				WebSocketHandler wsHandler, Exception exception) {
+								   WebSocketHandler wsHandler, Exception exception) {
 
 			response.getHeaders().add("exceptionHeaderName", "exceptionHeaderValue");
 			this.exception = exception;

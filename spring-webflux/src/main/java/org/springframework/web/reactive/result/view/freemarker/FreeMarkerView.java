@@ -16,15 +16,6 @@
 
 package org.springframework.web.reactive.result.view.freemarker;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapperBuilder;
@@ -32,8 +23,6 @@ import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 import freemarker.template.Version;
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -48,6 +37,16 @@ import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * A {@code View} implementation that uses the FreeMarker template engine.
@@ -74,6 +73,13 @@ public class FreeMarkerView extends AbstractUrlBasedView {
 	@Nullable
 	private String encoding;
 
+	/**
+	 * Return the FreeMarker configuration used by this view.
+	 */
+	@Nullable
+	protected Configuration getConfiguration() {
+		return this.configuration;
+	}
 
 	/**
 	 * Set the FreeMarker Configuration to be used by this view.
@@ -86,15 +92,8 @@ public class FreeMarkerView extends AbstractUrlBasedView {
 	}
 
 	/**
-	 * Return the FreeMarker configuration used by this view.
-	 */
-	@Nullable
-	protected Configuration getConfiguration() {
-		return this.configuration;
-	}
-
-	/**
 	 * Obtain the FreeMarker configuration for actual use.
+	 *
 	 * @return the FreeMarker configuration (never {@code null})
 	 * @throws IllegalStateException in case of no Configuration object set
 	 * @since 5.0
@@ -103,6 +102,14 @@ public class FreeMarkerView extends AbstractUrlBasedView {
 		Configuration configuration = getConfiguration();
 		Assert.state(configuration != null, "No Configuration set");
 		return configuration;
+	}
+
+	/**
+	 * Return the encoding for the FreeMarker template.
+	 */
+	@Nullable
+	protected String getEncoding() {
+		return this.encoding;
 	}
 
 	/**
@@ -116,15 +123,6 @@ public class FreeMarkerView extends AbstractUrlBasedView {
 		this.encoding = encoding;
 	}
 
-	/**
-	 * Return the encoding for the FreeMarker template.
-	 */
-	@Nullable
-	protected String getEncoding() {
-		return this.encoding;
-	}
-
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
@@ -136,6 +134,7 @@ public class FreeMarkerView extends AbstractUrlBasedView {
 
 	/**
 	 * Autodetect a {@link FreeMarkerConfig} object via the ApplicationContext.
+	 *
 	 * @return the Configuration instance to use for FreeMarkerViews
 	 * @throws BeansException if no Configuration instance could be found
 	 * @see #setConfiguration
@@ -144,8 +143,7 @@ public class FreeMarkerView extends AbstractUrlBasedView {
 		try {
 			return BeanFactoryUtils.beanOfTypeIncludingAncestors(
 					obtainApplicationContext(), FreeMarkerConfig.class, true, false);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			throw new ApplicationContextException(
 					"Must define a single FreeMarkerConfig bean in this web application context " +
 							"(may be inherited): FreeMarkerConfigurer is the usual implementation. " +
@@ -165,16 +163,13 @@ public class FreeMarkerView extends AbstractUrlBasedView {
 			// Check that we can get the template, even if we might subsequently get it again.
 			getTemplate(locale);
 			return true;
-		}
-		catch (FileNotFoundException ex) {
+		} catch (FileNotFoundException ex) {
 			// Allow for ViewResolver chaining...
 			return false;
-		}
-		catch (ParseException ex) {
+		} catch (ParseException ex) {
 			throw new ApplicationContextException(
-					"Failed to parse FreeMarker template for URL [" +  getUrl() + "]", ex);
-		}
-		catch (IOException ex) {
+					"Failed to parse FreeMarker template for URL [" + getUrl() + "]", ex);
+		} catch (IOException ex) {
 			throw new ApplicationContextException(
 					"Could not load FreeMarker template for URL [" + getUrl() + "]", ex);
 		}
@@ -182,7 +177,7 @@ public class FreeMarkerView extends AbstractUrlBasedView {
 
 	@Override
 	protected Mono<Void> renderInternal(Map<String, Object> renderAttributes,
-			@Nullable MediaType contentType, ServerWebExchange exchange) {
+										@Nullable MediaType contentType, ServerWebExchange exchange) {
 
 		return exchange.getResponse().writeWith(Mono
 				.fromCallable(() -> {
@@ -200,13 +195,11 @@ public class FreeMarkerView extends AbstractUrlBasedView {
 						Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset);
 						getTemplate(locale).process(freeMarkerModel, writer);
 						return dataBuffer;
-					}
-					catch (IOException ex) {
+					} catch (IOException ex) {
 						DataBufferUtils.release(dataBuffer);
 						String message = "Could not load FreeMarker template for URL [" + getUrl() + "]";
 						throw new IllegalStateException(message, ex);
-					}
-					catch (Throwable ex) {
+					} catch (Throwable ex) {
 						DataBufferUtils.release(dataBuffer);
 						throw ex;
 					}
@@ -221,7 +214,8 @@ public class FreeMarkerView extends AbstractUrlBasedView {
 	/**
 	 * Build a FreeMarker template model for the given model Map.
 	 * <p>The default implementation builds a {@link SimpleHash}.
-	 * @param model the model to use for rendering
+	 *
+	 * @param model    the model to use for rendering
 	 * @param exchange current exchange
 	 * @return the FreeMarker template model, as a {@link SimpleHash} or subclass thereof
 	 */
@@ -234,6 +228,7 @@ public class FreeMarkerView extends AbstractUrlBasedView {
 	/**
 	 * Return the configured FreeMarker {@link ObjectWrapper}, or the
 	 * {@link ObjectWrapper#DEFAULT_WRAPPER default wrapper} if none specified.
+	 *
 	 * @see freemarker.template.Configuration#getObjectWrapper()
 	 */
 	protected ObjectWrapper getObjectWrapper() {
@@ -247,6 +242,7 @@ public class FreeMarkerView extends AbstractUrlBasedView {
 	 * to be rendering by this view.
 	 * <p>By default, the template specified by the "url" bean property
 	 * will be retrieved.
+	 *
 	 * @param locale the current locale
 	 * @return the FreeMarker template to render
 	 */

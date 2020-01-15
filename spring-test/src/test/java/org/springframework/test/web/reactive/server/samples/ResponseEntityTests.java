@@ -16,17 +16,8 @@
 
 package org.springframework.test.web.reactive.server.samples;
 
-import java.net.URI;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,11 +29,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
-import static java.time.Duration.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.http.MediaType.*;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.time.Duration.ofMillis;
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertThat;
+import static org.springframework.http.MediaType.TEXT_EVENT_STREAM;
 
 /**
  * Annotated controllers accepting and returning typed Objects.
@@ -107,8 +108,8 @@ public class ResponseEntityTests {
 				.expectStatus().isOk()
 				.expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
 				.expectBodyList(Person.class).value(people -> {
-					MatcherAssert.assertThat(people, hasItem(new Person("Jason")));
-				});
+			MatcherAssert.assertThat(people, hasItem(new Person("Jason")));
+		});
 	}
 
 	@Test
@@ -122,7 +123,8 @@ public class ResponseEntityTests {
 		this.client.get().uri("?map=true")
 				.exchange()
 				.expectStatus().isOk()
-				.expectBody(new ParameterizedTypeReference<Map<String, Person>>() {}).isEqualTo(map);
+				.expectBody(new ParameterizedTypeReference<Map<String, Person>>() {
+				}).isEqualTo(map);
 	}
 
 	@Test

@@ -16,11 +16,14 @@
 
 package org.springframework.jmx.support;
 
-import java.beans.PropertyDescriptor;
-import java.lang.management.ManagementFactory;
-import java.lang.reflect.Method;
-import java.util.Hashtable;
-import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.jmx.MBeanServerNotFoundException;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.management.DynamicMBean;
 import javax.management.JMX;
@@ -29,16 +32,11 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.jmx.MBeanServerNotFoundException;
-import org.springframework.lang.Nullable;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
+import java.beans.PropertyDescriptor;
+import java.lang.management.ManagementFactory;
+import java.lang.reflect.Method;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Collection of generic utility methods to support Spring JMX.
@@ -46,8 +44,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Rob Harrop
  * @author Juergen Hoeller
- * @since 1.2
  * @see #locateMBeanServer
+ * @since 1.2
  */
 public abstract class JmxUtils {
 
@@ -70,6 +68,7 @@ public abstract class JmxUtils {
 	 * Attempt to find a locally running {@code MBeanServer}. Fails if no
 	 * {@code MBeanServer} can be found. Logs a warning if more than one
 	 * {@code MBeanServer} found, returning the first one from the list.
+	 *
 	 * @return the {@code MBeanServer} if found
 	 * @throws MBeanServerNotFoundException if no {@code MBeanServer} could be found
 	 * @see javax.management.MBeanServerFactory#findMBeanServer
@@ -82,9 +81,10 @@ public abstract class JmxUtils {
 	 * Attempt to find a locally running {@code MBeanServer}. Fails if no
 	 * {@code MBeanServer} can be found. Logs a warning if more than one
 	 * {@code MBeanServer} found, returning the first one from the list.
+	 *
 	 * @param agentId the agent identifier of the MBeanServer to retrieve.
-	 * If this parameter is {@code null}, all registered MBeanServers are considered.
-	 * If the empty String is given, the platform MBeanServer will be returned.
+	 *                If this parameter is {@code null}, all registered MBeanServers are considered.
+	 *                If the empty String is given, the platform MBeanServer will be returned.
 	 * @return the {@code MBeanServer} if found
 	 * @throws MBeanServerNotFoundException if no {@code MBeanServer} could be found
 	 * @see javax.management.MBeanServerFactory#findMBeanServer(String)
@@ -110,8 +110,7 @@ public abstract class JmxUtils {
 			// Attempt to load the PlatformMBeanServer.
 			try {
 				server = ManagementFactory.getPlatformMBeanServer();
-			}
-			catch (SecurityException ex) {
+			} catch (SecurityException ex) {
 				throw new MBeanServerNotFoundException("No specific MBeanServer found, " +
 						"and not allowed to obtain the Java platform MBeanServer", ex);
 			}
@@ -120,7 +119,7 @@ public abstract class JmxUtils {
 		if (server == null) {
 			throw new MBeanServerNotFoundException(
 					"Unable to locate an MBeanServer instance" +
-					(agentId != null ? " with agent id [" + agentId + "]" : ""));
+							(agentId != null ? " with agent id [" + agentId + "]" : ""));
 		}
 
 		if (logger.isDebugEnabled()) {
@@ -132,6 +131,7 @@ public abstract class JmxUtils {
 	/**
 	 * Convert an array of {@code MBeanParameterInfo} into an array of
 	 * {@code Class} instances corresponding to the parameters.
+	 *
 	 * @param paramInfo the JMX parameter info
 	 * @return the parameter types as classes
 	 * @throws ClassNotFoundException if a parameter type could not be resolved
@@ -146,7 +146,8 @@ public abstract class JmxUtils {
 	/**
 	 * Convert an array of {@code MBeanParameterInfo} into an array of
 	 * {@code Class} instances corresponding to the parameters.
-	 * @param paramInfo the JMX parameter info
+	 *
+	 * @param paramInfo   the JMX parameter info
 	 * @param classLoader the ClassLoader to use for loading parameter types
 	 * @return the parameter types as classes
 	 * @throws ClassNotFoundException if a parameter type could not be resolved
@@ -170,6 +171,7 @@ public abstract class JmxUtils {
 	 * Create a {@code String[]} representing the argument signature of a
 	 * method. Each element in the array is the fully qualified class name
 	 * of the corresponding argument in the methods signature.
+	 *
 	 * @param method the method to build an argument signature for
 	 * @return the signature as array of argument types
 	 */
@@ -188,15 +190,15 @@ public abstract class JmxUtils {
 	 * such as {@code getFoo()} translates to an attribute called
 	 * {@code Foo}. With strict casing disabled, {@code getFoo()}
 	 * would translate to just {@code foo}.
-	 * @param property the JavaBeans property descriptor
+	 *
+	 * @param property        the JavaBeans property descriptor
 	 * @param useStrictCasing whether to use strict casing
 	 * @return the JMX attribute name to use
 	 */
 	public static String getAttributeName(PropertyDescriptor property, boolean useStrictCasing) {
 		if (useStrictCasing) {
 			return StringUtils.capitalize(property.getName());
-		}
-		else {
+		} else {
 			return property.getName();
 		}
 	}
@@ -209,7 +211,8 @@ public abstract class JmxUtils {
 	 * class. Useful when generating {@link ObjectName ObjectNames} at runtime for a set of
 	 * managed resources based on the template value supplied by a
 	 * {@link org.springframework.jmx.export.naming.ObjectNamingStrategy}.
-	 * @param objectName the original JMX ObjectName
+	 *
+	 * @param objectName      the original JMX ObjectName
 	 * @param managedResource the MBean instance
 	 * @return an ObjectName with the MBean identity added
 	 * @throws MalformedObjectNameException in case of an invalid object name specification
@@ -229,6 +232,7 @@ public abstract class JmxUtils {
 	 * (for example, checked for annotations).
 	 * <p>This implementation returns the superclass for a CGLIB proxy and
 	 * the class of the given bean else (for a JDK proxy or a plain bean class).
+	 *
 	 * @param managedBean the bean instance (might be an AOP proxy)
 	 * @return the bean class to expose
 	 * @see org.springframework.util.ClassUtils#getUserClass(Object)
@@ -243,6 +247,7 @@ public abstract class JmxUtils {
 	 * (for example, checked for annotations).
 	 * <p>This implementation returns the superclass for a CGLIB proxy and
 	 * the class of the given bean else (for a JDK proxy or a plain bean class).
+	 *
 	 * @param clazz the bean class (might be an AOP proxy class)
 	 * @return the bean class to expose
 	 * @see org.springframework.util.ClassUtils#getUserClass(Class)
@@ -256,6 +261,7 @@ public abstract class JmxUtils {
 	 * <p>This implementation checks for {@link javax.management.DynamicMBean}
 	 * classes as well as classes with corresponding "*MBean" interface
 	 * (Standard MBeans) or corresponding "*MXBean" interface (Java 6 MXBeans).
+	 *
 	 * @param clazz the bean class to analyze
 	 * @return whether the class qualifies as an MBean
 	 * @see org.springframework.jmx.export.MBeanExporter#isMBean(Class)
@@ -270,6 +276,7 @@ public abstract class JmxUtils {
 	 * Return the Standard MBean interface for the given class, if any
 	 * (that is, an interface whose name matches the class name of the
 	 * given class but with suffix "MBean").
+	 *
 	 * @param clazz the class to check
 	 * @return the Standard MBean interface for the given class
 	 */
@@ -292,6 +299,7 @@ public abstract class JmxUtils {
 	 * Return the Java 6 MXBean interface exists for the given class, if any
 	 * (that is, an interface whose name ends with "MXBean" and/or
 	 * carries an appropriate MXBean annotation).
+	 *
 	 * @param clazz the class to check
 	 * @return whether there is an MXBean interface for the given class
 	 */

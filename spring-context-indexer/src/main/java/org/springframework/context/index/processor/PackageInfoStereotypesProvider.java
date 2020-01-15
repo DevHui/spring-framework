@@ -16,11 +16,10 @@
 
 package org.springframework.context.index.processor;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A {@link StereotypesProvider} implementation that provides the

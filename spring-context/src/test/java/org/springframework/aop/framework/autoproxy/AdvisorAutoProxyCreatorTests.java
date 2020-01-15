@@ -16,11 +16,7 @@
 
 package org.springframework.aop.framework.autoproxy;
 
-import java.io.IOException;
-
 import org.junit.Test;
-import test.mixin.Lockable;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.framework.autoproxy.target.AbstractBeanFactoryBasedTargetSourceCreator;
@@ -36,17 +32,21 @@ import org.springframework.tests.aop.advice.CountingBeforeAdvice;
 import org.springframework.tests.aop.interceptor.NopInterceptor;
 import org.springframework.tests.sample.beans.CountingTestBean;
 import org.springframework.tests.sample.beans.ITestBean;
+import test.mixin.Lockable;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for auto proxy creation by advisor recognition.
  *
- * @see org.springframework.aop.framework.autoproxy.AdvisorAutoProxyCreatorIntegrationTests
- *
  * @author Rod Johnson
  * @author Dave Syer
  * @author Chris Beams
+ * @see org.springframework.aop.framework.autoproxy.AdvisorAutoProxyCreatorIntegrationTests
  */
 @SuppressWarnings("resource")
 public class AdvisorAutoProxyCreatorTests {

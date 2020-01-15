@@ -16,8 +16,6 @@
 
 package org.springframework.http.client;
 
-import java.net.URI;
-
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -29,8 +27,15 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.net.URI;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * @author Stephane Nicoll

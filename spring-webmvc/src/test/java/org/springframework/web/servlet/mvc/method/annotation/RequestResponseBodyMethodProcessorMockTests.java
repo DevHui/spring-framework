@@ -16,19 +16,8 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -54,8 +43,32 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.anyCollection;
+import static org.mockito.BDDMockito.argThat;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.isA;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.never;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Test fixture for {@link RequestResponseBodyMethodProcessor} delegating to a
@@ -162,8 +175,7 @@ public class RequestResponseBodyMethodProcessorMockTests {
 		try {
 			testResolveArgumentWithValidation(new SimpleBean(null));
 			fail("Expected exception");
-		}
-		catch (MethodArgumentNotValidException e) {
+		} catch (MethodArgumentNotValidException e) {
 			assertEquals("simpleBean", e.getBindingResult().getObjectName());
 			assertEquals(1, e.getBindingResult().getErrorCount());
 			assertNotNull(e.getBindingResult().getFieldError("name"));
@@ -447,22 +459,6 @@ public class RequestResponseBodyMethodProcessorMockTests {
 		return null;
 	}
 
-
-	private final class ValidatingBinderFactory implements WebDataBinderFactory {
-
-		@Override
-		public WebDataBinder createBinder(NativeWebRequest webRequest, @Nullable Object target,
-				String objectName) throws Exception {
-
-			LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-			validator.afterPropertiesSet();
-			WebDataBinder dataBinder = new WebDataBinder(target, objectName);
-			dataBinder.setValidator(validator);
-			return dataBinder;
-		}
-	}
-
-
 	@SuppressWarnings("unused")
 	private static class SimpleBean {
 
@@ -475,6 +471,20 @@ public class RequestResponseBodyMethodProcessorMockTests {
 
 		public String getName() {
 			return name;
+		}
+	}
+
+	private final class ValidatingBinderFactory implements WebDataBinderFactory {
+
+		@Override
+		public WebDataBinder createBinder(NativeWebRequest webRequest, @Nullable Object target,
+										  String objectName) throws Exception {
+
+			LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+			validator.afterPropertiesSet();
+			WebDataBinder dataBinder = new WebDataBinder(target, objectName);
+			dataBinder.setValidator(validator);
+			return dataBinder;
 		}
 	}
 

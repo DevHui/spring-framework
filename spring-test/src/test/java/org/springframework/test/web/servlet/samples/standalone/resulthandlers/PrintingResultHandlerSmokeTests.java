@@ -16,18 +16,16 @@
 
 package org.springframework.test.web.servlet.samples.standalone.resulthandlers;
 
-import java.io.StringWriter;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.test.web.servlet.result.PrintingResultHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.io.StringWriter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -55,12 +53,12 @@ public class PrintingResultHandlerSmokeTests {
 		StringWriter writer = new StringWriter();
 
 		standaloneSetup(new SimpleController())
-			.build()
-			.perform(get("/").content("Hello Request".getBytes()))
-			.andDo(log())
-			.andDo(print())
-			.andDo(print(System.err))
-			.andDo(print(writer))
+				.build()
+				.perform(get("/").content("Hello Request".getBytes()))
+				.andDo(log())
+				.andDo(print())
+				.andDo(print(System.err))
+				.andDo(print(writer))
 		;
 
 		System.out.println();

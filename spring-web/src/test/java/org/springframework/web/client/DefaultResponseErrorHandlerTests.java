@@ -16,20 +16,24 @@
 
 package org.springframework.web.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * Unit tests for {@link DefaultResponseErrorHandler}.
@@ -70,8 +74,7 @@ public class DefaultResponseErrorHandlerTests {
 		try {
 			handler.handleError(response);
 			fail("expected HttpClientErrorException");
-		}
-		catch (HttpClientErrorException ex) {
+		} catch (HttpClientErrorException ex) {
 			assertSame(headers, ex.getResponseHeaders());
 		}
 	}

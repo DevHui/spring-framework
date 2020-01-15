@@ -16,16 +16,7 @@
 
 package org.springframework.web.server.session;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.Clock;
-import java.time.Duration;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -37,8 +28,20 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebHandler;
 import org.springframework.web.server.WebSession;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.Clock;
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for with a server-side session.
@@ -193,7 +196,7 @@ public class WebSessionIntegrationTests extends AbstractHttpHandlerIntegrationTe
 		assertNotNull(headerValues);
 		assertEquals(1, headerValues.size());
 
-		for (String s : headerValues.get(0).split(";")){
+		for (String s : headerValues.get(0).split(";")) {
 			if (s.startsWith("SESSION=")) {
 				return s.substring("SESSION=".length());
 			}
@@ -221,15 +224,12 @@ public class WebSessionIntegrationTests extends AbstractHttpHandlerIntegrationTe
 				return exchange.getSession().doOnNext(session -> {
 					// Don't do anything, leave it expired...
 				}).then();
-			}
-			else if (exchange.getRequest().getQueryParams().containsKey("changeId")) {
+			} else if (exchange.getRequest().getQueryParams().containsKey("changeId")) {
 				return exchange.getSession().flatMap(session ->
 						session.changeSessionId().doOnSuccess(aVoid -> updateSessionAttribute(session)));
-			}
-			else if (exchange.getRequest().getQueryParams().containsKey("invalidate")) {
+			} else if (exchange.getRequest().getQueryParams().containsKey("invalidate")) {
 				return exchange.getSession().doOnNext(WebSession::invalidate).then();
-			}
-			else {
+			} else {
 				return exchange.getSession().doOnSuccess(this::updateSessionAttribute).then();
 			}
 		}

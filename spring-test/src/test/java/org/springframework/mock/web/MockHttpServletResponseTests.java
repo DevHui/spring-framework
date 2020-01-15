@@ -16,19 +16,22 @@
 
 package org.springframework.mock.web;
 
+import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Test;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.util.WebUtils;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link MockHttpServletResponse}.
@@ -320,7 +323,7 @@ public class MockHttpServletResponseTests {
 	@SuppressWarnings("deprecation")
 	public void modifyStatusMessageAfterSendError() throws IOException {
 		response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,"Server Error");
+		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server Error");
 		assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
 	}
 
@@ -417,7 +420,7 @@ public class MockHttpServletResponseTests {
 
 		assertNumCookies(1);
 		assertEquals("SESSION=123; Path=/; Domain=example.com; Max-Age=0; " +
-				"Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=Lax",
+						"Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=Lax",
 				response.getHeader(HttpHeaders.SET_COOKIE));
 
 		// Adding a 2nd Cookie should result in 2 Cookies.

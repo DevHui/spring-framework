@@ -16,16 +16,16 @@
 
 package org.springframework.http;
 
-import java.util.Arrays;
-
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Arrays;
+
 import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for {@link ResponseCookie}.
+ *
  * @author Rossen Stoyanchev
  */
 public class ResponseCookieTests {
@@ -58,8 +58,7 @@ public class ResponseCookieTests {
 				.forEach(name -> {
 					try {
 						ResponseCookie.from(name, "value").build();
-					}
-					catch (IllegalArgumentException ex) {
+					} catch (IllegalArgumentException ex) {
 						assertThat(ex.getMessage(), Matchers.containsString("RFC2616 token"));
 					}
 				});
@@ -78,8 +77,7 @@ public class ResponseCookieTests {
 				.forEach(value -> {
 					try {
 						ResponseCookie.from("id", value).build();
-					}
-					catch (IllegalArgumentException ex) {
+					} catch (IllegalArgumentException ex) {
 						assertThat(ex.getMessage(), Matchers.containsString("RFC2616 cookie value"));
 					}
 				});
@@ -95,8 +93,7 @@ public class ResponseCookieTests {
 				.forEach(domain -> {
 					try {
 						ResponseCookie.from("n", "v").domain(domain).build();
-					}
-					catch (IllegalArgumentException ex) {
+					} catch (IllegalArgumentException ex) {
 						assertThat(ex.getMessage(), Matchers.containsString("Invalid first/last char"));
 					}
 				});
@@ -105,8 +102,7 @@ public class ResponseCookieTests {
 				.forEach(domain -> {
 					try {
 						ResponseCookie.from("n", "v").domain(domain).build();
-					}
-					catch (IllegalArgumentException ex) {
+					} catch (IllegalArgumentException ex) {
 						assertThat(ex.getMessage(), Matchers.containsString("invalid cookie domain char"));
 					}
 				});

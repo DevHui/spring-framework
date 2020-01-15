@@ -16,15 +16,16 @@
 
 package org.springframework.web.socket;
 
-import java.util.List;
-
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.List;
+
+import static org.junit.Assert.assertThat;
 
 /**
  * Test fixture for {@link WebSocketExtension}
+ *
  * @author Brian Clozel
  */
 public class WebSocketExtensionTests {

@@ -16,16 +16,7 @@
 
 package org.springframework.web.reactive.function;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -37,6 +28,14 @@ import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.codec.multipart.Part;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Static factory methods for {@link BodyExtractor} implementations.
@@ -62,8 +61,9 @@ public abstract class BodyExtractors {
 
 	/**
 	 * Extractor to decode the input content into {@code Mono<T>}.
+	 *
 	 * @param elementClass the class of the element type to decode to
-	 * @param <T> the element type to decode to
+	 * @param <T>          the element type to decode to
 	 * @return {@code BodyExtractor} for {@code Mono<T>}
 	 */
 	public static <T> BodyExtractor<Mono<T>, ReactiveHttpInputMessage> toMono(Class<? extends T> elementClass) {
@@ -72,8 +72,9 @@ public abstract class BodyExtractors {
 
 	/**
 	 * Variant of {@link #toMono(Class)} for type information with generics.
+	 *
 	 * @param typeRef the type reference for the type to decode to
-	 * @param <T> the element type to decode to
+	 * @param <T>     the element type to decode to
 	 * @return {@code BodyExtractor} for {@code Mono<T>}
 	 */
 	public static <T> BodyExtractor<Mono<T>, ReactiveHttpInputMessage> toMono(ParameterizedTypeReference<T> typeRef) {
@@ -90,8 +91,9 @@ public abstract class BodyExtractors {
 
 	/**
 	 * Extractor to decode the input content into {@code Flux<T>}.
+	 *
 	 * @param elementClass the class of the element type to decode to
-	 * @param <T> the element type to decode to
+	 * @param <T>          the element type to decode to
 	 * @return {@code BodyExtractor} for {@code Flux<T>}
 	 */
 	public static <T> BodyExtractor<Flux<T>, ReactiveHttpInputMessage> toFlux(Class<? extends T> elementClass) {
@@ -100,8 +102,9 @@ public abstract class BodyExtractors {
 
 	/**
 	 * Variant of {@link #toFlux(Class)} for type information with generics.
+	 *
 	 * @param typeRef the type reference for the type to decode to
-	 * @param <T> the element type to decode to
+	 * @param <T>     the element type to decode to
 	 * @return {@code BodyExtractor} for {@code Flux<T>}
 	 */
 	public static <T> BodyExtractor<Flux<T>, ReactiveHttpInputMessage> toFlux(ParameterizedTypeReference<T> typeRef) {
@@ -124,6 +127,7 @@ public abstract class BodyExtractors {
 	 * Extractor to read form data into {@code MultiValueMap<String, String>}.
 	 * <p>As of 5.1 this method can also be used on the client side to read form
 	 * data from a server response (e.g. OAuth).
+	 *
 	 * @return {@code BodyExtractor} for form data
 	 */
 	public static BodyExtractor<Mono<MultiValueMap<String, String>>, ReactiveHttpInputMessage> toFormData() {
@@ -137,6 +141,7 @@ public abstract class BodyExtractors {
 
 	/**
 	 * Extractor to read multipart data into a {@code MultiValueMap<String, Part>}.
+	 *
 	 * @return {@code BodyExtractor} for multipart data
 	 */
 	// Parameterized for server-side use
@@ -151,6 +156,7 @@ public abstract class BodyExtractors {
 
 	/**
 	 * Extractor to read multipart data into {@code Flux<Part>}.
+	 *
 	 * @return {@code BodyExtractor} for multipart request parts
 	 */
 	// Parameterized for server-side use
@@ -168,6 +174,7 @@ public abstract class BodyExtractors {
 	 * <p><strong>Note:</strong> the data buffers should be
 	 * {@link org.springframework.core.io.buffer.DataBufferUtils#release(DataBuffer)
 	 * released} after being used.
+	 *
 	 * @return {@code BodyExtractor} for data buffers
 	 */
 	public static BodyExtractor<Flux<DataBuffer>, ReactiveHttpInputMessage> toDataBuffers() {
@@ -204,7 +211,7 @@ public abstract class BodyExtractors {
 	}
 
 	private static <T> Mono<T> readToMono(ReactiveHttpInputMessage message, BodyExtractor.Context context,
-			ResolvableType type, HttpMessageReader<T> reader) {
+										  ResolvableType type, HttpMessageReader<T> reader) {
 
 		return context.serverResponse()
 				.map(response -> reader.readMono(type, type, (ServerHttpRequest) message, response, context.hints()))
@@ -212,7 +219,7 @@ public abstract class BodyExtractors {
 	}
 
 	private static <T> Flux<T> readToFlux(ReactiveHttpInputMessage message, BodyExtractor.Context context,
-			ResolvableType type, HttpMessageReader<T> reader) {
+										  ResolvableType type, HttpMessageReader<T> reader) {
 
 		return context.serverResponse()
 				.map(response -> reader.read(type, type, (ServerHttpRequest) message, response, context.hints()))
@@ -229,8 +236,7 @@ public abstract class BodyExtractors {
 				DataBufferUtils.release(buffer);
 				throw ex;
 			});
-		}
-		else {
+		} else {
 			result = message instanceof ClientHttpResponse ?
 					consumeAndCancel(message).thenMany(Flux.error(ex)) : Flux.error(ex);
 		}

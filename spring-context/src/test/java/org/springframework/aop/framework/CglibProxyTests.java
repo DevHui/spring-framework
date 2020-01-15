@@ -16,13 +16,9 @@
 
 package org.springframework.aop.framework;
 
-import java.io.Serializable;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
-import test.mixin.LockMixinAdvisor;
-
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.MethodMatcher;
 import org.springframework.aop.Pointcut;
@@ -35,9 +31,16 @@ import org.springframework.tests.aop.advice.CountingBeforeAdvice;
 import org.springframework.tests.aop.interceptor.NopInterceptor;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
+import test.mixin.LockMixinAdvisor;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.io.Serializable;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Additional and overridden tests for CGLIB proxies.
@@ -207,14 +210,17 @@ public class CglibProxyTests extends AbstractAopProxyTests implements Serializab
 			public ClassFilter getClassFilter() {
 				return ClassFilter.TRUE;
 			}
+
 			@Override
 			public MethodMatcher getMethodMatcher() {
 				return MethodMatcher.TRUE;
 			}
+
 			@Override
 			public boolean equals(Object obj) {
 				return true;
 			}
+
 			@Override
 			public int hashCode() {
 				return 0;
@@ -262,7 +268,7 @@ public class CglibProxyTests extends AbstractAopProxyTests implements Serializab
 		AdvisedSupport pc = new AdvisedSupport();
 		pc.setTargetSource(mockTargetSource);
 		CglibAopProxy aop = new CglibAopProxy(pc);
-		aop.setConstructorArguments(new Object[] {"Rob Harrop", 22}, new Class<?>[] {String.class, int.class});
+		aop.setConstructorArguments(new Object[]{"Rob Harrop", 22}, new Class<?>[]{String.class, int.class});
 
 		NoArgCtorTestBean proxy = (NoArgCtorTestBean) aop.getProxy();
 		assertNotNull(proxy);
@@ -326,8 +332,7 @@ public class CglibProxyTests extends AbstractAopProxyTests implements Serializab
 
 		try {
 			proxy.doTest();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			assertTrue("Invalid exception class", ex instanceof ApplicationContextException);
 		}
 
@@ -391,6 +396,21 @@ public class CglibProxyTests extends AbstractAopProxyTests implements Serializab
 	}
 
 
+	public enum MyEnum implements MyInterface {
+
+		A, B;
+	}
+
+
+	public enum MyOtherEnum implements MyInterface {
+
+		C, D;
+	}
+
+
+	public interface MyInterface {
+	}
+
 	public static class MyBean {
 
 		private String name;
@@ -413,23 +433,6 @@ public class CglibProxyTests extends AbstractAopProxyTests implements Serializab
 		}
 	}
 
-
-	public interface MyInterface {
-	}
-
-
-	public enum MyEnum implements MyInterface {
-
-		A, B;
-	}
-
-
-	public enum MyOtherEnum implements MyInterface {
-
-		C, D;
-	}
-
-
 	public static class ExceptionThrower {
 
 		private boolean catchInvoked;
@@ -447,12 +450,10 @@ public class CglibProxyTests extends AbstractAopProxyTests implements Serializab
 		public void doTest() throws Exception {
 			try {
 				throw new ApplicationContextException("foo");
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				catchInvoked = true;
 				throw ex;
-			}
-			finally {
+			} finally {
 				finallyInvoked = true;
 			}
 		}
@@ -505,12 +506,12 @@ public class CglibProxyTests extends AbstractAopProxyTests implements Serializab
 			setName("Some Default");
 		}
 
-		public void setName(String name) {
-			this.name = name;
-		}
-
 		public String getName() {
 			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
 		}
 
 		@Override
@@ -529,12 +530,12 @@ class CglibTestBean {
 		setName("Some Default");
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getName() {
 		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

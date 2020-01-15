@@ -16,17 +16,8 @@
 
 package org.springframework.jms.connection;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.jms.StubQueue;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.SessionCallback;
@@ -38,8 +29,23 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * @author Juergen Hoeller
@@ -163,8 +169,7 @@ public class JmsTransactionManagerTests {
 		try {
 			tm.commit(ts);
 			fail("Should have thrown UnexpectedRollbackException");
-		}
-		catch (UnexpectedRollbackException ex) {
+		} catch (UnexpectedRollbackException ex) {
 			// expected
 		}
 

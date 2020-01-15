@@ -16,12 +16,7 @@
 
 package org.springframework.validation.beanvalidation;
 
-import javax.annotation.PostConstruct;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import org.junit.Test;
-
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -31,7 +26,13 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncAnnotationAdvisor;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
+import javax.annotation.PostConstruct;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Juergen Hoeller
@@ -47,8 +48,7 @@ public class BeanValidationPostProcessorTests {
 		try {
 			ac.refresh();
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getRootCause().getMessage().contains("testBean"));
 			assertTrue(ex.getRootCause().getMessage().contains("invalid"));
 		}
@@ -104,8 +104,7 @@ public class BeanValidationPostProcessorTests {
 		try {
 			ac.refresh();
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getRootCause().getMessage().contains("stringValue"));
 			assertTrue(ex.getRootCause().getMessage().contains("invalid"));
 		}

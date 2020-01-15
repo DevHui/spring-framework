@@ -16,17 +16,11 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.Date;
-import java.util.concurrent.ExecutionException;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.concurrent.ListenableFutureCallback;
@@ -35,8 +29,18 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.sockjs.frame.Jackson2SockJsMessageCodec;
 import org.springframework.web.socket.sockjs.transport.TransportType;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Date;
+import java.util.concurrent.ExecutionException;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Unit tests for {@link DefaultTransportRequest}.
@@ -46,20 +50,12 @@ import static org.mockito.Mockito.*;
 public class DefaultTransportRequestTests {
 
 	private static final Jackson2SockJsMessageCodec CODEC = new Jackson2SockJsMessageCodec();
-
-
-	private SettableListenableFuture<WebSocketSession> connectFuture;
-
-	private ListenableFutureCallback<WebSocketSession> connectCallback;
-
-	private TestTransport webSocketTransport;
-
-	private TestTransport xhrTransport;
-
-
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
-
+	private SettableListenableFuture<WebSocketSession> connectFuture;
+	private ListenableFutureCallback<WebSocketSession> connectCallback;
+	private TestTransport webSocketTransport;
+	private TestTransport xhrTransport;
 
 	@SuppressWarnings("unchecked")
 	@Before

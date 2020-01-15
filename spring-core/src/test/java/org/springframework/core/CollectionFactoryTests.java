@@ -16,6 +16,10 @@
 
 package org.springframework.core;
 
+import org.junit.Test;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -34,14 +38,15 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.junit.Test;
-
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.core.CollectionFactory.*;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.springframework.core.CollectionFactory.createApproximateCollection;
+import static org.springframework.core.CollectionFactory.createApproximateMap;
+import static org.springframework.core.CollectionFactory.createCollection;
+import static org.springframework.core.CollectionFactory.createMap;
 
 /**
  * Unit tests for {@link CollectionFactory}.
@@ -75,8 +80,7 @@ public class CollectionFactoryTests {
 			// cannot be cast to a Color.
 			ints.add(42);
 			fail("Should have thrown a ClassCastException");
-		}
-		catch (ClassCastException e) {
+		} catch (ClassCastException e) {
 			/* expected */
 		}
 	}
@@ -93,8 +97,7 @@ public class CollectionFactoryTests {
 			// to a Color.
 			ints.add(42);
 			fail("Should have thrown a ClassCastException");
-		}
-		catch (ClassCastException e) {
+		} catch (ClassCastException e) {
 			/* expected */
 		}
 	}
@@ -121,8 +124,7 @@ public class CollectionFactoryTests {
 			// cast to a Color.
 			map.put("foo", 1);
 			fail("Should have thrown a ClassCastException");
-		}
-		catch (ClassCastException e) {
+		} catch (ClassCastException e) {
 			/* expected */
 		}
 	}
@@ -139,8 +141,7 @@ public class CollectionFactoryTests {
 			// Color.
 			map.put("foo", 1);
 			fail("Should have thrown a ClassCastException");
-		}
-		catch (ClassCastException e) {
+		} catch (ClassCastException e) {
 			/* expected */
 		}
 	}
@@ -157,8 +158,7 @@ public class CollectionFactoryTests {
 			// cast to a List.
 			map.put("foo", 1);
 			fail("Should have thrown a ClassCastException");
-		}
-		catch (ClassCastException e) {
+		} catch (ClassCastException e) {
 			/* expected */
 		}
 	}

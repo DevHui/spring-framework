@@ -17,12 +17,10 @@
 package org.springframework.web.reactive.result.condition;
 
 import org.junit.Test;
-
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -71,7 +69,7 @@ public class RequestConditionHolderTests {
 
 		RequestConditionHolder holder = custom.getMatchingCondition(this.exchange);
 		assertNotNull(holder);
-		assertEquals(expected,  holder.getCondition());
+		assertEquals(expected, holder.getCondition());
 	}
 
 	@Test

@@ -16,20 +16,22 @@
 
 package org.springframework.orm.jpa.hibernate;
 
-import java.util.List;
-
 import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.orm.jpa.AbstractContainerEntityManagerFactoryIntegrationTests;
 import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 import org.springframework.orm.jpa.domain.Person;
 
-import static org.junit.Assert.*;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Hibernate-specific JPA tests with native SessionFactory setup and getCurrentSession interaction.
@@ -48,7 +50,7 @@ public class HibernateNativeEntityManagerFactoryIntegrationTests extends Abstrac
 
 	@Override
 	protected String[] getConfigLocations() {
-		return new String[] {"/org/springframework/orm/jpa/hibernate/hibernate-manager-native.xml",
+		return new String[]{"/org/springframework/orm/jpa/hibernate/hibernate-manager-native.xml",
 				"/org/springframework/orm/jpa/memdb.xml", "/org/springframework/orm/jpa/inject.xml"};
 	}
 
@@ -71,7 +73,7 @@ public class HibernateNativeEntityManagerFactoryIntegrationTests extends Abstrac
 	}
 
 	@Test
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testCurrentSession() {
 		String firstName = "Tony";
 		insertPerson(firstName);

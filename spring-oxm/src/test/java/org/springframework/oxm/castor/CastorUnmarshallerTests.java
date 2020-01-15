@@ -16,24 +16,27 @@
 
 package org.springframework.oxm.castor;
 
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.oxm.AbstractUnmarshallerTests;
+import org.springframework.oxm.MarshallingException;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamSource;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.oxm.AbstractUnmarshallerTests;
-import org.springframework.oxm.MarshallingException;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Arjen Poutsma
@@ -48,15 +51,15 @@ public class CastorUnmarshallerTests extends AbstractUnmarshallerTests<CastorMar
 	 */
 	protected static final String EXTRA_ATTRIBUTES_STRING =
 			"<tns:flights xmlns:tns=\"http://samples.springframework.org/flight\">" +
-			"<tns:flight status=\"canceled\"><tns:number>42</tns:number></tns:flight></tns:flights>";
+					"<tns:flight status=\"canceled\"><tns:number>42</tns:number></tns:flight></tns:flights>";
 
 	/**
 	 * Represents the xml with additional element that is not mapped in Castor config.
 	 */
 	protected static final String EXTRA_ELEMENTS_STRING =
 			"<tns:flights xmlns:tns=\"http://samples.springframework.org/flight\">" +
-			"<tns:flight><tns:number>42</tns:number><tns:date>2011-06-14</tns:date>" +
-			"</tns:flight></tns:flights>";
+					"<tns:flight><tns:number>42</tns:number><tns:date>2011-06-14</tns:date>" +
+					"</tns:flight></tns:flights>";
 
 
 	@Override
@@ -183,7 +186,7 @@ public class CastorUnmarshallerTests extends AbstractUnmarshallerTests<CastorMar
 	@Test
 	public void clearCollectionsFalse() throws Exception {
 		Flights flights = new Flights();
-		flights.setFlight(new Flight[] {new Flight(), null});
+		flights.setFlight(new Flight[]{new Flight(), null});
 		unmarshaller.setRootObject(flights);
 		unmarshaller.setClearCollections(false);
 		Object result = unmarshalFlights();

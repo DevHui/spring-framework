@@ -16,13 +16,7 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -41,8 +35,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.config.EnableWebFlux;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Data binding and type conversion related integration tests for
@@ -95,7 +94,7 @@ public class RequestMappingDataBindingIntegrationTests extends AbstractRequestMa
 
 		@InitBinder
 		public void initBinder(WebDataBinder binder,
-				@RequestParam("date-pattern") Optional<String> optionalPattern) {
+							   @RequestParam("date-pattern") Optional<String> optionalPattern) {
 
 			optionalPattern.ifPresent(pattern -> {
 				CustomDateEditor dateEditor = new CustomDateEditor(new SimpleDateFormat(pattern), false);

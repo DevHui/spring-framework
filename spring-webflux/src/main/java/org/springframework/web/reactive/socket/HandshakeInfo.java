@@ -16,25 +16,24 @@
 
 package org.springframework.web.reactive.socket;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import reactor.core.publisher.Mono;
+
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Map;
 
-import reactor.core.publisher.Mono;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-
 /**
  * Simple container of information related to the handshake request that started
  * the {@link WebSocketSession} session.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see WebSocketSession#getHandshakeInfo()
+ * @since 5.0
  */
 public class HandshakeInfo {
 
@@ -58,10 +57,11 @@ public class HandshakeInfo {
 
 	/**
 	 * Constructor with basic information about the handshake.
-	 * @param uri the endpoint URL
-	 * @param headers request headers for server or response headers or client
+	 *
+	 * @param uri       the endpoint URL
+	 * @param headers   request headers for server or response headers or client
 	 * @param principal the principal for the session
-	 * @param protocol the negotiated sub-protocol (may be {@code null})
+	 * @param protocol  the negotiated sub-protocol (may be {@code null})
 	 */
 	public HandshakeInfo(URI uri, HttpHeaders headers, Mono<Principal> principal, @Nullable String protocol) {
 		this(uri, headers, principal, protocol, null, Collections.emptyMap(), null);
@@ -71,19 +71,20 @@ public class HandshakeInfo {
 	 * Constructor targetting server-side use with extra information about the
 	 * handshake, the remote address, and a pre-existing log prefix for
 	 * correlation.
-	 * @param uri the endpoint URL
-	 * @param headers request headers for server or response headers or client
-	 * @param principal the principal for the session
-	 * @param protocol the negotiated sub-protocol (may be {@code null})
+	 *
+	 * @param uri           the endpoint URL
+	 * @param headers       request headers for server or response headers or client
+	 * @param principal     the principal for the session
+	 * @param protocol      the negotiated sub-protocol (may be {@code null})
 	 * @param remoteAddress the remote address where the handshake came from
-	 * @param attributes initial attributes to use for the WebSocket session
-	 * @param logPrefix log prefix used during the handshake for correlating log
-	 * messages, if any.
+	 * @param attributes    initial attributes to use for the WebSocket session
+	 * @param logPrefix     log prefix used during the handshake for correlating log
+	 *                      messages, if any.
 	 * @since 5.1
 	 */
 	public HandshakeInfo(URI uri, HttpHeaders headers, Mono<Principal> principal,
-			@Nullable String protocol, @Nullable InetSocketAddress remoteAddress,
-			Map<String, Object> attributes, @Nullable String logPrefix) {
+						 @Nullable String protocol, @Nullable InetSocketAddress remoteAddress,
+						 Map<String, Object> attributes, @Nullable String logPrefix) {
 
 		Assert.notNull(uri, "URI is required");
 		Assert.notNull(headers, "HttpHeaders are required");
@@ -124,6 +125,7 @@ public class HandshakeInfo {
 
 	/**
 	 * The sub-protocol negotiated at handshake time, or {@code null} if none.
+	 *
 	 * @see <a href="https://tools.ietf.org/html/rfc6455#section-1.9">
 	 * https://tools.ietf.org/html/rfc6455#section-1.9</a>
 	 */
@@ -135,6 +137,7 @@ public class HandshakeInfo {
 	/**
 	 * For a server-side session this is the remote address where the handshake
 	 * request came from.
+	 *
 	 * @since 5.1
 	 */
 	@Nullable
@@ -145,6 +148,7 @@ public class HandshakeInfo {
 	/**
 	 * Attributes extracted from the handshake request to be added to the
 	 * WebSocket session.
+	 *
 	 * @since 5.1
 	 */
 	public Map<String, Object> getAttributes() {
@@ -153,6 +157,7 @@ public class HandshakeInfo {
 
 	/**
 	 * A log prefix used in the handshake to correlate log messages, if any.
+	 *
 	 * @return a log prefix, or {@code null} if not specified
 	 * @since 5.1
 	 */

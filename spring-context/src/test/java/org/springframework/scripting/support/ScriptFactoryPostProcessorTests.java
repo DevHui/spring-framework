@@ -18,7 +18,6 @@ package org.springframework.scripting.support;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -31,8 +30,12 @@ import org.springframework.scripting.groovy.GroovyScriptFactory;
 import org.springframework.tests.Assume;
 import org.springframework.tests.TestGroup;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Rick Evans
@@ -75,6 +78,43 @@ public class ScriptFactoryPostProcessorTests {
 			"  }\n" +
 			"}";
 
+	private static StaticScriptSource getScriptSource(GenericApplicationContext ctx) throws Exception {
+		ScriptFactoryPostProcessor processor = (ScriptFactoryPostProcessor) ctx.getBean(PROCESSOR_BEAN_NAME);
+		BeanDefinition bd = processor.scriptBeanFactory.getBeanDefinition("scriptedObject.messenger");
+		return (StaticScriptSource) bd.getConstructorArgumentValues().getIndexedArgumentValue(0, StaticScriptSource.class).getValue();
+	}
+
+	private static BeanDefinition createScriptFactoryPostProcessor(boolean isRefreshable) {
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ScriptFactoryPostProcessor.class);
+		if (isRefreshable) {
+			builder.addPropertyValue("defaultRefreshCheckDelay", new Long(1));
+		}
+		return builder.getBeanDefinition();
+	}
+
+	private static BeanDefinition createScriptedGroovyBean() {
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyScriptFactory.class);
+		builder.addConstructorArgValue("inline:package org.springframework.scripting;\n" +
+				"class GroovyMessenger implements Messenger {\n" +
+				"  private String message = \"Bingo\"\n" +
+				"  public String getMessage() {\n" +
+				"    return this.message\n" +
+				"  }\n" +
+				"  public void setMessage(String message) {\n" +
+				"    this.message = message\n" +
+				"  }\n" +
+				"}");
+		builder.addPropertyValue("message", MESSAGE_TEXT);
+		return builder.getBeanDefinition();
+	}
+
+	private static void pauseToLetRefreshDelayKickIn(int secondsToPause) {
+		try {
+			Thread.sleep(secondsToPause * 1000);
+		} catch (InterruptedException ignored) {
+		}
+	}
+
 	@Before
 	public void setUp() {
 		Assume.group(TestGroup.PERFORMANCE);
@@ -90,8 +130,7 @@ public class ScriptFactoryPostProcessorTests {
 		try {
 			new ScriptFactoryPostProcessor().setBeanFactory(mock(BeanFactory.class));
 			fail("Must have thrown exception by this point.");
-		}
-		catch (IllegalStateException expected) {
+		} catch (IllegalStateException expected) {
 		}
 	}
 
@@ -212,8 +251,7 @@ public class ScriptFactoryPostProcessorTests {
 		try {
 			refreshedMessenger.getMessage();
 			fail("Must have thrown an Exception (invalid script)");
-		}
-		catch (FatalBeanException expected) {
+		} catch (FatalBeanException expected) {
 			assertTrue(expected.contains(ScriptCompilationException.class));
 		}
 	}
@@ -237,45 +275,6 @@ public class ScriptFactoryPostProcessorTests {
 		Messenger messenger2 = (Messenger) ctx.getBean(BEAN_WITH_DEPENDENCY_NAME);
 		assertNotSame(messenger1, messenger2);
 	}
-
-	private static StaticScriptSource getScriptSource(GenericApplicationContext ctx) throws Exception {
-		ScriptFactoryPostProcessor processor = (ScriptFactoryPostProcessor) ctx.getBean(PROCESSOR_BEAN_NAME);
-		BeanDefinition bd = processor.scriptBeanFactory.getBeanDefinition("scriptedObject.messenger");
-		return (StaticScriptSource) bd.getConstructorArgumentValues().getIndexedArgumentValue(0, StaticScriptSource.class).getValue();
-	}
-
-	private static BeanDefinition createScriptFactoryPostProcessor(boolean isRefreshable) {
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ScriptFactoryPostProcessor.class);
-		if (isRefreshable) {
-			builder.addPropertyValue("defaultRefreshCheckDelay", new Long(1));
-		}
-		return builder.getBeanDefinition();
-	}
-
-	private static BeanDefinition createScriptedGroovyBean() {
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyScriptFactory.class);
-		builder.addConstructorArgValue("inline:package org.springframework.scripting;\n" +
-				"class GroovyMessenger implements Messenger {\n" +
-				"  private String message = \"Bingo\"\n" +
-				"  public String getMessage() {\n" +
-				"    return this.message\n" +
-				"  }\n" +
-				"  public void setMessage(String message) {\n" +
-				"    this.message = message\n" +
-				"  }\n" +
-				"}");
-		builder.addPropertyValue("message", MESSAGE_TEXT);
-		return builder.getBeanDefinition();
-	}
-
-	private static void pauseToLetRefreshDelayKickIn(int secondsToPause) {
-		try {
-			Thread.sleep(secondsToPause * 1000);
-		}
-		catch (InterruptedException ignored) {
-		}
-	}
-
 
 	public static class DefaultMessengerService {
 

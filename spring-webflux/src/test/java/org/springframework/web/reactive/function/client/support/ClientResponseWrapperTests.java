@@ -16,13 +16,8 @@
 
 package org.springframework.web.reactive.function.client.support;
 
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ReactiveHttpInputMessage;
@@ -32,10 +27,15 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyExtractor;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.client.ClientResponse;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static java.util.Collections.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.util.List;
+
+import static java.util.Collections.singletonList;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arjen Poutsma
@@ -110,7 +110,8 @@ public class ClientResponseWrapperTests {
 	@Test
 	public void bodyToMonoParameterizedTypeReference() {
 		Mono<String> result = Mono.just("foo");
-		ParameterizedTypeReference<String> reference = new ParameterizedTypeReference<String>() {};
+		ParameterizedTypeReference<String> reference = new ParameterizedTypeReference<String>() {
+		};
 		when(mockResponse.bodyToMono(reference)).thenReturn(result);
 
 		assertSame(result, wrapper.bodyToMono(reference));
@@ -127,7 +128,8 @@ public class ClientResponseWrapperTests {
 	@Test
 	public void bodyToFluxParameterizedTypeReference() {
 		Flux<String> result = Flux.just("foo");
-		ParameterizedTypeReference<String> reference = new ParameterizedTypeReference<String>() {};
+		ParameterizedTypeReference<String> reference = new ParameterizedTypeReference<String>() {
+		};
 		when(mockResponse.bodyToFlux(reference)).thenReturn(result);
 
 		assertSame(result, wrapper.bodyToFlux(reference));
@@ -144,7 +146,8 @@ public class ClientResponseWrapperTests {
 	@Test
 	public void toEntityParameterizedTypeReference() {
 		Mono<ResponseEntity<String>> result = Mono.just(new ResponseEntity<>("foo", HttpStatus.OK));
-		ParameterizedTypeReference<String> reference = new ParameterizedTypeReference<String>() {};
+		ParameterizedTypeReference<String> reference = new ParameterizedTypeReference<String>() {
+		};
 		when(mockResponse.toEntity(reference)).thenReturn(result);
 
 		assertSame(result, wrapper.toEntity(reference));
@@ -161,12 +164,12 @@ public class ClientResponseWrapperTests {
 	@Test
 	public void toEntityListParameterizedTypeReference() {
 		Mono<ResponseEntity<List<String>>> result = Mono.just(new ResponseEntity<>(singletonList("foo"), HttpStatus.OK));
-		ParameterizedTypeReference<String> reference = new ParameterizedTypeReference<String>() {};
+		ParameterizedTypeReference<String> reference = new ParameterizedTypeReference<String>() {
+		};
 		when(mockResponse.toEntityList(reference)).thenReturn(result);
 
 		assertSame(result, wrapper.toEntityList(reference));
 	}
-
 
 
 }

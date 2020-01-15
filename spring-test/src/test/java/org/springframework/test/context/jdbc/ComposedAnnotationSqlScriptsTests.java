@@ -16,18 +16,16 @@
 
 package org.springframework.test.context.jdbc;
 
-import java.lang.annotation.Retention;
-
 import org.junit.Test;
-
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import static java.lang.annotation.RetentionPolicy.*;
-import static org.junit.Assert.*;
+import java.lang.annotation.Retention;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.*;
 
 /**
@@ -43,9 +41,9 @@ public class ComposedAnnotationSqlScriptsTests extends AbstractTransactionalJUni
 
 	@Test
 	@ComposedSql(
-		scripts = { "drop-schema.sql", "schema.sql" },
-		statements = "INSERT INTO user VALUES('Dilbert')",
-		executionPhase = BEFORE_TEST_METHOD
+			scripts = {"drop-schema.sql", "schema.sql"},
+			statements = "INSERT INTO user VALUES('Dilbert')",
+			executionPhase = BEFORE_TEST_METHOD
 	)
 	public void composedSqlAnnotation() {
 		assertEquals("Number of rows in the 'user' table.", 1, countRowsInTable("user"));

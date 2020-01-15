@@ -16,22 +16,6 @@
 
 package org.springframework.web.filter;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -42,6 +26,21 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UrlPathHelper;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Extract values from "Forwarded" and "X-Forwarded-*" headers, wrap the request
@@ -61,8 +60,8 @@ import org.springframework.web.util.UrlPathHelper;
  * @author Rossen Stoyanchev
  * @author Eddú Meléndez
  * @author Rob Winch
- * @since 4.3
  * @see <a href="https://tools.ietf.org/html/rfc7239">https://tools.ietf.org/html/rfc7239</a>
+ * @since 4.3
  */
 public class ForwardedHeaderFilter extends OncePerRequestFilter {
 
@@ -96,6 +95,7 @@ public class ForwardedHeaderFilter extends OncePerRequestFilter {
 	/**
 	 * Enables mode in which any "Forwarded" or "X-Forwarded-*" headers are
 	 * removed only and the information in them ignored.
+	 *
 	 * @param removeOnly whether to discard and ignore forwarded headers
 	 * @since 4.3.9
 	 */
@@ -111,6 +111,7 @@ public class ForwardedHeaderFilter extends OncePerRequestFilter {
 	 * {@link HttpServletResponse#sendRedirect(String)} are overridden in order
 	 * to turn relative into absolute URLs, also taking into account forwarded
 	 * headers.
+	 *
 	 * @param relativeRedirects whether to use relative redirects
 	 * @since 4.3.10
 	 */
@@ -141,13 +142,12 @@ public class ForwardedHeaderFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-			FilterChain filterChain) throws ServletException, IOException {
+									FilterChain filterChain) throws ServletException, IOException {
 
 		if (this.removeOnly) {
 			ForwardedHeaderRemovingRequest wrappedRequest = new ForwardedHeaderRemovingRequest(request);
 			filterChain.doFilter(wrappedRequest, response);
-		}
-		else {
+		} else {
 			HttpServletRequest wrappedRequest =
 					new ForwardedHeaderExtractingRequest(request, this.pathHelper);
 
@@ -161,7 +161,7 @@ public class ForwardedHeaderFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterNestedErrorDispatch(HttpServletRequest request, HttpServletResponse response,
-			FilterChain filterChain) throws ServletException, IOException {
+											   FilterChain filterChain) throws ServletException, IOException {
 
 		doFilterInternal(request, response, filterChain);
 	}
@@ -299,12 +299,9 @@ public class ForwardedHeaderFilter extends OncePerRequestFilter {
 		private final UrlPathHelper pathHelper;
 
 		private final String baseUrl;
-
-		private String actualRequestUri;
-
 		@Nullable
 		private final String forwardedPrefix;
-
+		private String actualRequestUri;
 		@Nullable
 		private String requestUri;
 
@@ -313,11 +310,12 @@ public class ForwardedHeaderFilter extends OncePerRequestFilter {
 
 		/**
 		 * Constructor with required information.
+		 *
 		 * @param delegateRequest supplier for the current
-		 * {@link HttpServletRequestWrapper#getRequest() delegate request} which
-		 * may change during a forward (e.g. Tomcat.
-		 * @param pathHelper the path helper instance
-		 * @param baseUrl the host, scheme, and port based on forwarded headers
+		 *                        {@link HttpServletRequestWrapper#getRequest() delegate request} which
+		 *                        may change during a forward (e.g. Tomcat.
+		 * @param pathHelper      the path helper instance
+		 * @param baseUrl         the host, scheme, and port based on forwarded headers
 		 */
 		public ForwardedPrefixExtractor(
 				Supplier<HttpServletRequest> delegateRequest, UrlPathHelper pathHelper, String baseUrl) {

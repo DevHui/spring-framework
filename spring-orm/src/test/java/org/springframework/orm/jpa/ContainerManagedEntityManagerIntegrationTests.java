@@ -16,22 +16,26 @@
 
 package org.springframework.orm.jpa;
 
-import java.lang.reflect.Proxy;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
-import javax.persistence.TransactionRequiredException;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.orm.jpa.domain.Person;
 
-import static org.junit.Assert.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
+import javax.persistence.TransactionRequiredException;
+import java.lang.reflect.Proxy;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Integration tests using in-memory database for container-managed JPA
@@ -79,8 +83,7 @@ public class ContainerManagedEntityManagerIntegrationTests extends AbstractEntit
 		try {
 			em.close();
 			fail("Close should not work on container managed EM");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// OK
 		}
 		assertTrue(em.isOpen());
@@ -92,8 +95,7 @@ public class ContainerManagedEntityManagerIntegrationTests extends AbstractEntit
 		try {
 			createContainerManagedEntityManager().getTransaction();
 			fail("Should have thrown an IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 	}
@@ -114,8 +116,7 @@ public class ContainerManagedEntityManagerIntegrationTests extends AbstractEntit
 		try {
 			createContainerManagedEntityManager().joinTransaction();
 			fail("Should have thrown a TransactionRequiredException");
-		}
-		catch (TransactionRequiredException ex) {
+		} catch (TransactionRequiredException ex) {
 			// expected
 		}
 	}
@@ -153,7 +154,7 @@ public class ContainerManagedEntityManagerIntegrationTests extends AbstractEntit
 
 		doInstantiateAndSave(em);
 		setComplete();
-		endTransaction();	// Should rollback
+		endTransaction();    // Should rollback
 		assertEquals("Tx must have committed back", 1, countRowsInTable(em, "person"));
 
 		// Now clean up the database
@@ -164,7 +165,7 @@ public class ContainerManagedEntityManagerIntegrationTests extends AbstractEntit
 	public void testRollbackOccurs() {
 		EntityManager em = createContainerManagedEntityManager();
 		doInstantiateAndSave(em);
-		endTransaction();	// Should rollback
+		endTransaction();    // Should rollback
 		assertEquals("Tx must have been rolled back", 0, countRowsInTable(em, "person"));
 	}
 
@@ -173,7 +174,7 @@ public class ContainerManagedEntityManagerIntegrationTests extends AbstractEntit
 		EntityManager em = createContainerManagedEntityManager();
 		doInstantiateAndSave(em);
 		setComplete();
-		endTransaction();	// Should rollback
+		endTransaction();    // Should rollback
 		assertEquals("Tx must have committed back", 1, countRowsInTable(em, "person"));
 
 		// Now clean up the database

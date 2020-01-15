@@ -15,10 +15,10 @@
  */
 package org.springframework.test.web.reactive.server.samples;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 class Person {
@@ -35,12 +35,12 @@ class Person {
 		this.name = name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getName() {
 		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

@@ -16,27 +16,12 @@
 
 package org.springframework.web.reactive.function;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.util.IllegalReferenceCountException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-import reactor.test.publisher.TestPublisher;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.codec.ByteBufferDecoder;
 import org.springframework.core.codec.StringDecoder;
@@ -63,9 +48,25 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.mock.http.client.reactive.test.MockClientHttpResponse;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+import reactor.test.publisher.TestPublisher;
 
-import static org.junit.Assert.*;
-import static org.springframework.http.codec.json.Jackson2CodecSupport.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.http.codec.json.Jackson2CodecSupport.JSON_VIEW_HINT;
 
 /**
  * @author Arjen Poutsma
@@ -136,7 +137,8 @@ public class BodyExtractorsTests {
 	@Test
 	public void toMonoParameterizedTypeReference() {
 		BodyExtractor<Mono<Map<String, String>>, ReactiveHttpInputMessage> extractor =
-				BodyExtractors.toMono(new ParameterizedTypeReference<Map<String, String>>() {});
+				BodyExtractors.toMono(new ParameterizedTypeReference<Map<String, String>>() {
+				});
 
 		DefaultDataBufferFactory factory = new DefaultDataBufferFactory();
 		DefaultDataBuffer dataBuffer =
@@ -146,7 +148,7 @@ public class BodyExtractorsTests {
 		MockServerHttpRequest request = MockServerHttpRequest.post("/").contentType(MediaType.APPLICATION_JSON).body(body);
 		Mono<Map<String, String>> result = extractor.extract(request, this.context);
 
-		Map<String, String > expected = new LinkedHashMap<>();
+		Map<String, String> expected = new LinkedHashMap<>();
 		expected.put("username", "foo");
 		expected.put("password", "bar");
 		StepVerifier.create(result)
@@ -183,7 +185,8 @@ public class BodyExtractorsTests {
 	@Test  // SPR-15758
 	public void toMonoWithEmptyBodyAndNoContentType() {
 		BodyExtractor<Mono<Map<String, String>>, ReactiveHttpInputMessage> extractor =
-				BodyExtractors.toMono(new ParameterizedTypeReference<Map<String, String>>() {});
+				BodyExtractors.toMono(new ParameterizedTypeReference<Map<String, String>>() {
+				});
 
 		MockServerHttpRequest request = MockServerHttpRequest.post("/").body(Flux.empty());
 		Mono<Map<String, String>> result = extractor.extract(request, this.context);
@@ -443,7 +446,8 @@ public class BodyExtractorsTests {
 	}
 
 
-	interface SafeToDeserialize {}
+	interface SafeToDeserialize {
+	}
 
 
 	@SuppressWarnings("unused")

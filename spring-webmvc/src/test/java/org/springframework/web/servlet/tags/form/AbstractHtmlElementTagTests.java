@@ -16,16 +16,7 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Collections;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.JspException;
-
 import org.junit.Before;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockPageContext;
 import org.springframework.validation.BindingResult;
@@ -40,8 +31,15 @@ import org.springframework.web.servlet.support.RequestDataValueProcessorWrapper;
 import org.springframework.web.servlet.tags.AbstractTagTests;
 import org.springframework.web.servlet.tags.RequestContextAwareTag;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Rob Harrop
@@ -126,8 +124,8 @@ public abstract class AbstractHtmlElementTagTests extends AbstractTagTests {
 	protected final void assertContainsAttribute(String output, String attributeName, String attributeValue) {
 		String attributeString = attributeName + "=\"" + attributeValue + "\"";
 		assertTrue("Expected to find attribute '" + attributeName +
-				"' with value '" + attributeValue +
-				"' in output + '" + output + "'",
+						"' with value '" + attributeValue +
+						"' in output + '" + output + "'",
 				output.contains(attributeString));
 	}
 

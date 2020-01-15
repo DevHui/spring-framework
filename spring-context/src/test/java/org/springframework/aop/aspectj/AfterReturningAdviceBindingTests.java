@@ -18,7 +18,6 @@ package org.springframework.aop.aspectj;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.aspectj.AfterReturningAdviceBindingTestAspect.AfterReturningAdviceBindingCollaborator;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
@@ -26,8 +25,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.verifyZeroInteractions;
 
 /**
  * Tests for various parameter binding scenarios with before advice.
@@ -62,7 +63,7 @@ public class AfterReturningAdviceBindingTests {
 		assertTrue(AopUtils.isAopProxy(testBeanProxy));
 
 		// we need the real target too, not just the proxy...
-		this.testBeanTarget = (TestBean) ((Advised)testBeanProxy).getTargetSource().getTarget();
+		this.testBeanTarget = (TestBean) ((Advised) testBeanProxy).getTargetSource().getTarget();
 	}
 
 
@@ -81,7 +82,7 @@ public class AfterReturningAdviceBindingTests {
 	@Test
 	public void testOneIntAndOneObjectArgs() {
 		testBeanProxy.setAge(5);
-		verify(mockCollaborator).oneIntAndOneObject(5,this.testBeanProxy);
+		verify(mockCollaborator).oneIntAndOneObject(5, this.testBeanProxy);
 	}
 
 	@Test
@@ -179,10 +180,15 @@ final class AfterReturningAdviceBindingTestAspect extends AdviceBindingTestAspec
 	interface AfterReturningAdviceBindingCollaborator extends AdviceBindingCollaborator {
 
 		void oneString(String s);
+
 		void oneTestBeanArg(TestBean b);
+
 		void testBeanArrayArg(ITestBean[] b);
+
 		void objectMatchNoArgs();
+
 		void stringMatchNoArgs();
+
 		void oneInt(int result);
 	}
 

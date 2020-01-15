@@ -16,24 +16,23 @@
 
 package org.springframework.cache.jcache.interceptor;
 
+import org.springframework.cache.interceptor.CacheOperationInvocationContext;
+
+import javax.cache.annotation.CacheInvocationContext;
+import javax.cache.annotation.CacheInvocationParameter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Set;
-
-import javax.cache.annotation.CacheInvocationContext;
-import javax.cache.annotation.CacheInvocationParameter;
-
-import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 
 /**
  * The default {@link CacheOperationInvocationContext} implementation used
  * by all interceptors. Also implements {@link CacheInvocationContext} to
  * act as a proper bridge when calling JSR-107 {@link javax.cache.annotation.CacheResolver}
  *
+ * @param <A> the annotation type
  * @author Stephane Nicoll
  * @since 4.1
- * @param <A> the annotation type
  */
 class DefaultCacheInvocationContext<A extends Annotation>
 		implements CacheInvocationContext<A>, CacheOperationInvocationContext<JCacheOperation<A>> {

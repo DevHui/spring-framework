@@ -17,7 +17,6 @@
 package org.springframework.aop.support.annotation;
 
 import org.junit.Test;
-
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.MethodMatcher;
 import org.springframework.aop.Pointcut;

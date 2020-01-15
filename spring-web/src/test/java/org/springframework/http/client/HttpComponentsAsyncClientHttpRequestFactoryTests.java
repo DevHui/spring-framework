@@ -16,17 +16,18 @@
 
 package org.springframework.http.client;
 
-import java.net.URI;
-
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.junit.Test;
-
 import org.springframework.http.HttpMethod;
 
-import static org.junit.Assert.*;
+import java.net.URI;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Arjen Poutsma

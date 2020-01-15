@@ -16,22 +16,22 @@
 
 package org.springframework.http.codec.json;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.AbstractDecoderTestCase;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.codec.Pojo;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.MimeType;
+import reactor.core.publisher.Flux;
 
-import static org.junit.Assert.*;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.core.ResolvableType.forClass;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -82,8 +82,7 @@ public class Jackson2SmileDecoderTests extends AbstractDecoderTestCase<Jackson2S
 	private byte[] writeObject(Object o) {
 		try {
 			return this.mapper.writer().writeValueAsBytes(o);
-		}
-		catch (JsonProcessingException e) {
+		} catch (JsonProcessingException e) {
 			throw new AssertionError(e);
 		}
 

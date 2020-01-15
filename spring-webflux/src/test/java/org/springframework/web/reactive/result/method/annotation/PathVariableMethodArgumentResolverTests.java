@@ -16,16 +16,8 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.annotation.SynthesizingMethodParameter;
@@ -38,6 +30,13 @@ import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerErrorException;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -52,10 +51,8 @@ import static org.junit.Assert.fail;
  */
 public class PathVariableMethodArgumentResolverTests {
 
+	private final MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/"));
 	private PathVariableMethodArgumentResolver resolver;
-
-	private final MockServerWebExchange exchange= MockServerWebExchange.from(MockServerHttpRequest.get("/"));
-
 	private MethodParameter paramNamedString;
 	private MethodParameter paramString;
 	private MethodParameter paramNotRequired;
@@ -83,8 +80,7 @@ public class PathVariableMethodArgumentResolverTests {
 		try {
 			this.resolver.supportsParameter(this.paramMono);
 			fail();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertTrue("Unexpected error message:\n" + ex.getMessage(),
 					ex.getMessage().startsWith(
 							"PathVariableMethodArgumentResolver doesn't support reactive type wrapper"));

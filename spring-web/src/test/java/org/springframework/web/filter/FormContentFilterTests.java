@@ -16,20 +16,23 @@
 
 package org.springframework.web.filter;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.test.MockFilterChain;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 
-import static org.junit.Assert.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Test fixture for {@link FormContentFilter}.
@@ -66,8 +69,7 @@ public class FormContentFilterTests {
 			this.filter.doFilter(request, this.response, this.filterChain);
 			if (method == HttpMethod.PUT || method == HttpMethod.PATCH || method == HttpMethod.DELETE) {
 				assertNotSame(request, this.filterChain.getRequest());
-			}
-			else {
+			} else {
 				assertSame(request, this.filterChain.getRequest());
 			}
 		}
@@ -75,7 +77,7 @@ public class FormContentFilterTests {
 
 	@Test
 	public void wrapFormEncodedOnly() throws Exception {
-		String[] contentTypes = new String[] {"text/plain", "multipart/form-data"};
+		String[] contentTypes = new String[]{"text/plain", "multipart/form-data"};
 		for (String contentType : contentTypes) {
 			MockHttpServletRequest request = new MockHttpServletRequest("PUT", "/");
 			request.setContent("".getBytes("ISO-8859-1"));
@@ -147,7 +149,7 @@ public class FormContentFilterTests {
 		String[] values = this.filterChain.getRequest().getParameterValues("name");
 
 		assertNotSame("Request not wrapped", this.request, filterChain.getRequest());
-		assertArrayEquals(new String[] {"value1", "value2", "value3", "value4"}, values);
+		assertArrayEquals(new String[]{"value1", "value2", "value3", "value4"}, values);
 	}
 
 	@Test
@@ -161,7 +163,7 @@ public class FormContentFilterTests {
 		String[] values = this.filterChain.getRequest().getParameterValues("name");
 
 		assertNotSame("Request not wrapped", this.request, this.filterChain.getRequest());
-		assertArrayEquals(new String[] {"value1", "value2"}, values);
+		assertArrayEquals(new String[]{"value1", "value2"}, values);
 	}
 
 	@Test
@@ -174,7 +176,7 @@ public class FormContentFilterTests {
 		String[] values = this.filterChain.getRequest().getParameterValues("anotherName");
 
 		assertNotSame("Request not wrapped", this.request, this.filterChain.getRequest());
-		assertArrayEquals(new String[] {"anotherValue"}, values);
+		assertArrayEquals(new String[]{"anotherValue"}, values);
 	}
 
 	@Test
@@ -202,8 +204,8 @@ public class FormContentFilterTests {
 
 		assertNotSame("Request not wrapped", this.request, this.filterChain.getRequest());
 		assertEquals(2, parameters.size());
-		assertArrayEquals(new String[] {"value1", "value2", "value3"}, parameters.get("name"));
-		assertArrayEquals(new String[] {"value4"}, parameters.get("name4"));
+		assertArrayEquals(new String[]{"value1", "value2", "value3"}, parameters.get("name"));
+		assertArrayEquals(new String[]{"value4"}, parameters.get("name4"));
 	}
 
 	@Test  // SPR-15835
@@ -212,7 +214,7 @@ public class FormContentFilterTests {
 		this.request.addParameter("hiddenField", "testHidden");
 		this.filter.doFilter(this.request, this.response, this.filterChain);
 
-		assertArrayEquals(new String[] {"testHidden"},
+		assertArrayEquals(new String[]{"testHidden"},
 				this.filterChain.getRequest().getParameterValues("hiddenField"));
 	}
 

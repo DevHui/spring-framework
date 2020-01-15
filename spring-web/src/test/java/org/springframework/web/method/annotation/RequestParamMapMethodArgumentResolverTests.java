@@ -16,13 +16,7 @@
 
 package org.springframework.web.method.annotation;
 
-import java.util.Collections;
-import java.util.Map;
-
-import javax.servlet.http.Part;
-
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
@@ -37,8 +31,14 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.ResolvableMethod;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.junit.Assert.*;
-import static org.springframework.web.method.MvcAnnotationPredicates.*;
+import javax.servlet.http.Part;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.web.method.MvcAnnotationPredicates.requestParam;
 
 /**
  * Test fixture with {@link RequestParamMapMethodArgumentResolver}.

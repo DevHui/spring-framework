@@ -16,13 +16,13 @@
 
 package org.springframework.core.io.buffer;
 
+import org.springframework.util.Assert;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.function.IntPredicate;
-
-import org.springframework.util.Assert;
 
 /**
  * DataBuffer implementation created by {@link LeakAwareDataBufferFactory}.
@@ -48,7 +48,7 @@ class LeakAwareDataBuffer implements PooledDataBuffer {
 
 	private static AssertionError createLeakError(DataBuffer delegate) {
 		String message = String.format("DataBuffer leak detected: {%s} has not been released.%n" +
-				"Stack trace of buffer allocation statement follows:",
+						"Stack trace of buffer allocation statement follows:",
 				delegate);
 		AssertionError result = new AssertionError(message);
 		// remove first four irrelevant stack trace elements
@@ -238,8 +238,7 @@ class LeakAwareDataBuffer implements PooledDataBuffer {
 		if (o instanceof LeakAwareDataBuffer) {
 			LeakAwareDataBuffer other = (LeakAwareDataBuffer) o;
 			return this.delegate.equals(other.delegate);
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
